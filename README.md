@@ -1,0 +1,1 @@
+# soft-gestion-isp-core
