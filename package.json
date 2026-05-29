@@ -1,0 +1,59 @@
+{
+  "name": "soft-gestion-isp-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema core de gestión para ISP desarrollado con Next.js, React, TypeScript y MongoDB.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed:admin": "tsx scripts/seed-admin.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armandie2013/soft-gestion-isp-core.git"
+  },
+  "keywords": [
+    "isp",
+    "gestion",
+    "nextjs",
+    "react",
+    "mongodb"
+  ],
+  "author": "Diego Armando Cardenes",
+  "license": "UNLICENSED",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/armandie2013/soft-gestion-isp-core/issues"
+  },
+  "homepage": "https://github.com/armandie2013/soft-gestion-isp-core#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.19",
+    "dotenv": "^17.4.2",
+    "jose": "^6.1.3",
+    "lucide-react": "^0.511.0",
+    "mongoose": "^8.20.1",
+    "next": "^14.2.35",
+    "next-themes": "^0.4.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/node": "^24.10.1",
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.5",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

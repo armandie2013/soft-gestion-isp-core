@@ -1,0 +1,72 @@
+import { SignJWT, jwtVerify } from "jose";
+import type { UserRole } from "@/types/usuario.types";
+
+const AUTH_COOKIE_NAME = "soft_gestion_isp_session";
+
+export type AuthTokenPayload = {
+  userId: string;
+  nombre: string;
+  email: string;
+  rol: UserRole;
+  debeCambiarPassword: boolean;
+};
+
+function getAuthSecret() {
+  const secret = process.env.AUTH_SECRET;
+
+  if (!secret) {
+    throw new Error("Falta configurar AUTH_SECRET en .env.local");
+  }
+
+  return new TextEncoder().encode(secret);
+}
+
+export function getAuthCookieName() {
+  return AUTH_COOKIE_NAME;
+}
+
+export async function createAuthToken(payload: AuthTokenPayload) {
+  const secret = getAuthSecret();
+
+  return new SignJWT({
+    userId: payload.userId,
+    nombre: payload.nombre,
+    email: payload.email,
+    rol: payload.rol,
+    debeCambiarPassword: payload.debeCambiarPassword,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("12h")
+    .sign(secret);
+}
+
+export async function verifyAuthToken(token: string) {
+  try {
+    const secret = getAuthSecret();
+
+    const { payload } = await jwtVerify(token, secret);
+
+    if (
+      typeof payload.userId !== "string" ||
+      typeof payload.nombre !== "string" ||
+      typeof payload.email !== "string" ||
+      typeof payload.rol !== "string"
+    ) {
+      return null;
+    }
+
+    return {
+      userId: payload.userId,
+      nombre: payload.nombre,
+      email: payload.email,
+      rol: payload.rol as UserRole,
+      debeCambiarPassword:
+        typeof payload.debeCambiarPassword === "boolean"
+          ? payload.debeCambiarPassword
+          : false,
+    };
+  } catch {
+    return null;
+  }
+}

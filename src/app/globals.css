@@ -1,0 +1,265 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /*
+    Paleta modo claro inspirada en la imagen:
+    azul grisáceo, blanco azulado, celeste suave y sombras livianas.
+  */
+  --background: #eef6ff;
+  --foreground: #344155;
+
+  --app-bg: #eef6ff;
+  --app-bg-soft: #f7fbff;
+
+  --app-surface: rgba(255, 255, 255, 0.82);
+  --app-surface-solid: #ffffff;
+  --app-surface-soft: #f4f9ff;
+
+  --app-card: rgba(255, 255, 255, 0.9);
+  --app-card-solid: #ffffff;
+
+  --app-border: #d7e4f2;
+  --app-border-strong: #b9cbe0;
+
+  --app-primary: #7f98b6;
+  --app-primary-hover: #6f88a6;
+  --app-primary-soft: #dce9f7;
+  --app-primary-foreground: #ffffff;
+
+  --app-accent: #9db9d8;
+  --app-accent-soft: #e6f1fb;
+
+  --app-text: #344155;
+  --app-text-strong: #263244;
+  --app-muted: #6c7a8c;
+  --app-muted-soft: #8a9aac;
+
+  --app-danger: #dc2626;
+  --app-danger-soft: #fee2e2;
+
+  --app-success: #059669;
+  --app-success-soft: #d1fae5;
+
+  --app-warning: #d97706;
+  --app-warning-soft: #fef3c7;
+
+  --app-shadow: 0 18px 45px rgba(80, 106, 135, 0.16);
+  --app-shadow-soft: 0 10px 28px rgba(80, 106, 135, 0.1);
+
+  --card: var(--app-card-solid);
+  --card-foreground: var(--app-text-strong);
+
+  --muted: var(--app-surface-soft);
+  --muted-foreground: var(--app-muted);
+
+  --border: var(--app-border);
+  --primary: var(--app-primary);
+  --primary-foreground: var(--app-primary-foreground);
+}
+
+.dark {
+  /*
+    Modo oscuro conservado como venimos trabajando.
+  */
+  --background: #020617;
+  --foreground: #e2e8f0;
+
+  --app-bg: #020617;
+  --app-bg-soft: #0f172a;
+
+  --app-surface: rgba(15, 23, 42, 0.78);
+  --app-surface-solid: #0f172a;
+  --app-surface-soft: #111827;
+
+  --app-card: rgba(15, 23, 42, 0.86);
+  --app-card-solid: #0f172a;
+
+  --app-border: #1e293b;
+  --app-border-strong: #334155;
+
+  --app-primary: #06b6d4;
+  --app-primary-hover: #22d3ee;
+  --app-primary-soft: rgba(8, 145, 178, 0.18);
+  --app-primary-foreground: #083344;
+
+  --app-accent: #38bdf8;
+  --app-accent-soft: rgba(56, 189, 248, 0.12);
+
+  --app-text: #e2e8f0;
+  --app-text-strong: #f8fafc;
+  --app-muted: #94a3b8;
+  --app-muted-soft: #64748b;
+
+  --app-danger: #f87171;
+  --app-danger-soft: rgba(127, 29, 29, 0.35);
+
+  --app-success: #34d399;
+  --app-success-soft: rgba(6, 78, 59, 0.35);
+
+  --app-warning: #fbbf24;
+  --app-warning-soft: rgba(120, 53, 15, 0.35);
+
+  --app-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  --app-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.26);
+
+  --card: var(--app-card-solid);
+  --card-foreground: var(--app-text-strong);
+
+  --muted: var(--app-surface-soft);
+  --muted-foreground: var(--app-muted);
+
+  --border: var(--app-border);
+  --primary: var(--app-primary);
+  --primary-foreground: var(--app-primary-foreground);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(157, 185, 216, 0.35), transparent 26rem),
+    radial-gradient(circle at 92% 18%, rgba(220, 233, 247, 0.75), transparent 28rem),
+    linear-gradient(180deg, var(--app-bg-soft) 0%, var(--app-bg) 42%, #e4f0fc 100%);
+  color: var(--app-text);
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(6, 182, 212, 0.1), transparent 28rem),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.08), transparent 30rem),
+    var(--app-bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(127, 152, 182, 0.35);
+}
+
+.dark ::selection {
+  background: rgba(6, 182, 212, 0.35);
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/*
+  Clases utilitarias propias para no repetir estilos largos.
+  Las usamos dentro de componentes base y también pueden servir en vistas puntuales.
+*/
+
+.app-page-bg {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(157, 185, 216, 0.35), transparent 26rem),
+    radial-gradient(circle at 92% 18%, rgba(220, 233, 247, 0.75), transparent 28rem),
+    linear-gradient(180deg, var(--app-bg-soft) 0%, var(--app-bg) 42%, #e4f0fc 100%);
+}
+
+.dark .app-page-bg {
+  background:
+    radial-gradient(circle at top left, rgba(6, 182, 212, 0.1), transparent 28rem),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.08), transparent 30rem),
+    var(--app-bg);
+}
+
+.app-glass {
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow-soft);
+  backdrop-filter: blur(14px);
+}
+
+.app-input {
+  height: 2.75rem;
+  width: 100%;
+  border-radius: 0.9rem;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface-solid);
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--app-text-strong);
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.app-input:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 4px rgba(127, 152, 182, 0.16);
+}
+
+.dark .app-input {
+  background: #020617;
+}
+
+.dark .app-input:focus {
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.12);
+}
+
+.app-textarea {
+  width: 100%;
+  resize: none;
+  border-radius: 0.9rem;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface-solid);
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--app-text-strong);
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.app-textarea:focus {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 4px rgba(127, 152, 182, 0.16);
+}
+
+.dark .app-textarea {
+  background: #020617;
+}
+
+.dark .app-textarea:focus {
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.12);
+}
+
+.app-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--app-text);
+}
+
+.app-muted {
+  color: var(--app-muted);
+}
