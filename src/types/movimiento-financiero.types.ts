@@ -38,7 +38,24 @@ export type FacturaClienteSafe = {
   importeOriginal: number;
   totalNotasCredito: number;
   totalNotasDebito: number;
+  totalPagos: number;
   saldoFactura: number;
+  referenciaMes?: number | null;
+  referenciaAnio?: number | null;
+};
+
+export type PeriodoCuentaClienteSafe = {
+  facturaId: string;
+  numeroComprobante: number;
+  fecha: string;
+  periodoLabel: string;
+  concepto: string;
+  importeOriginal: number;
+  totalNotasCredito: number;
+  totalNotasDebito: number;
+  totalPagos: number;
+  saldoPeriodo: number;
+  estadoPeriodo: "pendiente" | "cancelado" | "a_favor";
   referenciaMes?: number | null;
   referenciaAnio?: number | null;
 };
@@ -48,4 +65,13 @@ export type EstadoCuentaCliente = {
   totalHaber: number;
   saldo: number;
   movimientos: MovimientoFinancieroSafe[];
+  periodos: PeriodoCuentaClienteSafe[];
+};
+
+export type DetallePeriodoCuentaCliente = {
+  periodo: PeriodoCuentaClienteSafe;
+  movimientos: MovimientoFinancieroSafe[];
+  totalDebePeriodo: number;
+  totalHaberPeriodo: number;
+  saldoPeriodo: number;
 };

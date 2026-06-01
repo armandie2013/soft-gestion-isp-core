@@ -1,13 +1,15 @@
 import Link from "next/link";
 import {
   CreditCard,
-  FileText,
   Home,
+  KeyRound,
   ReceiptText,
+  Search,
   Settings,
   ShieldCheck,
   UserRound,
   UsersRound,
+  WalletCards,
   Wifi,
 } from "lucide-react";
 import { brandConfig } from "@/config/brand.config";
@@ -40,6 +42,11 @@ const linksByRole = {
       icon: Wifi,
     },
     {
+      label: "Caja cobradores",
+      href: "/admin/caja-cobradores",
+      icon: WalletCards,
+    },
+    {
       label: "Configuración",
       href: "/admin/configuracion",
       icon: Settings,
@@ -50,13 +57,30 @@ const linksByRole = {
       icon: ReceiptText,
     },
   ],
+
   cobrador: [
     {
       label: "Panel cobrador",
       href: "/cobrador",
       icon: CreditCard,
     },
+    {
+      label: "Buscar cliente",
+      href: "/cobrador/buscar-cliente",
+      icon: Search,
+    },
+    {
+      label: "Mi caja",
+      href: "/cobrador/caja",
+      icon: WalletCards,
+    },
+    {
+      label: "Cerrar caja",
+      href: "/cobrador/caja/cierre",
+      icon: KeyRound,
+    },
   ],
+
   cliente: [
     {
       label: "Mi panel",
@@ -87,6 +111,7 @@ export function DashboardSidebar({ rol }: DashboardSidebarProps) {
             <p className="truncate text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700 dark:text-cyan-300">
               {brandConfig.ispName}
             </p>
+
             <p className="truncate text-sm font-semibold text-slate-950 dark:text-white">
               {brandConfig.appName}
             </p>
@@ -114,6 +139,7 @@ export function DashboardSidebar({ rol }: DashboardSidebarProps) {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
             Rol activo
           </p>
+
           <p className="mt-1 text-sm font-semibold capitalize text-slate-950 dark:text-white">
             {rol}
           </p>

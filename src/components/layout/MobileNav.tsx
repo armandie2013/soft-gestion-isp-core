@@ -5,12 +5,15 @@ import { useState } from "react";
 import {
   CreditCard,
   Home,
+  KeyRound,
   Menu,
   ReceiptText,
+  Search,
   Settings,
   ShieldCheck,
   UserRound,
   UsersRound,
+  WalletCards,
   Wifi,
   X,
 } from "lucide-react";
@@ -44,6 +47,11 @@ const linksByRole = {
       icon: Wifi,
     },
     {
+      label: "Caja cobradores",
+      href: "/admin/caja-cobradores",
+      icon: WalletCards,
+    },
+    {
       label: "Configuración",
       href: "/admin/configuracion",
       icon: Settings,
@@ -54,13 +62,30 @@ const linksByRole = {
       icon: ReceiptText,
     },
   ],
+
   cobrador: [
     {
       label: "Panel cobrador",
       href: "/cobrador",
       icon: CreditCard,
     },
+    {
+      label: "Buscar cliente",
+      href: "/cobrador/buscar-cliente",
+      icon: Search,
+    },
+    {
+      label: "Mi caja",
+      href: "/cobrador/caja",
+      icon: WalletCards,
+    },
+    {
+      label: "Cerrar caja",
+      href: "/cobrador/caja/cierre",
+      icon: KeyRound,
+    },
   ],
+
   cliente: [
     {
       label: "Mi panel",
@@ -103,6 +128,7 @@ export function MobileNav({ rol }: MobileNavProps) {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-700 dark:text-cyan-300">
                   {brandConfig.ispName}
                 </p>
+
                 <p className="truncate text-sm font-semibold text-slate-950 dark:text-white">
                   Menú principal
                 </p>

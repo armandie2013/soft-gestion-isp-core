@@ -1,21 +1,13 @@
-import { ArrowDownLeft, ArrowUpRight, FileText } from "lucide-react";
+import Link from "next/link";
+import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { MovimientoFinancieroSafe } from "@/types/movimiento-financiero.types";
+import type { PeriodoCuentaClienteSafe } from "@/types/movimiento-financiero.types";
 
 type EstadoCuentaTableProps = {
-  movimientos: MovimientoFinancieroSafe[];
+  clienteId: string;
+  periodos: PeriodoCuentaClienteSafe[];
 };
-
-function formatDate(value: string) {
-  if (!value) return "-";
-
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(value));
-}
 
 function formatMoney(value: number) {
   return new Intl.NumberFormat("es-AR", {
@@ -25,63 +17,46 @@ function formatMoney(value: number) {
   }).format(value);
 }
 
-function getTipoLabel(tipo: string) {
-  if (tipo === "factura") return "Factura";
-  if (tipo === "nota_credito") return "Nota crédito";
-  if (tipo === "nota_debito") return "Nota débito";
-  if (tipo === "pago") return "Pago";
-  return "Ajuste";
-}
-
-function getTipoVariant(tipo: string) {
-  if (tipo === "factura") return "info";
-  if (tipo === "nota_credito") return "success";
-  if (tipo === "nota_debito") return "warning";
-  if (tipo === "pago") return "success";
-  return "default";
-}
-
-function getMovimientoImpacto(movimiento: MovimientoFinancieroSafe) {
-  if (movimiento.debe > 0) {
+function getPeriodoBadge(periodo: PeriodoCuentaClienteSafe) {
+  if (periodo.estadoPeriodo === "cancelado") {
     return {
-      tipo: "cargo",
-      label: "Cargo",
-      value: movimiento.debe,
-      symbol: "+",
-      colorClass: "text-[var(--app-danger)]",
-      bgClass: "bg-[var(--app-danger-soft)]",
-      icon: <ArrowUpRight className="h-4 w-4" />,
+      label: "Cancelado",
+      variant: "success",
     };
   }
 
-  if (movimiento.haber > 0) {
+  if (periodo.estadoPeriodo === "a_favor") {
     return {
-      tipo: "credito",
-      label: "Crédito",
-      value: movimiento.haber,
-      symbol: "-",
-      colorClass: "text-[var(--app-success)]",
-      bgClass: "bg-[var(--app-success-soft)]",
-      icon: <ArrowDownLeft className="h-4 w-4" />,
+      label: "A favor",
+      variant: "info",
     };
   }
 
   return {
-    tipo: "neutro",
-    label: "Sin impacto",
-    value: 0,
-    symbol: "",
-    colorClass: "text-[var(--app-muted)]",
-    bgClass: "bg-[var(--app-surface-soft)]",
-    icon: <FileText className="h-4 w-4" />,
+    label: "Pendiente",
+    variant: "danger",
   };
 }
 
-export function EstadoCuentaTable({ movimientos }: EstadoCuentaTableProps) {
-  if (movimientos.length === 0) {
+function getAjustesLabel(periodo: PeriodoCuentaClienteSafe) {
+  const ajustes = periodo.totalNotasDebito - periodo.totalNotasCredito - periodo.totalPagos;
+
+  if (ajustes === 0) {
+    return "Sin ajustes";
+  }
+
+  if (ajustes > 0) {
+    return `Ajustes +${formatMoney(ajustes)}`;
+  }
+
+  return `Ajustes -${formatMoney(Math.abs(ajustes))}`;
+}
+
+export function EstadoCuentaTable({ clienteId, periodos }: EstadoCuentaTableProps) {
+  if (periodos.length === 0) {
     return (
       <EmptyState
-        title="Este cliente todavía no tiene movimientos."
+        title="Este cliente todavía no tiene períodos facturados."
         description="Generá la facturación mensual desde Configuración para iniciar el estado de cuenta."
       />
     );
@@ -94,85 +69,82 @@ export function EstadoCuentaTable({ movimientos }: EstadoCuentaTableProps) {
           <table className="min-w-full text-left text-sm">
             <thead className="border-b border-[var(--app-border)] bg-[var(--app-surface-soft)] text-xs uppercase tracking-wide text-[var(--app-muted)]">
               <tr>
-                <th className="px-4 py-3 font-semibold">Fecha</th>
-                <th className="px-4 py-3 font-semibold">Detalle</th>
-                <th className="px-4 py-3 font-semibold">Tipo</th>
+                <th className="px-4 py-3 font-semibold">Período</th>
                 <th className="px-4 py-3 font-semibold">Factura</th>
-                <th className="px-4 py-3 text-right font-semibold">Movimiento</th>
+                <th className="px-4 py-3 font-semibold">Concepto</th>
+                <th className="px-4 py-3 text-right font-semibold">Original</th>
+                <th className="px-4 py-3 text-right font-semibold">Ajustes</th>
                 <th className="px-4 py-3 text-right font-semibold">Saldo</th>
+                <th className="px-4 py-3 font-semibold">Estado</th>
+                <th className="px-4 py-3 text-right font-semibold">Acción</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-[var(--app-border)]">
-              {movimientos.map((movimiento) => {
-                const impacto = getMovimientoImpacto(movimiento);
+              {periodos.map((periodo) => {
+                const badge = getPeriodoBadge(periodo);
+                const ajustes =
+                  periodo.totalNotasDebito -
+                  periodo.totalNotasCredito -
+                  periodo.totalPagos;
 
                 return (
                   <tr
-                    key={movimiento.id}
+                    key={periodo.facturaId}
                     className="transition hover:bg-[var(--app-surface-soft)]"
                   >
-                    <td className="whitespace-nowrap px-4 py-3 text-[var(--app-muted)]">
-                      <p className="font-medium text-[var(--app-text)]">
-                        {formatDate(movimiento.fecha)}
-                      </p>
-                      <p className="mt-1 text-xs text-[var(--app-muted)]">
-                        Comp. N° {movimiento.numeroComprobante}
-                      </p>
-                    </td>
-
                     <td className="px-4 py-3">
-                      <p className="font-medium text-[var(--app-text-strong)]">
-                        {movimiento.concepto}
+                      <p className="font-semibold text-[var(--app-text-strong)]">
+                        {periodo.periodoLabel}
                       </p>
-
-                      {movimiento.observacion ? (
-                        <p className="mt-1 text-xs text-[var(--app-muted)]">
-                          {movimiento.observacion}
-                        </p>
-                      ) : null}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      <Badge
-                        variant={getTipoVariant(movimiento.tipoMovimiento) as any}
-                      >
-                        {getTipoLabel(movimiento.tipoMovimiento)}
-                      </Badge>
                     </td>
 
                     <td className="px-4 py-3 text-[var(--app-muted)]">
-                      {movimiento.facturaAsociadaNumeroComprobante
-                        ? `N° ${movimiento.facturaAsociadaNumeroComprobante}`
-                        : movimiento.tipoMovimiento === "factura"
-                          ? `N° ${movimiento.numeroComprobante}`
-                          : "-"}
+                      N° {periodo.numeroComprobante}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <p className="line-clamp-1 font-medium text-[var(--app-text)]">
+                        {periodo.concepto}
+                      </p>
+                    </td>
+
+                    <td className="px-4 py-3 text-right font-medium text-[var(--app-text-strong)]">
+                      {formatMoney(periodo.importeOriginal)}
+                    </td>
+
+                    <td
+                      className={`px-4 py-3 text-right font-medium ${
+                        ajustes > 0
+                          ? "text-[var(--app-danger)]"
+                          : ajustes < 0
+                            ? "text-[var(--app-success)]"
+                            : "text-[var(--app-muted)]"
+                      }`}
+                    >
+                      {ajustes === 0
+                        ? "-"
+                        : ajustes > 0
+                          ? `+ ${formatMoney(ajustes)}`
+                          : `- ${formatMoney(Math.abs(ajustes))}`}
+                    </td>
+
+                    <td className="px-4 py-3 text-right font-semibold text-[var(--app-text-strong)]">
+                      {formatMoney(periodo.saldoPeriodo)}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <Badge variant={badge.variant as any}>{badge.label}</Badge>
                     </td>
 
                     <td className="px-4 py-3 text-right">
-                      <div className={`inline-flex items-center justify-end gap-2 rounded-xl px-3 py-2 ${impacto.bgClass}`}>
-                        <span className={impacto.colorClass}>
-                          {impacto.icon}
-                        </span>
-
-                        <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--app-muted)]">
-                            {impacto.label}
-                          </p>
-
-                          <p className={`font-semibold ${impacto.colorClass}`}>
-                            {impacto.value > 0
-                              ? `${impacto.symbol} ${formatMoney(impacto.value)}`
-                              : "-"}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="whitespace-nowrap px-4 py-3 text-right">
-                      <p className="font-semibold text-[var(--app-text-strong)]">
-                        {formatMoney(movimiento.saldo)}
-                      </p>
+                      <Link
+                        href={`/clientes/${clienteId}/estado-cuenta/${periodo.facturaId}`}
+                        className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-3 text-xs font-semibold text-[var(--app-text)] shadow-sm transition hover:bg-[var(--app-surface-soft)] active:scale-[0.99]"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        Ver detalle
+                      </Link>
                     </td>
                   </tr>
                 );
@@ -183,76 +155,63 @@ export function EstadoCuentaTable({ movimientos }: EstadoCuentaTableProps) {
       </div>
 
       <div className="grid gap-2 lg:hidden">
-        {movimientos.map((movimiento) => {
-          const impacto = getMovimientoImpacto(movimiento);
+        {periodos.map((periodo) => {
+          const badge = getPeriodoBadge(periodo);
 
           return (
             <div
-              key={movimiento.id}
+              key={periodo.facturaId}
               className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] p-3 shadow-[var(--app-shadow-soft)]"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)]">
-                    {formatDate(movimiento.fecha)} · Comp. N°{" "}
-                    {movimiento.numeroComprobante}
+                  <p className="text-sm font-semibold text-[var(--app-text-strong)]">
+                    {periodo.periodoLabel}
                   </p>
 
-                  <p className="mt-1 truncate text-sm font-semibold text-[var(--app-text-strong)]">
-                    {movimiento.concepto}
+                  <p className="mt-1 text-xs text-[var(--app-muted)]">
+                    Factura N° {periodo.numeroComprobante}
                   </p>
                 </div>
 
-                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${impacto.bgClass} ${impacto.colorClass}`}>
-                  {impacto.icon}
-                </div>
+                <Badge variant={badge.variant as any}>{badge.label}</Badge>
               </div>
 
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <Badge variant={getTipoVariant(movimiento.tipoMovimiento) as any}>
-                  {getTipoLabel(movimiento.tipoMovimiento)}
-                </Badge>
+              <p className="mt-2 line-clamp-1 text-xs text-[var(--app-muted)]">
+                {periodo.concepto}
+              </p>
 
-                {movimiento.facturaAsociadaNumeroComprobante ? (
-                  <span className="rounded-lg bg-[var(--app-primary-soft)] px-2 py-1 text-xs font-semibold text-[var(--app-primary)]">
-                    Factura N° {movimiento.facturaAsociadaNumeroComprobante}
-                  </span>
-                ) : movimiento.tipoMovimiento === "factura" ? (
-                  <span className="rounded-lg bg-[var(--app-primary-soft)] px-2 py-1 text-xs font-semibold text-[var(--app-primary)]">
-                    Factura N° {movimiento.numeroComprobante}
-                  </span>
-                ) : null}
-              </div>
-
-              {movimiento.observacion ? (
-                <p className="mt-2 text-xs leading-5 text-[var(--app-muted)]">
-                  {movimiento.observacion}
-                </p>
-              ) : null}
-
-              <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--app-border)] pt-3">
-                <div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] p-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--app-muted)]">
-                    {impacto.label}
+                    Original
                   </p>
-
-                  <p className={`text-sm font-semibold ${impacto.colorClass}`}>
-                    {impacto.value > 0
-                      ? `${impacto.symbol} ${formatMoney(impacto.value)}`
-                      : "-"}
+                  <p className="mt-1 text-sm font-semibold text-[var(--app-text-strong)]">
+                    {formatMoney(periodo.importeOriginal)}
                   </p>
                 </div>
 
-                <div className="text-right">
+                <div className="rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] p-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--app-muted)]">
                     Saldo
                   </p>
-
-                  <p className="text-sm font-semibold text-[var(--app-text-strong)]">
-                    {formatMoney(movimiento.saldo)}
+                  <p className="mt-1 text-sm font-semibold text-[var(--app-text-strong)]">
+                    {formatMoney(periodo.saldoPeriodo)}
                   </p>
                 </div>
               </div>
+
+              <p className="mt-2 text-xs font-medium text-[var(--app-muted)]">
+                {getAjustesLabel(periodo)}
+              </p>
+
+              <Link
+                href={`/clientes/${clienteId}/estado-cuenta/${periodo.facturaId}`}
+                className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-3 text-xs font-semibold text-[var(--app-text)] transition hover:bg-[var(--app-primary-soft)] active:scale-[0.99]"
+              >
+                <Eye className="h-3.5 w-3.5" />
+                Ver detalle del período
+              </Link>
             </div>
           );
         })}

@@ -6,10 +6,12 @@ import Plan from "@/models/Plan";
 import MovimientoFinanciero from "@/models/MovimientoFinanciero";
 import { obtenerSiguienteNumeroComprobante } from "@/utils/obtenerSiguienteNumeroComprobante";
 import type {
+  DetallePeriodoCuentaCliente,
   EstadoCuentaCliente,
   FacturaClienteSafe,
   MovimientoFinancieroSafe,
   MovimientoTipo,
+  PeriodoCuentaClienteSafe,
 } from "@/types/movimiento-financiero.types";
 
 export const generarFacturacionManualSchema = z.object({
@@ -67,6 +69,27 @@ function validarObjectId(id: string) {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
+function formatPeriodoLabel(mes?: number | null, anio?: number | null) {
+  if (!mes || !anio) return "Sin período";
+
+  const meses = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+
+  return `${meses[mes - 1] || mes}/${anio}`;
+}
+
 function toSafeMovimiento(movimiento: any): MovimientoFinancieroSafe {
   return {
     id: movimiento._id.toString(),
@@ -93,35 +116,86 @@ function toSafeMovimiento(movimiento: any): MovimientoFinancieroSafe {
   };
 }
 
-function toSafeFactura(factura: any, notas: any[]): FacturaClienteSafe {
+function calcularPeriodoDesdeFactura(
+  factura: any,
+  movimientosAsociados: any[],
+): PeriodoCuentaClienteSafe {
   const facturaId = factura._id.toString();
 
-  const notasDeLaFactura = notas.filter(
-    (nota) => nota.facturaAsociadaId?.toString() === facturaId,
+  const notasCredito = movimientosAsociados.filter(
+    (movimiento) => movimiento.tipoMovimiento === "nota_credito",
   );
 
-  const totalNotasCredito = notasDeLaFactura
-    .filter((nota) => nota.tipoMovimiento === "nota_credito")
-    .reduce((acc, nota) => acc + Number(nota.haber || 0), 0);
+  const notasDebito = movimientosAsociados.filter(
+    (movimiento) => movimiento.tipoMovimiento === "nota_debito",
+  );
 
-  const totalNotasDebito = notasDeLaFactura
-    .filter((nota) => nota.tipoMovimiento === "nota_debito")
-    .reduce((acc, nota) => acc + Number(nota.debe || 0), 0);
+  const pagos = movimientosAsociados.filter(
+    (movimiento) => movimiento.tipoMovimiento === "pago",
+  );
 
   const importeOriginal = Number(factura.debe || 0);
-  const saldoFactura = importeOriginal + totalNotasDebito - totalNotasCredito;
+
+  const totalNotasCredito = notasCredito.reduce(
+    (acc, movimiento) => acc + Number(movimiento.haber || 0),
+    0,
+  );
+
+  const totalNotasDebito = notasDebito.reduce(
+    (acc, movimiento) => acc + Number(movimiento.debe || 0),
+    0,
+  );
+
+  const totalPagos = pagos.reduce(
+    (acc, movimiento) => acc + Number(movimiento.haber || 0),
+    0,
+  );
+
+  const saldoPeriodo =
+    importeOriginal + totalNotasDebito - totalNotasCredito - totalPagos;
+
+  let estadoPeriodo: PeriodoCuentaClienteSafe["estadoPeriodo"] = "pendiente";
+
+  if (saldoPeriodo === 0) {
+    estadoPeriodo = "cancelado";
+  }
+
+  if (saldoPeriodo < 0) {
+    estadoPeriodo = "a_favor";
+  }
 
   return {
-    id: facturaId,
+    facturaId,
     numeroComprobante: Number(factura.numeroComprobante || 0),
     fecha: factura.fecha?.toISOString?.() || "",
+    periodoLabel: formatPeriodoLabel(factura.referenciaMes, factura.referenciaAnio),
     concepto: factura.concepto || "",
     importeOriginal,
     totalNotasCredito,
     totalNotasDebito,
-    saldoFactura,
+    totalPagos,
+    saldoPeriodo,
+    estadoPeriodo,
     referenciaMes: factura.referenciaMes ?? null,
     referenciaAnio: factura.referenciaAnio ?? null,
+  };
+}
+
+function toSafeFactura(factura: any, movimientosAsociados: any[]): FacturaClienteSafe {
+  const periodo = calcularPeriodoDesdeFactura(factura, movimientosAsociados);
+
+  return {
+    id: periodo.facturaId,
+    numeroComprobante: periodo.numeroComprobante,
+    fecha: periodo.fecha,
+    concepto: periodo.concepto,
+    importeOriginal: periodo.importeOriginal,
+    totalNotasCredito: periodo.totalNotasCredito,
+    totalNotasDebito: periodo.totalNotasDebito,
+    totalPagos: periodo.totalPagos,
+    saldoFactura: periodo.saldoPeriodo,
+    referenciaMes: periodo.referenciaMes,
+    referenciaAnio: periodo.referenciaAnio,
   };
 }
 
@@ -170,21 +244,7 @@ async function crearMovimiento(params: {
   return toSafeMovimiento(movimiento);
 }
 
-export async function obtenerEstadoCuentaCliente(
-  clienteId: string,
-): Promise<EstadoCuentaCliente | null> {
-  if (!validarObjectId(clienteId)) {
-    return null;
-  }
-
-  await connectDB();
-
-  const clienteExiste = await Cliente.exists({ _id: clienteId });
-
-  if (!clienteExiste) {
-    return null;
-  }
-
+async function obtenerMovimientosCliente(clienteId: string) {
   const movimientosRaw = await MovimientoFinanciero.find({ clienteId })
     .sort({ fecha: 1, creadoEn: 1 })
     .lean();
@@ -204,6 +264,63 @@ export async function obtenerEstadoCuentaCliente(
       : null,
   }));
 
+  return {
+    movimientosRaw,
+    movimientos,
+  };
+}
+
+function agruparPeriodosDesdeMovimientos(movimientosRaw: any[]) {
+  const facturas = movimientosRaw.filter(
+    (movimiento) => movimiento.tipoMovimiento === "factura",
+  );
+
+  const movimientosAsociados = movimientosRaw.filter(
+    (movimiento) => movimiento.facturaAsociadaId,
+  );
+
+  return facturas
+    .map((factura) => {
+      const facturaId = factura._id.toString();
+
+      const asociados = movimientosAsociados.filter(
+        (movimiento) => movimiento.facturaAsociadaId?.toString() === facturaId,
+      );
+
+      return calcularPeriodoDesdeFactura(factura, asociados);
+    })
+    .sort((a, b) => {
+      const anioA = a.referenciaAnio || 0;
+      const anioB = b.referenciaAnio || 0;
+      const mesA = a.referenciaMes || 0;
+      const mesB = b.referenciaMes || 0;
+
+      if (anioA !== anioB) return anioB - anioA;
+      if (mesA !== mesB) return mesB - mesA;
+
+      return b.numeroComprobante - a.numeroComprobante;
+    });
+}
+
+export async function obtenerEstadoCuentaCliente(
+  clienteId: string,
+): Promise<EstadoCuentaCliente | null> {
+  if (!validarObjectId(clienteId)) {
+    return null;
+  }
+
+  await connectDB();
+
+  const clienteExiste = await Cliente.exists({ _id: clienteId });
+
+  if (!clienteExiste) {
+    return null;
+  }
+
+  const { movimientosRaw, movimientos } = await obtenerMovimientosCliente(clienteId);
+
+  const periodos = agruparPeriodosDesdeMovimientos(movimientosRaw);
+
   const totalDebe = movimientos.reduce((acc, mov) => acc + mov.debe, 0);
   const totalHaber = movimientos.reduce((acc, mov) => acc + mov.haber, 0);
   const saldo = totalDebe - totalHaber;
@@ -213,6 +330,7 @@ export async function obtenerEstadoCuentaCliente(
     totalHaber,
     saldo,
     movimientos,
+    periodos,
   };
 }
 
@@ -231,7 +349,7 @@ export async function obtenerFacturasCliente(
     return [];
   }
 
-  const [facturas, notas] = await Promise.all([
+  const [facturas, movimientosAsociados] = await Promise.all([
     MovimientoFinanciero.find({
       clienteId,
       tipoMovimiento: "factura",
@@ -241,12 +359,19 @@ export async function obtenerFacturasCliente(
 
     MovimientoFinanciero.find({
       clienteId,
-      tipoMovimiento: { $in: ["nota_credito", "nota_debito"] },
       facturaAsociadaId: { $ne: null },
     }).lean(),
   ]);
 
-  return facturas.map((factura) => toSafeFactura(factura, notas));
+  return facturas.map((factura) => {
+    const facturaId = factura._id.toString();
+
+    const asociados = movimientosAsociados.filter(
+      (movimiento) => movimiento.facturaAsociadaId?.toString() === facturaId,
+    );
+
+    return toSafeFactura(factura, asociados);
+  });
 }
 
 async function obtenerFacturaConSaldo(params: {
@@ -265,13 +390,67 @@ async function obtenerFacturaConSaldo(params: {
     return null;
   }
 
-  const notas = await MovimientoFinanciero.find({
+  const movimientosAsociados = await MovimientoFinanciero.find({
     clienteId,
     facturaAsociadaId,
-    tipoMovimiento: { $in: ["nota_credito", "nota_debito"] },
   }).lean();
 
-  return toSafeFactura(factura, notas);
+  return toSafeFactura(factura, movimientosAsociados);
+}
+
+export async function obtenerDetallePeriodoCliente(
+  clienteId: string,
+  facturaId: string,
+): Promise<DetallePeriodoCuentaCliente | null> {
+  if (!validarObjectId(clienteId) || !validarObjectId(facturaId)) {
+    return null;
+  }
+
+  await connectDB();
+
+  const factura = await MovimientoFinanciero.findOne({
+    _id: facturaId,
+    clienteId,
+    tipoMovimiento: "factura",
+  }).lean();
+
+  if (!factura) {
+    return null;
+  }
+
+  const movimientosAsociadosRaw = await MovimientoFinanciero.find({
+    clienteId,
+    facturaAsociadaId: facturaId,
+  })
+    .sort({ fecha: 1, creadoEn: 1 })
+    .lean();
+
+  const todosLosMovimientosRaw = [factura, ...movimientosAsociadosRaw];
+
+  const periodo = calcularPeriodoDesdeFactura(factura, movimientosAsociadosRaw);
+
+  const movimientos = todosLosMovimientosRaw.map((movimiento) => {
+    const safe = toSafeMovimiento(movimiento);
+
+    return {
+      ...safe,
+      facturaAsociadaNumeroComprobante: safe.facturaAsociadaId
+        ? Number(factura.numeroComprobante || 0)
+        : null,
+    };
+  });
+
+  const totalDebePeriodo = movimientos.reduce((acc, mov) => acc + mov.debe, 0);
+  const totalHaberPeriodo = movimientos.reduce((acc, mov) => acc + mov.haber, 0);
+  const saldoPeriodo = totalDebePeriodo - totalHaberPeriodo;
+
+  return {
+    periodo,
+    movimientos,
+    totalDebePeriodo,
+    totalHaberPeriodo,
+    saldoPeriodo,
+  };
 }
 
 export async function generarFacturacionManual(
