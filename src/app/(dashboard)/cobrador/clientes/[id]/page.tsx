@@ -4,16 +4,11 @@ import {
   CreditCard,
   Eye,
   FileText,
-  Search,
   UserRound,
+  WalletCards,
   Wifi,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import { AppButtonLink } from "@/components/ui/AppButton";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { PageShell } from "@/components/ui/PageShell";
-import { SectionCard } from "@/components/ui/SectionCard";
 import { obtenerResumenClienteParaCobrador } from "@/services/cobrador.service";
 
 type CobradorClientePageProps = {
@@ -31,7 +26,7 @@ function formatMoney(value: number) {
     style: "currency",
     currency: "ARS",
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(value || 0);
 }
 
 function getEstadoBadgeVariant(estado: string) {
@@ -69,12 +64,12 @@ function DataLine({
   value?: string | number | null;
 }) {
   return (
-    <div className="flex items-start justify-between gap-3 border-b border-[var(--app-border)] py-2 last:border-b-0">
-      <span className="shrink-0 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)]">
+    <div className="flex items-start justify-between gap-3 border-b border-slate-200 py-2 last:border-b-0 dark:border-slate-800">
+      <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
         {label}
       </span>
 
-      <span className="text-right text-sm font-medium text-[var(--app-text-strong)]">
+      <span className="text-right text-sm font-medium text-slate-950 dark:text-white">
         {value || "-"}
       </span>
     </div>
@@ -90,56 +85,88 @@ export default async function CobradorClientePage({
     notFound();
   }
 
-  const { cliente, estadoCuenta, periodosPendientes, totalPendiente } = resumen;
+  const { cliente, estadoCuenta, totalPendiente } = resumen;
+  const tieneDeuda = totalPendiente > 0;
 
   return (
-    <PageShell maxWidth="lg">
-      <PageHeader
-        eyebrow={`Cliente N° ${cliente.numeroCliente}`}
-        title={`${cliente.apellido}, ${cliente.nombre}`}
-        description={`DNI ${cliente.dni}`}
-        backHref="/cobrador/buscar-cliente"
-        backLabel="Buscar otro cliente"
-        actions={
-          <AppButtonLink href="/cobrador/buscar-cliente" variant="secondary">
-            <Search className="h-4 w-4" />
-            Nueva búsqueda
-          </AppButtonLink>
-        }
-      >
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Badge variant={getEstadoBadgeVariant(cliente.estado) as any}>
-            {cliente.estado}
-          </Badge>
+    <section className="mx-auto w-full max-w-7xl space-y-4">
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/75 sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-800 dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-200">
+              <UserRound className="h-3.5 w-3.5" />
+              Cliente N° {cliente.numeroCliente}
+            </div>
 
-          {cliente.plan ? (
-            <Badge variant="info">{cliente.plan.nombre}</Badge>
-          ) : (
-            <Badge variant="warning">Sin plan</Badge>
-          )}
+            <div className="mt-4 flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white dark:bg-cyan-500 dark:text-slate-950">
+                <UserRound className="h-5 w-5" />
+              </div>
 
-          <Badge variant={totalPendiente > 0 ? "danger" : "success"}>
-            {totalPendiente > 0
-              ? `Pendiente ${formatMoney(totalPendiente)}`
-              : "Sin deuda"}
-          </Badge>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  Ficha del cliente
+                </p>
+
+                <h1 className="mt-1 truncate text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
+                  {cliente.apellido}, {cliente.nombre}
+                </h1>
+
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  DNI {cliente.dni}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Badge variant={getEstadoBadgeVariant(cliente.estado) as any}>
+              {cliente.estado}
+            </Badge>
+
+            {cliente.plan ? (
+              <Badge variant="info">{cliente.plan.nombre}</Badge>
+            ) : (
+              <Badge variant="warning">Sin plan</Badge>
+            )}
+
+            <Badge variant={tieneDeuda ? "danger" : "success"}>
+              {tieneDeuda ? "Con deuda" : "Sin deuda"}
+            </Badge>
+          </div>
         </div>
-      </PageHeader>
+      </div>
 
-      <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-        <SectionCard
-          title="Ficha del cliente"
-          description="Información útil para confirmar identidad y servicio."
-          icon={<UserRound className="h-5 w-5" />}
-        >
-          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-4 py-2">
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+            <Wifi className="h-5 w-5" />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+              Datos del servicio
+            </p>
+
+            <h2 className="mt-1 text-base font-semibold text-slate-950 dark:text-white">
+              Información del cliente
+            </h2>
+
+            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              Datos personales y plan contratado.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-3 lg:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-800 dark:bg-slate-950/60">
             <DataLine label="Teléfono" value={cliente.telefono} />
             <DataLine label="Dirección" value={cliente.direccion} />
             <DataLine label="Localidad" value={cliente.localidad} />
             <DataLine label="Provincia" value={cliente.provincia} />
           </div>
 
-          <div className="mt-3 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-4 py-2">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-800 dark:bg-slate-950/60">
             <DataLine
               label="Plan"
               value={cliente.plan?.nombre || "Sin plan asignado"}
@@ -149,64 +176,96 @@ export default async function CobradorClientePage({
               label="Importe"
               value={cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
             />
+            <DataLine label="Detalle" value={cliente.plan?.detalle || "-"} />
           </div>
-        </SectionCard>
-
-        <SectionCard
-          title="Resumen de deuda"
-          description="Períodos pendientes disponibles para cobro."
-          icon={<FileText className="h-5 w-5" />}
-        >
-          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-primary-soft)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--app-primary)]">
-              Total pendiente
-            </p>
-
-            <p className="mt-2 text-3xl font-semibold tracking-tight text-[var(--app-text-strong)]">
-              {formatMoney(totalPendiente)}
-            </p>
-
-            <p className="mt-1 text-sm text-[var(--app-muted)]">
-              Calculado sobre períodos facturados con saldo mayor a cero.
-            </p>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <AppButtonLink
-              href={`/cobrador/clientes/${cliente.id}/pagar`}
-              className="w-full sm:w-auto"
-            >
-              <CreditCard className="h-4 w-4" />
-              Registrar pago
-            </AppButtonLink>
-          </div>
-        </SectionCard>
+        </div>
       </div>
 
-      <SectionCard
-        title="Períodos del cliente"
-        description="Vista resumida por período. Más adelante el cobrador podrá aplicar pagos a uno o varios períodos."
-        icon={<Wifi className="h-5 w-5" />}
-      >
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+                <WalletCards className="h-5 w-5" />
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+                  Cuenta del cliente
+                </p>
+
+                <h2 className="mt-1 text-base font-semibold text-slate-950 dark:text-white">
+                  Total pendiente
+                </h2>
+
+                <p
+                  className={`mt-2 text-3xl font-semibold tracking-tight ${
+                    tieneDeuda
+                      ? "text-red-700 dark:text-red-300"
+                      : "text-slate-950 dark:text-white"
+                  }`}
+                >
+                  {formatMoney(totalPendiente)}
+                </p>
+
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Calculado sobre períodos facturados con saldo mayor a cero.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Link
+            href={`/cobrador/clientes/${cliente.id}/pagar`}
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-cyan-200 bg-cyan-50 px-5 text-sm font-semibold text-cyan-800 shadow-sm transition hover:bg-cyan-100 active:scale-[0.99] dark:border-cyan-900/70 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400 sm:w-auto"
+          >
+            <CreditCard className="h-4 w-4" />
+            Registrar pago
+          </Link>
+        </div>
+      </div>
+
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+            <FileText className="h-5 w-5" />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+              Estado de cuenta
+            </p>
+
+            <h2 className="mt-1 text-base font-semibold text-slate-950 dark:text-white">
+              Períodos del cliente
+            </h2>
+
+            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              Vista resumida por período. Entrá al detalle para ver factura,
+              pagos, notas y comprobantes.
+            </p>
+          </div>
+        </div>
+
         {estadoCuenta.periodos.length === 0 ? (
-          <EmptyState
-            title="Este cliente todavía no tiene períodos facturados."
-            description="No hay deuda para consultar o cobrar."
-          />
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-400">
+            Este cliente todavía no tiene períodos facturados.
+          </div>
         ) : (
           <div className="grid gap-2">
             {estadoCuenta.periodos.map((periodo) => {
               const badge = getPeriodoBadge(periodo.estadoPeriodo);
+              const periodoConSaldo = periodo.saldoPeriodo > 0;
 
               return (
                 <div
                   key={periodo.facturaId}
-                  className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] p-3 shadow-sm"
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950/60"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-sm font-semibold text-[var(--app-text-strong)]">
+                        <p className="text-sm font-semibold text-slate-950 dark:text-white">
                           {periodo.periodoLabel}
                         </p>
 
@@ -215,25 +274,32 @@ export default async function CobradorClientePage({
                         </Badge>
                       </div>
 
-                      <p className="mt-1 text-xs text-[var(--app-muted)]">
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         Factura N° {periodo.numeroComprobante} · Original{" "}
                         {formatMoney(periodo.importeOriginal)}
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between gap-3 sm:min-w-72">
-                      <div className="text-left sm:text-right">
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)]">
+                    <div className="flex flex-col gap-2 sm:min-w-72 sm:items-end">
+                      <div className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80 sm:w-auto sm:min-w-40">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                           Saldo
                         </p>
-                        <p className="text-sm font-semibold text-[var(--app-text-strong)]">
+
+                        <p
+                          className={`mt-0.5 text-sm font-semibold ${
+                            periodoConSaldo
+                              ? "text-red-700 dark:text-red-300"
+                              : "text-slate-950 dark:text-white"
+                          }`}
+                        >
                           {formatMoney(periodo.saldoPeriodo)}
                         </p>
                       </div>
 
                       <Link
                         href={`/cobrador/clientes/${cliente.id}/estado-cuenta/${periodo.facturaId}`}
-                        className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-3 text-xs font-semibold text-[var(--app-text)] transition hover:bg-[var(--app-primary-soft)] active:scale-[0.99]"
+                        className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800 transition hover:bg-cyan-50 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800 sm:w-auto"
                       >
                         <Eye className="h-3.5 w-3.5" />
                         Ver detalle
@@ -245,7 +311,7 @@ export default async function CobradorClientePage({
             })}
           </div>
         )}
-      </SectionCard>
-    </PageShell>
+      </div>
+    </section>
   );
 }

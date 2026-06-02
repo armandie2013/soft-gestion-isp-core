@@ -110,16 +110,27 @@ const MovimientoFinancieroSchema = new Schema(
     codigoVerificacion: {
       type: String,
       trim: true,
-      default: null,
-      index: true,
-      unique: true,
-      sparse: true,
+      default: undefined,
+      set: (value: unknown) => {
+        if (typeof value !== "string") return undefined;
+
+        const limpio = value.trim();
+
+        return limpio.length > 0 ? limpio : undefined;
+      },
     },
 
     firmaVerificacion: {
       type: String,
       trim: true,
-      default: null,
+      default: undefined,
+      set: (value: unknown) => {
+        if (typeof value !== "string") return undefined;
+
+        const limpio = value.trim();
+
+        return limpio.length > 0 ? limpio : undefined;
+      },
     },
   },
   {
@@ -129,6 +140,18 @@ const MovimientoFinancieroSchema = new Schema(
     },
   },
 );
+
+MovimientoFinancieroSchema.pre("validate", function (next) {
+  if (this.codigoVerificacion === null) {
+    this.set("codigoVerificacion", undefined);
+  }
+
+  if (this.firmaVerificacion === null) {
+    this.set("firmaVerificacion", undefined);
+  }
+
+  next();
+});
 
 MovimientoFinancieroSchema.index({
   clienteId: 1,
@@ -141,6 +164,20 @@ MovimientoFinancieroSchema.index({
   clienteId: 1,
   facturaAsociadaId: 1,
 });
+
+MovimientoFinancieroSchema.index(
+  { codigoVerificacion: 1 },
+  {
+    name: "codigoVerificacion_unico_si_existe",
+    unique: true,
+    partialFilterExpression: {
+      codigoVerificacion: {
+        $exists: true,
+        $type: "string",
+      },
+    },
+  },
+);
 
 export type MovimientoFinancieroDocument = InferSchemaType<
   typeof MovimientoFinancieroSchema

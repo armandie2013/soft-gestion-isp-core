@@ -5,11 +5,10 @@ import {
   ArrowUpRight,
   FileText,
   ReceiptText,
+  UserRound,
+  WalletCards,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { PageShell } from "@/components/ui/PageShell";
-import { SectionCard } from "@/components/ui/SectionCard";
 import { obtenerClienteParaCobrador } from "@/services/cobrador.service";
 import { obtenerDetallePeriodoCliente } from "@/services/movimiento-financiero.service";
 import type { MovimientoFinancieroSafe } from "@/types/movimiento-financiero.types";
@@ -40,7 +39,7 @@ function formatMoney(value: number) {
     style: "currency",
     currency: "ARS",
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(value || 0);
 }
 
 function getTipoLabel(tipo: string) {
@@ -59,36 +58,6 @@ function getTipoVariant(tipo: string) {
   return "default";
 }
 
-function getImpacto(movimiento: MovimientoFinancieroSafe) {
-  if (movimiento.debe > 0) {
-    return {
-      label: "Suma",
-      value: movimiento.debe,
-      sign: "+",
-      className: "text-[var(--app-danger)]",
-      icon: <ArrowUpRight className="h-4 w-4" />,
-    };
-  }
-
-  if (movimiento.haber > 0) {
-    return {
-      label: "Resta",
-      value: movimiento.haber,
-      sign: "-",
-      className: "text-[var(--app-success)]",
-      icon: <ArrowDownLeft className="h-4 w-4" />,
-    };
-  }
-
-  return {
-    label: "Sin impacto",
-    value: 0,
-    sign: "",
-    className: "text-[var(--app-muted)]",
-    icon: <FileText className="h-4 w-4" />,
-  };
-}
-
 function getEstadoPeriodoBadge(estado: string) {
   if (estado === "cancelado") {
     return <Badge variant="success">Cancelado</Badge>;
@@ -99,6 +68,72 @@ function getEstadoPeriodoBadge(estado: string) {
   }
 
   return <Badge variant="danger">Pendiente</Badge>;
+}
+
+function getImpacto(movimiento: MovimientoFinancieroSafe) {
+  if (movimiento.debe > 0) {
+    return {
+      label: "Suma",
+      value: movimiento.debe,
+      sign: "+",
+      className: "text-red-700 dark:text-red-300",
+      icon: <ArrowUpRight className="h-4 w-4" />,
+    };
+  }
+
+  if (movimiento.haber > 0) {
+    return {
+      label: "Resta",
+      value: movimiento.haber,
+      sign: "-",
+      className: "text-emerald-700 dark:text-emerald-300",
+      icon: <ArrowDownLeft className="h-4 w-4" />,
+    };
+  }
+
+  return {
+    label: "Sin impacto",
+    value: 0,
+    sign: "",
+    className: "text-slate-500 dark:text-slate-400",
+    icon: <FileText className="h-4 w-4" />,
+  };
+}
+
+function ResumenItem({
+  label,
+  value,
+  helper,
+  variant = "default",
+}: {
+  label: string;
+  value: string;
+  helper?: string;
+  variant?: "default" | "success" | "danger";
+}) {
+  const valueClass = {
+    default: "text-slate-950 dark:text-white",
+    success: "text-emerald-700 dark:text-emerald-300",
+    danger: "text-red-700 dark:text-red-300",
+  };
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/60">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+        {label}
+      </p>
+
+      <p className={`mt-1 text-lg font-semibold ${valueClass[variant]}`}>
+        {value}
+      </p>
+
+      {helper ? (
+        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+          {helper}
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
 export default async function DetallePeriodoCobradorPage({
@@ -113,73 +148,138 @@ export default async function DetallePeriodoCobradorPage({
     notFound();
   }
 
+  const saldoPendiente = detalle.periodo.saldoPeriodo > 0;
+
   return (
-    <PageShell maxWidth="lg">
-      <PageHeader
-        eyebrow={`Factura N° ${detalle.periodo.numeroComprobante}`}
-        title={`Detalle ${detalle.periodo.periodoLabel}`}
-        description={`${cliente.apellido}, ${cliente.nombre} · DNI ${cliente.dni}`}
-        backHref={`/cobrador/clientes/${cliente.id}`}
-        backLabel="Volver al cliente"
-      >
-        <div className="mt-3 flex flex-wrap gap-2">
-          {getEstadoPeriodoBadge(detalle.periodo.estadoPeriodo)}
-          <Badge variant="info">
-            {formatMoney(detalle.periodo.saldoPeriodo)}
-          </Badge>
-        </div>
-      </PageHeader>
+    <section className="mx-auto w-full max-w-7xl space-y-4">
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/75 sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-800 dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-200">
+              <FileText className="h-3.5 w-3.5" />
+              Factura N° {detalle.periodo.numeroComprobante}
+            </div>
 
-      <div className="grid gap-3 md:grid-cols-4">
-        <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] p-4 shadow-[var(--app-shadow-soft)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--app-muted)]">
-            Original
-          </p>
+            <div className="mt-4 flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white dark:bg-cyan-500 dark:text-slate-950">
+                <UserRound className="h-5 w-5" />
+              </div>
 
-          <p className="mt-2 text-lg font-semibold text-[var(--app-text-strong)]">
-            {formatMoney(detalle.periodo.importeOriginal)}
-          </p>
-        </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  Detalle del período
+                </p>
 
-        <div className="rounded-2xl border border-emerald-200 bg-[var(--app-success-soft)] p-4 text-[var(--app-success)] shadow-[var(--app-shadow-soft)] dark:border-emerald-900/70">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] opacity-80">
-            Notas crédito / pagos
-          </p>
+                <h1 className="mt-1 truncate text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
+                  {detalle.periodo.periodoLabel}
+                </h1>
 
-          <p className="mt-2 text-lg font-semibold">
-            -{" "}
-            {formatMoney(
-              detalle.periodo.totalNotasCredito + detalle.periodo.totalPagos,
-            )}
-          </p>
-        </div>
+                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  {cliente.apellido}, {cliente.nombre} · DNI {cliente.dni}
+                </p>
+              </div>
+            </div>
+          </div>
 
-        <div className="rounded-2xl border border-red-200 bg-[var(--app-danger-soft)] p-4 text-[var(--app-danger)] shadow-[var(--app-shadow-soft)] dark:border-red-900/70">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] opacity-80">
-            Notas débito
-          </p>
+          <div className="flex shrink-0 flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/60 sm:min-w-72">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+                Saldo del período
+              </p>
 
-          <p className="mt-2 text-lg font-semibold">
-            + {formatMoney(detalle.periodo.totalNotasDebito)}
-          </p>
-        </div>
+              <p
+                className={`mt-1 text-2xl font-semibold tracking-tight ${
+                  saldoPendiente
+                    ? "text-red-700 dark:text-red-300"
+                    : "text-slate-950 dark:text-white"
+                }`}
+              >
+                {formatMoney(detalle.periodo.saldoPeriodo)}
+              </p>
+            </div>
 
-        <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-primary-soft)] p-4 text-[var(--app-primary)] shadow-[var(--app-shadow-soft)]">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] opacity-80">
-            Saldo período
-          </p>
-
-          <p className="mt-2 text-lg font-semibold">
-            {formatMoney(detalle.periodo.saldoPeriodo)}
-          </p>
+            <div className="flex flex-wrap gap-2">
+              {getEstadoPeriodoBadge(detalle.periodo.estadoPeriodo)}
+              <Badge variant="info">{detalle.periodo.periodoLabel}</Badge>
+            </div>
+          </div>
         </div>
       </div>
 
-      <SectionCard
-        title="Movimientos del período"
-        description="Detalle de la factura base, notas asociadas y pagos aplicados a este período."
-        icon={<FileText className="h-5 w-5" />}
-      >
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+            <WalletCards className="h-5 w-5" />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+              Resumen
+            </p>
+
+            <h2 className="mt-1 text-base font-semibold text-slate-950 dark:text-white">
+              Composición del período
+            </h2>
+
+            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              Factura base, créditos, débitos, pagos y saldo final.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <ResumenItem
+            label="Original"
+            value={formatMoney(detalle.periodo.importeOriginal)}
+            helper="Importe de la factura"
+          />
+
+          <ResumenItem
+            label="Créditos / pagos"
+            value={`- ${formatMoney(
+              detalle.periodo.totalNotasCredito + detalle.periodo.totalPagos,
+            )}`}
+            helper="Descuentos aplicados"
+            variant="success"
+          />
+
+          <ResumenItem
+            label="Notas débito"
+            value={`+ ${formatMoney(detalle.periodo.totalNotasDebito)}`}
+            helper="Importes sumados"
+            variant="danger"
+          />
+
+          <ResumenItem
+            label="Saldo período"
+            value={formatMoney(detalle.periodo.saldoPeriodo)}
+            helper="Saldo final"
+            variant={saldoPendiente ? "danger" : "default"}
+          />
+        </div>
+      </div>
+
+      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
+        <div className="mb-4 flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+            <FileText className="h-5 w-5" />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+              Movimientos
+            </p>
+
+            <h2 className="mt-1 text-base font-semibold text-slate-950 dark:text-white">
+              Detalle de movimientos
+            </h2>
+
+            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              Factura base, notas asociadas y pagos aplicados a este período.
+            </p>
+          </div>
+        </div>
+
         <div className="space-y-2">
           {detalle.movimientos.map((movimiento) => {
             const impacto = getImpacto(movimiento);
@@ -187,7 +287,7 @@ export default async function DetallePeriodoCobradorPage({
             return (
               <div
                 key={movimiento.id}
-                className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] p-3 shadow-sm"
+                className="rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950/60"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
@@ -200,31 +300,31 @@ export default async function DetallePeriodoCobradorPage({
                         {getTipoLabel(movimiento.tipoMovimiento)}
                       </Badge>
 
-                      <span className="text-xs font-semibold text-[var(--app-muted)]">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                         {formatDate(movimiento.fecha)} · Comp. N°{" "}
                         {movimiento.numeroComprobante}
                       </span>
                     </div>
 
-                    <p className="mt-2 text-sm font-semibold text-[var(--app-text-strong)]">
+                    <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
                       {movimiento.concepto}
                     </p>
 
                     {movimiento.observacion ? (
-                      <p className="mt-1 text-xs text-[var(--app-muted)]">
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         {movimiento.observacion}
                       </p>
                     ) : null}
                   </div>
 
-                  <div className="flex shrink-0 flex-col gap-2 sm:min-w-40">
+                  <div className="flex shrink-0 flex-col gap-2 sm:min-w-44">
                     <div
-                      className={`flex items-center justify-between gap-3 rounded-xl bg-[var(--app-surface-soft)] px-3 py-2 ${impacto.className}`}
+                      className={`flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80 ${impacto.className}`}
                     >
                       <div className="shrink-0">{impacto.icon}</div>
 
                       <div className="text-right">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--app-muted)]">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
                           {impacto.label}
                         </p>
 
@@ -239,7 +339,7 @@ export default async function DetallePeriodoCobradorPage({
                     {movimiento.tipoMovimiento === "pago" ? (
                       <Link
                         href={`/comprobantes/pagos/${movimiento.id}`}
-                        className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-3 text-xs font-semibold text-[var(--app-text)] transition hover:bg-[var(--app-primary-soft)] active:scale-[0.99]"
+                        className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800 transition hover:bg-cyan-50 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800"
                       >
                         <ReceiptText className="h-3.5 w-3.5" />
                         Ver comprobante
@@ -251,7 +351,7 @@ export default async function DetallePeriodoCobradorPage({
             );
           })}
         </div>
-      </SectionCard>
-    </PageShell>
+      </div>
+    </section>
   );
 }

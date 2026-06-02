@@ -11,7 +11,10 @@ import {
   generarFirmaPago,
 } from "@/utils/comprobante-verificacion";
 import { obtenerSiguienteNumeroComprobante } from "@/utils/obtenerSiguienteNumeroComprobante";
-import { obtenerDetallePeriodoCliente } from "@/services/movimiento-financiero.service";
+import {
+  obtenerDetallePeriodoCliente,
+  obtenerEstadoCuentaCliente,
+} from "@/services/movimiento-financiero.service";
 import type {
   AdminCajaCobradoresResumenSafe,
   CajaCobradorMovimientoSafe,
@@ -129,6 +132,22 @@ function toSafeCodigo(codigo: any): CodigoCierreCajaSafe {
 
 function generarCodigoSeisDigitos() {
   return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function ordenarPeriodosPendientesPorAntiguedad(periodos: any[]) {
+  return [...periodos].sort((a, b) => {
+    const anioA = a.referenciaAnio || 0;
+    const anioB = b.referenciaAnio || 0;
+
+    if (anioA !== anioB) return anioA - anioB;
+
+    const mesA = a.referenciaMes || 0;
+    const mesB = b.referenciaMes || 0;
+
+    if (mesA !== mesB) return mesA - mesB;
+
+    return Number(a.numeroComprobante || 0) - Number(b.numeroComprobante || 0);
+  });
 }
 
 async function obtenerSaldoActualCliente(clienteId: string) {
@@ -288,7 +307,8 @@ export async function registrarPagoCobrador(
   if (cobrador.rol !== "cobrador") {
     return {
       ok: false,
-      message: "Solo un usuario cobrador puede registrar pagos desde este módulo.",
+      message:
+        "Solo un usuario cobrador puede registrar pagos desde este módulo.",
     };
   }
 
@@ -314,6 +334,32 @@ export async function registrarPagoCobrador(
     return {
       ok: false,
       message: "El período seleccionado no existe o no pertenece al cliente.",
+    };
+  }
+
+  const estadoCuenta = await obtenerEstadoCuentaCliente(clienteId);
+
+if (!estadoCuenta) {
+  return {
+    ok: false,
+    message: "No se pudo obtener el estado de cuenta del cliente.",
+  };
+}
+
+const periodosPendientesOrdenados = ordenarPeriodosPendientesPorAntiguedad(
+  estadoCuenta.periodos.filter((periodo) => periodo.saldoPeriodo > 0),
+);
+
+  const primerPeriodoPendiente = periodosPendientesOrdenados[0] || null;
+
+  if (
+    primerPeriodoPendiente &&
+    primerPeriodoPendiente.facturaId !== facturaAsociadaId
+  ) {
+    return {
+      ok: false,
+      message:
+        "No se puede cobrar este período porque existen períodos anteriores impagos.",
     };
   }
 
@@ -463,7 +509,9 @@ export async function generarCodigoCierreCaja(
   const codigo = await CodigoCierreCaja.create({
     codigo: generarCodigoSeisDigitos(),
     cobradorId,
-    cobradorNombre: `${cobrador.apellido || ""}, ${cobrador.nombre || ""}`.trim(),
+    cobradorNombre: `${cobrador.apellido || ""}, ${
+      cobrador.nombre || ""
+    }`.trim(),
     importe: caja.saldoActual,
     estado: "pendiente",
     generadoPorAdminId: admin.userId,

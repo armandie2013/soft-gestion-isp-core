@@ -122,3 +122,14 @@ export async function obtenerResumenClienteParaCobrador(clienteId: string) {
     totalPendiente,
   };
 }
+
+/**
+ * Alias usado por la vista:
+ * src/app/(dashboard)/cobrador/buscar-cliente/page.tsx
+ *
+ * Lo dejamos separado para no romper las funciones que ya usaban
+ * buscarClientePorDniParaCobrador().
+ */
+export async function buscarClienteParaCobradorPorDni(dni: string) {
+  return buscarClientePorDniParaCobrador(dni);
+}

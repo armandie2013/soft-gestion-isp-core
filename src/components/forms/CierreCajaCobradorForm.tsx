@@ -24,13 +24,13 @@ function formatMoney(value?: number) {
   }).format(value || 0);
 }
 
-function ValidarButton() {
+function ValidarButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
       className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-[var(--app-primary)] px-4 text-sm font-semibold text-[var(--app-primary-foreground)] shadow-sm transition hover:bg-[var(--app-primary-hover)] disabled:cursor-not-allowed disabled:opacity-70 active:scale-[0.99] sm:w-auto"
     >
       {pending ? (
@@ -74,16 +74,24 @@ function ConfirmarButton() {
 
 export function CierreCajaCobradorForm() {
   const [codigo, setCodigo] = useState("");
+
   const [validacionState, validarAction] = useFormState(
     validarCodigoCierreCajaAction,
     initialState,
   );
+
   const [confirmacionState, confirmarAction] = useFormState(
     confirmarCierreCajaAction,
     initialState,
   );
 
   const codigoLimpio = codigo.replace(/\D/g, "").slice(0, 6);
+  const codigoCompleto = codigoLimpio.length === 6;
+
+  function handleCodigoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const soloNumeros = event.target.value.replace(/\D/g, "").slice(0, 6);
+    setCodigo(soloNumeros);
+  }
 
   return (
     <div className="space-y-5">
@@ -98,14 +106,16 @@ export function CierreCajaCobradorForm() {
             name="codigo"
             type="text"
             inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
             value={codigoLimpio}
-            onChange={(event) => setCodigo(event.target.value)}
+            onChange={handleCodigoChange}
             placeholder="000000"
-            className="app-input text-center text-xl font-semibold tracking-[0.3em]"
+            className="app-input text-center text-xl font-semibold tracking-[0.3em] placeholder:text-center placeholder:text-xl placeholder:font-semibold placeholder:tracking-[0.3em] placeholder:text-slate-300 focus:placeholder:text-transparent dark:placeholder:text-slate-700"
           />
         </FormField>
 
-        <ValidarButton />
+        <ValidarButton disabled={!codigoCompleto} />
 
         {validacionState.message ? (
           <AlertBox variant={validacionState.ok ? "success" : "danger"}>

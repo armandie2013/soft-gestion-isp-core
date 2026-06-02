@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
-import { ArrowLeft, ReceiptText, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Download, ReceiptText, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { PageShell } from "@/components/ui/PageShell";
-import { PrintButton } from "@/components/ui/PrintButton";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { obtenerComprobantePagoCliente } from "@/services/comprobante.service";
 
@@ -35,7 +34,7 @@ function formatMoney(value: number) {
     style: "currency",
     currency: "ARS",
     maximumFractionDigits: 2,
-  }).format(value);
+  }).format(value || 0);
 }
 
 function DataLine({
@@ -83,10 +82,17 @@ export default async function ComprobantePagoPage({
           Volver
         </Link>
 
-        <PrintButton />
+        <Link
+          href={`/api/comprobantes/pagos/${params.movimientoId}/pdf?size=a4`}
+          target="_blank"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-cyan-200 bg-cyan-50 px-4 text-sm font-semibold text-cyan-800 shadow-sm transition hover:bg-cyan-100 active:scale-[0.99] dark:border-cyan-900/70 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400"
+        >
+          <Download className="h-4 w-4" />
+          Descargar PDF A4
+        </Link>
       </div>
 
-      <div className="rounded-[1.7rem] border border-[var(--app-border)] bg-[var(--app-card)] p-4 shadow-[var(--app-shadow-soft)] sm:p-6 print:border-slate-300 print:bg-white print:shadow-none">
+      <div className="rounded-[1.7rem] border border-[var(--app-border)] bg-[var(--app-card)] p-4 shadow-[var(--app-shadow-soft)] sm:p-6">
         <div className="flex flex-col gap-4 border-b border-[var(--app-border)] pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--app-primary)]">
@@ -105,7 +111,7 @@ export default async function ComprobantePagoPage({
           <Badge variant="success">Pago registrado</Badge>
         </div>
 
-        <div className="mt-5 rounded-2xl border border-emerald-200 bg-[var(--app-success-soft)] p-4 text-[var(--app-success)] dark:border-emerald-900/70 print:border-slate-300 print:bg-white print:text-slate-950">
+        <div className="mt-5 rounded-2xl border border-emerald-200 bg-[var(--app-success-soft)] p-4 text-[var(--app-success)] dark:border-emerald-900/70">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] opacity-80">
             Importe pagado
           </p>
@@ -124,7 +130,7 @@ export default async function ComprobantePagoPage({
             title="Cliente"
             icon={<ReceiptText className="h-5 w-5" />}
           >
-            <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-4 py-2 print:border-slate-300 print:bg-white">
+            <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-4 py-2">
               <DataLine
                 label="Cliente"
                 value={`${comprobante.clienteApellido}, ${comprobante.clienteNombre}`}
@@ -141,7 +147,7 @@ export default async function ComprobantePagoPage({
             title="Detalle del pago"
             icon={<ReceiptText className="h-5 w-5" />}
           >
-            <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-4 py-2 print:border-slate-300 print:bg-white">
+            <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-4 py-2">
               <DataLine label="Período" value={comprobante.periodoLabel} />
               <DataLine
                 label="Factura"
@@ -161,7 +167,7 @@ export default async function ComprobantePagoPage({
           </SectionCard>
         </div>
 
-        <div className="mt-5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] p-4 print:border-slate-300 print:bg-white">
+        <div className="mt-5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
@@ -193,7 +199,7 @@ export default async function ComprobantePagoPage({
         </div>
 
         {comprobante.observacion ? (
-          <div className="mt-5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] p-4 print:border-slate-300 print:bg-white">
+          <div className="mt-5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--app-muted)]">
               Observación
             </p>

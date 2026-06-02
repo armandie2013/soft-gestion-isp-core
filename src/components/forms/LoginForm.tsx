@@ -9,6 +9,7 @@ import { loginAction, type LoginActionState } from "@/actions/auth.actions";
 const initialState: LoginActionState = {
   ok: false,
   message: "",
+  redirectTo: "",
 };
 
 function SubmitButton() {
@@ -39,12 +40,14 @@ export function LoginForm() {
   const router = useRouter();
   const [state, formAction] = useFormState(loginAction, initialState);
 
+  const currentState: LoginActionState = state ?? initialState;
+
   useEffect(() => {
-    if (state.ok && state.redirectTo) {
-      router.push(state.redirectTo);
+    if (currentState.ok && currentState.redirectTo) {
+      router.push(currentState.redirectTo);
       router.refresh();
     }
-  }, [router, state.ok, state.redirectTo]);
+  }, [router, currentState.ok, currentState.redirectTo]);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -84,15 +87,15 @@ export function LoginForm() {
         />
       </div>
 
-      {state.message ? (
+      {currentState.message ? (
         <div
           className={
-            state.ok
+            currentState.ok
               ? "rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"
               : "rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
           }
         >
-          {state.message}
+          {currentState.message}
         </div>
       ) : null}
 
