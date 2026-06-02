@@ -232,7 +232,7 @@ export default async function CobradorClientePage({
                       </div>
 
                       <Link
-                        href={`/clientes/${cliente.id}/estado-cuenta/${periodo.facturaId}`}
+                        href={`/cobrador/clientes/${cliente.id}/estado-cuenta/${periodo.facturaId}`}
                         className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-soft)] px-3 text-xs font-semibold text-[var(--app-text)] transition hover:bg-[var(--app-primary-soft)] active:scale-[0.99]"
                       >
                         <Eye className="h-3.5 w-3.5" />

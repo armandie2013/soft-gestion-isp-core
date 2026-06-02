@@ -60,7 +60,7 @@ function MovimientoAction({ movimiento }: { movimiento: CajaCobradorMovimientoSa
   ) {
     return (
       <Link
-        href={`/cobrador/comprobantes/pagos/${movimiento.movimientoFinancieroId}`}
+        href={`/comprobantes/pagos/${movimiento.movimientoFinancieroId}`}
         className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-[var(--app-border)] bg-[var(--app-surface-solid)] px-3 text-xs font-semibold text-[var(--app-text)] shadow-sm transition hover:bg-[var(--app-surface-soft)] active:scale-[0.99]"
       >
         <ReceiptText className="h-3.5 w-3.5" />

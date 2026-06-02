@@ -98,7 +98,6 @@ const MovimientoFinancieroSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      index: true,
     },
 
     observacion: {
@@ -106,6 +105,21 @@ const MovimientoFinancieroSchema = new Schema(
       trim: true,
       maxlength: [300, "La observación no puede superar los 300 caracteres."],
       default: "",
+    },
+
+    codigoVerificacion: {
+      type: String,
+      trim: true,
+      default: null,
+      index: true,
+      unique: true,
+      sparse: true,
+    },
+
+    firmaVerificacion: {
+      type: String,
+      trim: true,
+      default: null,
     },
   },
   {
@@ -118,15 +132,14 @@ const MovimientoFinancieroSchema = new Schema(
 
 MovimientoFinancieroSchema.index({
   clienteId: 1,
-  referenciaMes: 1,
-  referenciaAnio: 1,
   tipoMovimiento: 1,
+  referenciaAnio: 1,
+  referenciaMes: 1,
 });
 
 MovimientoFinancieroSchema.index({
   clienteId: 1,
   facturaAsociadaId: 1,
-  tipoMovimiento: 1,
 });
 
 export type MovimientoFinancieroDocument = InferSchemaType<

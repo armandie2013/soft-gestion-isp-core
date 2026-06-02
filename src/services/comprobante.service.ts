@@ -5,9 +5,15 @@ import Cliente from "@/models/Cliente";
 import CodigoCierreCaja from "@/models/CodigoCierreCaja";
 import MovimientoFinanciero from "@/models/MovimientoFinanciero";
 import Usuario from "@/models/Usuario";
+import {
+  formatearFirmaCorta,
+  generarCodigoVerificacionPago,
+  generarFirmaPago,
+} from "@/utils/comprobante-verificacion";
 import type {
   ComprobanteCierreCajaSafe,
   ComprobantePagoClienteSafe,
+  VerificacionPagoSafe,
 } from "@/types/comprobante.types";
 
 function validarObjectId(id: string) {
@@ -17,22 +23,7 @@ function validarObjectId(id: string) {
 function formatPeriodoLabel(mes?: number | null, anio?: number | null) {
   if (!mes || !anio) return "Sin período";
 
-  const meses = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ];
-
-  return `${meses[mes - 1] || mes}/${anio}`;
+  return `${mes}/${anio}`;
 }
 
 function buildNombreUsuario(usuario: any, fallback = "Usuario") {
@@ -43,6 +34,47 @@ function buildNombreUsuario(usuario: any, fallback = "Usuario") {
   }`.trim();
 
   return nombreCompleto || fallback;
+}
+
+function getAppPublicUrl() {
+  return process.env.APP_PUBLIC_URL || "http://localhost:3000";
+}
+
+async function asegurarVerificacionPago(movimiento: any, cliente: any) {
+  if (movimiento.codigoVerificacion && movimiento.firmaVerificacion) {
+    return {
+      codigoVerificacion: movimiento.codigoVerificacion,
+      firmaVerificacion: movimiento.firmaVerificacion,
+    };
+  }
+
+  const codigoVerificacion = generarCodigoVerificacionPago(
+    Number(movimiento.numeroComprobante || 0),
+  );
+
+  const firmaVerificacion = generarFirmaPago({
+    movimientoId: movimiento._id.toString(),
+    numeroComprobante: Number(movimiento.numeroComprobante || 0),
+    clienteId: cliente._id.toString(),
+    clienteDni: cliente.dni || "",
+    importe: Number(movimiento.haber || 0),
+    fechaIso: movimiento.fecha?.toISOString?.() || "",
+  });
+
+  await MovimientoFinanciero.updateOne(
+    { _id: movimiento._id },
+    {
+      $set: {
+        codigoVerificacion,
+        firmaVerificacion,
+      },
+    },
+  );
+
+  return {
+    codigoVerificacion,
+    firmaVerificacion,
+  };
 }
 
 export async function obtenerComprobantePagoCliente(
@@ -79,14 +111,23 @@ export async function obtenerComprobantePagoCliente(
     return null;
   }
 
+  const verificacion = await asegurarVerificacionPago(movimiento, cliente);
+
   const cobradorNombre = cobrador
     ? buildNombreUsuario(cobrador, "Cobrador")
     : movimiento.creadoPorNombre || "Cobrador";
+
+  const urlVerificacion = `${getAppPublicUrl()}/verificar/pago/${verificacion.codigoVerificacion}`;
 
   return {
     movimientoId: movimiento._id.toString(),
     numeroComprobante: Number(movimiento.numeroComprobante || 0),
     fecha: movimiento.fecha?.toISOString?.() || "",
+
+    codigoVerificacion: verificacion.codigoVerificacion,
+    firmaVerificacion: verificacion.firmaVerificacion,
+    firmaCorta: formatearFirmaCorta(verificacion.firmaVerificacion),
+    urlVerificacion,
 
     clienteId: cliente._id.toString(),
     clienteNumero: Number(cliente.numeroCliente || 0),
@@ -112,6 +153,95 @@ export async function obtenerComprobantePagoCliente(
     cobradorNombre,
 
     saldoClienteDespuesDelPago: Number(movimiento.saldo || 0),
+  };
+}
+
+export async function verificarPagoPorCodigo(
+  codigoVerificacion: string,
+): Promise<VerificacionPagoSafe> {
+  const codigo = String(codigoVerificacion || "").trim().toUpperCase();
+
+  if (!codigo) {
+    return {
+      valido: false,
+      mensaje: "Código de verificación inválido.",
+    };
+  }
+
+  await connectDB();
+
+  const movimiento = await MovimientoFinanciero.findOne({
+    codigoVerificacion: codigo,
+    tipoMovimiento: "pago",
+  }).lean();
+
+  if (!movimiento) {
+    return {
+      valido: false,
+      mensaje: "No se encontró un pago registrado con ese código.",
+    };
+  }
+
+  const [cliente, cobrador, factura] = await Promise.all([
+    Cliente.findById(movimiento.clienteId).lean(),
+
+    movimiento.creadoPorUsuarioId
+      ? Usuario.findById(movimiento.creadoPorUsuarioId).lean()
+      : Promise.resolve(null),
+
+    movimiento.facturaAsociadaId
+      ? MovimientoFinanciero.findById(movimiento.facturaAsociadaId).lean()
+      : Promise.resolve(null),
+  ]);
+
+  if (!cliente) {
+    return {
+      valido: false,
+      mensaje: "El pago existe, pero no se encontró el cliente asociado.",
+    };
+  }
+
+  const firmaEsperada = generarFirmaPago({
+    movimientoId: movimiento._id.toString(),
+    numeroComprobante: Number(movimiento.numeroComprobante || 0),
+    clienteId: cliente._id.toString(),
+    clienteDni: cliente.dni || "",
+    importe: Number(movimiento.haber || 0),
+    fechaIso: movimiento.fecha?.toISOString?.() || "",
+  });
+
+  const firmaGuardada = movimiento.firmaVerificacion || "";
+
+  if (firmaGuardada !== firmaEsperada) {
+    return {
+      valido: false,
+      mensaje:
+        "El comprobante fue encontrado, pero la firma interna no coincide. Contacte al administrador.",
+    };
+  }
+
+  return {
+    valido: true,
+    mensaje: "Comprobante válido. Los datos coinciden con el sistema.",
+
+    numeroComprobante: Number(movimiento.numeroComprobante || 0),
+    fecha: movimiento.fecha?.toISOString?.() || "",
+    codigoVerificacion: movimiento.codigoVerificacion || "",
+    firmaCorta: formatearFirmaCorta(firmaGuardada),
+
+    clienteNombre: `${cliente.apellido || ""}, ${cliente.nombre || ""}`.trim(),
+    clienteDni: cliente.dni || "",
+
+    periodoLabel: formatPeriodoLabel(
+      movimiento.referenciaMes,
+      movimiento.referenciaAnio,
+    ),
+    facturaNumeroComprobante: factura
+      ? Number(factura.numeroComprobante || 0)
+      : null,
+    concepto: movimiento.concepto || "",
+    importePagado: Number(movimiento.haber || 0),
+    cobradorNombre: buildNombreUsuario(cobrador, movimiento.creadoPorNombre),
   };
 }
 

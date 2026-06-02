@@ -3,6 +3,11 @@ export type ComprobantePagoClienteSafe = {
   numeroComprobante: number;
   fecha: string;
 
+  codigoVerificacion: string;
+  firmaVerificacion: string;
+  firmaCorta: string;
+  urlVerificacion: string;
+
   clienteId: string;
   clienteNumero: number;
   clienteNombre: string;
@@ -43,4 +48,23 @@ export type ComprobanteCierreCajaSafe = {
 
   descripcion: string;
   observacion: string;
+};
+
+export type VerificacionPagoSafe = {
+  valido: boolean;
+  mensaje: string;
+
+  numeroComprobante?: number;
+  fecha?: string;
+  codigoVerificacion?: string;
+  firmaCorta?: string;
+
+  clienteNombre?: string;
+  clienteDni?: string;
+
+  periodoLabel?: string;
+  facturaNumeroComprobante?: number | null;
+  concepto?: string;
+  importePagado?: number;
+  cobradorNombre?: string;
 };

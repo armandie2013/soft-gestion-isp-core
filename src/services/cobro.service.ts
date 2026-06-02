@@ -6,6 +6,10 @@ import Usuario from "@/models/Usuario";
 import CajaCobrador from "@/models/CajaCobrador";
 import CodigoCierreCaja from "@/models/CodigoCierreCaja";
 import MovimientoFinanciero from "@/models/MovimientoFinanciero";
+import {
+  generarCodigoVerificacionPago,
+  generarFirmaPago,
+} from "@/utils/comprobante-verificacion";
 import { obtenerSiguienteNumeroComprobante } from "@/utils/obtenerSiguienteNumeroComprobante";
 import { obtenerDetallePeriodoCliente } from "@/services/movimiento-financiero.service";
 import type {
@@ -339,12 +343,26 @@ export async function registrarPagoCobrador(
 
   const concepto = `Pago período ${detallePeriodo.periodo.periodoLabel} - Factura N° ${detallePeriodo.periodo.numeroComprobante}`;
 
+  const movimientoFinancieroId = new mongoose.Types.ObjectId();
+  const fechaPago = new Date();
+  const codigoVerificacion = generarCodigoVerificacionPago(numeroComprobante);
+
+  const firmaVerificacion = generarFirmaPago({
+    movimientoId: movimientoFinancieroId.toString(),
+    numeroComprobante,
+    clienteId,
+    clienteDni: cliente.dni || "",
+    importe,
+    fechaIso: fechaPago.toISOString(),
+  });
+
   const movimientoFinanciero = await MovimientoFinanciero.create({
+    _id: movimientoFinancieroId,
     numeroComprobante,
     clienteId,
     tipoMovimiento: "pago",
     facturaAsociadaId,
-    fecha: new Date(),
+    fecha: fechaPago,
     concepto,
     debe: 0,
     haber: importe,
@@ -355,6 +373,8 @@ export async function registrarPagoCobrador(
     creadoPorUsuarioId: cobrador.userId,
     creadoPorNombre: cobrador.nombre,
     creadoPorRol: cobrador.rol,
+    codigoVerificacion,
+    firmaVerificacion,
   });
 
   const saldoActualCaja = await obtenerSaldoCajaCobrador(cobrador.userId);

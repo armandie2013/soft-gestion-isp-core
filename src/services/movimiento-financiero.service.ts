@@ -72,48 +72,35 @@ function validarObjectId(id: string) {
 function formatPeriodoLabel(mes?: number | null, anio?: number | null) {
   if (!mes || !anio) return "Sin período";
 
-  const meses = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ];
-
-  return `${meses[mes - 1] || mes}/${anio}`;
+  return `${mes}/${anio}`;
 }
 
 function toSafeMovimiento(movimiento: any): MovimientoFinancieroSafe {
   return {
-    id: movimiento._id.toString(),
-    numeroComprobante: Number(movimiento.numeroComprobante || 0),
-    clienteId: movimiento.clienteId?.toString?.() || "",
-    tipoMovimiento: movimiento.tipoMovimiento as MovimientoTipo,
-    facturaAsociadaId: movimiento.facturaAsociadaId
-      ? movimiento.facturaAsociadaId.toString()
-      : null,
-    facturaAsociadaNumeroComprobante: null,
-    fecha: movimiento.fecha?.toISOString?.() || "",
-    concepto: movimiento.concepto || "",
-    debe: Number(movimiento.debe || 0),
-    haber: Number(movimiento.haber || 0),
-    saldo: Number(movimiento.saldo || 0),
-    referenciaMes: movimiento.referenciaMes ?? null,
-    referenciaAnio: movimiento.referenciaAnio ?? null,
-    creadoPorUsuarioId: movimiento.creadoPorUsuarioId?.toString?.() || "",
-    creadoPorNombre: movimiento.creadoPorNombre || "",
-    creadoPorRol: movimiento.creadoPorRol || "",
-    observacion: movimiento.observacion || "",
-    creadoEn: movimiento.creadoEn?.toISOString?.() || "",
-    actualizadoEn: movimiento.actualizadoEn?.toISOString?.() || "",
-  };
+  id: movimiento._id.toString(),
+  numeroComprobante: Number(movimiento.numeroComprobante || 0),
+  clienteId: movimiento.clienteId?.toString?.() || "",
+  tipoMovimiento: movimiento.tipoMovimiento as MovimientoTipo,
+  facturaAsociadaId: movimiento.facturaAsociadaId
+    ? movimiento.facturaAsociadaId.toString()
+    : null,
+  facturaAsociadaNumeroComprobante: null,
+  fecha: movimiento.fecha?.toISOString?.() || "",
+  concepto: movimiento.concepto || "",
+  debe: Number(movimiento.debe || 0),
+  haber: Number(movimiento.haber || 0),
+  saldo: Number(movimiento.saldo || 0),
+  referenciaMes: movimiento.referenciaMes ?? null,
+  referenciaAnio: movimiento.referenciaAnio ?? null,
+  creadoPorUsuarioId: movimiento.creadoPorUsuarioId?.toString?.() || "",
+  creadoPorNombre: movimiento.creadoPorNombre || "",
+  creadoPorRol: movimiento.creadoPorRol || "",
+  observacion: movimiento.observacion || "",
+  codigoVerificacion: movimiento.codigoVerificacion || null,
+  firmaVerificacion: movimiento.firmaVerificacion || null,
+  creadoEn: movimiento.creadoEn?.toISOString?.() || "",
+  actualizadoEn: movimiento.actualizadoEn?.toISOString?.() || "",
+};
 }
 
 function calcularPeriodoDesdeFactura(

@@ -10,11 +10,11 @@ import { Badge } from "@/components/ui/Badge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { PageShell } from "@/components/ui/PageShell";
 import { SectionCard } from "@/components/ui/SectionCard";
-import { obtenerClientePorId } from "@/services/cliente.service";
+import { obtenerClienteParaCobrador } from "@/services/cobrador.service";
 import { obtenerDetallePeriodoCliente } from "@/services/movimiento-financiero.service";
 import type { MovimientoFinancieroSafe } from "@/types/movimiento-financiero.types";
 
-type DetallePeriodoPageProps = {
+type DetallePeriodoCobradorPageProps = {
   params: {
     id: string;
     facturaId: string;
@@ -101,11 +101,11 @@ function getEstadoPeriodoBadge(estado: string) {
   return <Badge variant="danger">Pendiente</Badge>;
 }
 
-export default async function DetallePeriodoPage({
+export default async function DetallePeriodoCobradorPage({
   params,
-}: DetallePeriodoPageProps) {
+}: DetallePeriodoCobradorPageProps) {
   const [cliente, detalle] = await Promise.all([
-    obtenerClientePorId(params.id),
+    obtenerClienteParaCobrador(params.id),
     obtenerDetallePeriodoCliente(params.id, params.facturaId),
   ]);
 
@@ -119,8 +119,8 @@ export default async function DetallePeriodoPage({
         eyebrow={`Factura N° ${detalle.periodo.numeroComprobante}`}
         title={`Detalle ${detalle.periodo.periodoLabel}`}
         description={`${cliente.apellido}, ${cliente.nombre} · DNI ${cliente.dni}`}
-        backHref={`/clientes/${cliente.id}/estado-cuenta`}
-        backLabel="Volver al estado de cuenta"
+        backHref={`/cobrador/clientes/${cliente.id}`}
+        backLabel="Volver al cliente"
       >
         <div className="mt-3 flex flex-wrap gap-2">
           {getEstadoPeriodoBadge(detalle.periodo.estadoPeriodo)}
@@ -135,6 +135,7 @@ export default async function DetallePeriodoPage({
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--app-muted)]">
             Original
           </p>
+
           <p className="mt-2 text-lg font-semibold text-[var(--app-text-strong)]">
             {formatMoney(detalle.periodo.importeOriginal)}
           </p>
@@ -142,10 +143,14 @@ export default async function DetallePeriodoPage({
 
         <div className="rounded-2xl border border-emerald-200 bg-[var(--app-success-soft)] p-4 text-[var(--app-success)] shadow-[var(--app-shadow-soft)] dark:border-emerald-900/70">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] opacity-80">
-            Notas crédito
+            Notas crédito / pagos
           </p>
+
           <p className="mt-2 text-lg font-semibold">
-            - {formatMoney(detalle.periodo.totalNotasCredito)}
+            -{" "}
+            {formatMoney(
+              detalle.periodo.totalNotasCredito + detalle.periodo.totalPagos,
+            )}
           </p>
         </div>
 
@@ -153,6 +158,7 @@ export default async function DetallePeriodoPage({
           <p className="text-xs font-semibold uppercase tracking-[0.16em] opacity-80">
             Notas débito
           </p>
+
           <p className="mt-2 text-lg font-semibold">
             + {formatMoney(detalle.periodo.totalNotasDebito)}
           </p>
@@ -162,6 +168,7 @@ export default async function DetallePeriodoPage({
           <p className="text-xs font-semibold uppercase tracking-[0.16em] opacity-80">
             Saldo período
           </p>
+
           <p className="mt-2 text-lg font-semibold">
             {formatMoney(detalle.periodo.saldoPeriodo)}
           </p>
@@ -170,7 +177,7 @@ export default async function DetallePeriodoPage({
 
       <SectionCard
         title="Movimientos del período"
-        description="Detalle de la factura base y todos los movimientos asociados a este período."
+        description="Detalle de la factura base, notas asociadas y pagos aplicados a este período."
         icon={<FileText className="h-5 w-5" />}
       >
         <div className="space-y-2">
@@ -220,6 +227,7 @@ export default async function DetallePeriodoPage({
                         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--app-muted)]">
                           {impacto.label}
                         </p>
+
                         <p className="text-sm font-semibold">
                           {impacto.value > 0
                             ? `${impacto.sign} ${formatMoney(impacto.value)}`

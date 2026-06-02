@@ -26,6 +26,8 @@ export type MovimientoFinancieroSafe = {
   creadoPorNombre: string;
   creadoPorRol: string;
   observacion: string;
+  codigoVerificacion?: string | null;
+  firmaVerificacion?: string | null;
   creadoEn: string;
   actualizadoEn: string;
 };
