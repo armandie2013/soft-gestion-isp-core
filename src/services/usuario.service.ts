@@ -70,6 +70,7 @@ function toSafeUser(usuario: any): UsuarioSafe {
     clienteId: usuario.clienteId ? usuario.clienteId.toString() : null,
     creadoEn: usuario.creadoEn?.toISOString?.() || "",
     actualizadoEn: usuario.actualizadoEn?.toISOString?.() || "",
+    ultimoAcceso: usuario.ultimoAcceso?.toISOString?.() || null,
   };
 }
 

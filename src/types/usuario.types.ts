@@ -18,4 +18,5 @@ export type UsuarioSafe = {
   clienteId?: string | null;
   creadoEn: string;
   actualizadoEn: string;
+  ultimoAcceso?: string | null;
 };

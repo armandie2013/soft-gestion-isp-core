@@ -1,8 +1,10 @@
+// src/components/ui/PageShell.tsx
+
 import type { ReactNode } from "react";
 
 type PageShellProps = {
   children: ReactNode;
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "wide" | "full";
   className?: string;
 };
 
@@ -11,12 +13,13 @@ const maxWidthClass = {
   md: "max-w-5xl",
   lg: "max-w-7xl",
   xl: "max-w-[88rem]",
+  wide: "max-w-[1720px]",
   full: "max-w-none",
 };
 
 export function PageShell({
   children,
-  maxWidth = "lg",
+  maxWidth = "wide",
   className = "",
 }: PageShellProps) {
   return (

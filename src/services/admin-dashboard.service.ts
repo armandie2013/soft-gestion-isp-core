@@ -19,6 +19,17 @@ export type AdminDashboardCobradorCard = {
   codigoPendienteImporte: number;
 };
 
+export type AdminDashboardUltimoMovimiento = {
+  id: string;
+  fecha: string | null;
+  tipoMovimiento: string;
+  usuarioNombre: string;
+  usuarioRol: string;
+  detalle: string;
+  importe: number;
+  estado: "confirmado" | "pendiente";
+};
+
 export type AdminDashboardResumen = {
   totalCuentaAdmin: number;
   totalEnCajaCobradores: number;
@@ -32,6 +43,7 @@ export type AdminDashboardResumen = {
   saldoClientesPendiente: number;
   codigosPendientes: number;
   cobradores: AdminDashboardCobradorCard[];
+  ultimosMovimientos: AdminDashboardUltimoMovimiento[];
 };
 
 function toIso(value: unknown) {
@@ -40,6 +52,24 @@ function toIso(value: unknown) {
   }
 
   return null;
+}
+
+function normalizeId(value: unknown) {
+  if (value && typeof value === "object" && "toString" in value) {
+    return value.toString();
+  }
+
+  return String(value || "");
+}
+
+function calcularImporteMovimiento(movimiento: {
+  debe?: number | null;
+  haber?: number | null;
+}) {
+  const haber = Number(movimiento.haber || 0);
+  const debe = Number(movimiento.debe || 0);
+
+  return haber > 0 ? haber : debe;
 }
 
 export async function obtenerAdminDashboardResumen(): Promise<AdminDashboardResumen> {
@@ -55,6 +85,7 @@ export async function obtenerAdminDashboardResumen(): Promise<AdminDashboardResu
     planesActivos,
     facturasEmitidas,
     saldoClientesPendienteRaw,
+    ultimosMovimientosRaw,
   ] = await Promise.all([
     obtenerAdminCajaCobradoresResumen(),
 
@@ -107,6 +138,21 @@ export async function obtenerAdminDashboardResumen(): Promise<AdminDashboardResu
         },
       },
     ]),
+
+    MovimientoFinanciero.find()
+      .sort({ creadoEn: -1 })
+      .limit(4)
+      .select({
+        _id: 1,
+        fecha: 1,
+        tipoMovimiento: 1,
+        concepto: 1,
+        debe: 1,
+        haber: 1,
+        creadoPorNombre: 1,
+        creadoPorRol: 1,
+      })
+      .lean(),
   ]);
 
   const cobradores = await Promise.all(
@@ -135,6 +181,17 @@ export async function obtenerAdminDashboardResumen(): Promise<AdminDashboardResu
     }),
   );
 
+  const ultimosMovimientos = ultimosMovimientosRaw.map((movimiento) => ({
+    id: normalizeId(movimiento._id),
+    fecha: toIso(movimiento.fecha),
+    tipoMovimiento: String(movimiento.tipoMovimiento || "movimiento"),
+    usuarioNombre: String(movimiento.creadoPorNombre || "Sistema"),
+    usuarioRol: String(movimiento.creadoPorRol || "sistema"),
+    detalle: String(movimiento.concepto || "Movimiento financiero"),
+    importe: calcularImporteMovimiento(movimiento),
+    estado: "confirmado" as const,
+  }));
+
   return {
     totalCuentaAdmin: Number(cajaResumen.totalRecibidoAdmin || 0),
     totalEnCajaCobradores: Number(cajaResumen.totalSaldoCobradores || 0),
@@ -150,5 +207,6 @@ export async function obtenerAdminDashboardResumen(): Promise<AdminDashboardResu
     ),
     codigosPendientes: Number(cajaResumen.cantidadCodigosPendientes || 0),
     cobradores,
+    ultimosMovimientos,
   };
 }

@@ -1,3 +1,5 @@
+// src/components/layout/DashboardShell.tsx
+
 import type { ReactNode } from "react";
 import type { AuthTokenPayload } from "@/lib/jwt";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
@@ -18,7 +20,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         <div className="flex min-w-0 flex-1 flex-col">
           <DashboardHeader user={user} />
 
-          <main className="flex-1 px-4 py-4 safe-bottom sm:px-6 sm:py-6 lg:px-8">
+          <main className="flex-1 px-3 py-4 safe-bottom sm:px-4 sm:py-5 lg:px-4 xl:px-5 2xl:px-6">
             {children}
           </main>
         </div>
