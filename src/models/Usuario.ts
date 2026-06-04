@@ -75,6 +75,13 @@ const UsuarioSchema = new Schema(
       index: true,
     },
 
+    limiteCajaCobrador: {
+      type: Number,
+      required: true,
+      default: 100000,
+      min: [100000, "El límite mínimo de caja del cobrador es $100.000."],
+    },
+
     ultimoAcceso: {
       type: Date,
       default: null,

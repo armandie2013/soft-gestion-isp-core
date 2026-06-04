@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, WalletCards } from "lucide-react";
 import {
   actualizarUsuarioAction,
   type UsuarioActionState,
 } from "@/actions/usuario.actions";
-import type { UsuarioSafe } from "@/types/usuario.types";
+import type { UserRole, UsuarioSafe } from "@/types/usuario.types";
 
 type EditarUsuarioFormProps = {
   usuario: UsuarioSafe;
@@ -18,6 +18,19 @@ const initialState: UsuarioActionState = {
   ok: false,
   message: "",
 };
+
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value || 0);
+}
+
+function limpiarNumeroEntero(value: string) {
+  return value.replace(/\D/g, "");
+}
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -45,7 +58,23 @@ function SubmitButton() {
 
 export function EditarUsuarioForm({ usuario }: EditarUsuarioFormProps) {
   const router = useRouter();
-  const [state, formAction] = useFormState(actualizarUsuarioAction, initialState);
+
+  const [state, formAction] = useFormState(
+    actualizarUsuarioAction,
+    initialState,
+  );
+
+  const [rolSeleccionado, setRolSeleccionado] = useState<UserRole>(
+    usuario.rol,
+  );
+
+  const [limiteCajaTexto, setLimiteCajaTexto] = useState(
+    String(usuario.limiteCajaCobrador || 100000),
+  );
+
+  const limiteCajaNumerico = Number(limiteCajaTexto || 0);
+  const limiteCajaParaEnviar =
+    limiteCajaNumerico >= 100000 ? limiteCajaNumerico : 100000;
 
   useEffect(() => {
     if (state.ok) {
@@ -138,7 +167,15 @@ export function EditarUsuarioForm({ usuario }: EditarUsuarioFormProps) {
           <select
             id="rol"
             name="rol"
-            defaultValue={usuario.rol}
+            value={rolSeleccionado}
+            onChange={(event) => {
+              const nuevoRol = event.target.value as UserRole;
+              setRolSeleccionado(nuevoRol);
+
+              if (nuevoRol === "cobrador" && !limiteCajaTexto) {
+                setLimiteCajaTexto("100000");
+              }
+            }}
             className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
           >
             <option value="admin">Administrador</option>
@@ -166,6 +203,89 @@ export function EditarUsuarioForm({ usuario }: EditarUsuarioFormProps) {
           </select>
         </div>
       </div>
+
+      {rolSeleccionado === "cobrador" ? (
+        <div className="rounded-[1.4rem] border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/70 dark:bg-amber-950/30">
+          <div className="mb-3 flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
+              <WalletCards className="h-5 w-5" />
+            </div>
+
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
+                Límite de caja
+              </p>
+
+              <p className="mt-1 text-sm leading-6 text-amber-800 dark:text-amber-200">
+                Si la caja actual del cobrador más un nuevo pago supera este
+                límite, el sistema bloqueará el cobro y pedirá cerrar caja.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="limiteCajaCobradorVisible"
+                className="text-sm font-medium text-slate-700 dark:text-slate-200"
+              >
+                Máximo permitido en caja
+              </label>
+
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                  $
+                </span>
+
+                <input
+                  id="limiteCajaCobradorVisible"
+                  type="text"
+                  inputMode="numeric"
+                  value={limiteCajaTexto}
+                  onChange={(event) => {
+                    setLimiteCajaTexto(limpiarNumeroEntero(event.target.value));
+                  }}
+                  placeholder="100000"
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-8 pr-3 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:placeholder:text-transparent focus:ring-4 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+                />
+              </div>
+
+              <input
+                type="hidden"
+                name="limiteCajaCobrador"
+                value={limiteCajaParaEnviar}
+              />
+
+              <p className="text-xs leading-5 text-amber-800 dark:text-amber-200">
+                Se guardará como{" "}
+                <span className="font-semibold">
+                  {formatMoney(limiteCajaParaEnviar)}
+                </span>
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-amber-200 bg-white px-3 py-2 text-xs text-amber-800 dark:border-amber-900/70 dark:bg-slate-950/60 dark:text-amber-200 sm:min-w-52">
+              <p className="font-semibold uppercase tracking-[0.12em]">
+                Mínimo permitido
+              </p>
+
+              <p className="mt-1 text-sm font-semibold">
+                {formatMoney(100000)}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <input
+          type="hidden"
+          name="limiteCajaCobrador"
+          value={
+            usuario.limiteCajaCobrador && usuario.limiteCajaCobrador >= 100000
+              ? usuario.limiteCajaCobrador
+              : 100000
+          }
+        />
+      )}
 
       {state.message ? (
         <div

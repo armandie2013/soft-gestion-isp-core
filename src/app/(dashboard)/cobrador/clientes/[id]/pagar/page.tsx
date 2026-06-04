@@ -1,8 +1,11 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { CreditCard, FileText, UserRound, WalletCards } from "lucide-react";
 import { CobroForm } from "@/components/forms/CobroForm";
 import { Badge } from "@/components/ui/Badge";
+import { getCurrentUser } from "@/lib/current-user";
 import { obtenerResumenClienteParaCobrador } from "@/services/cobrador.service";
+import { obtenerCajaCobradorResumen } from "@/services/cobro.service";
+import { obtenerUsuarioPorId } from "@/services/usuario.service";
 
 type RegistrarPagoPageProps = {
   params: {
@@ -31,13 +34,28 @@ function getEstadoBadgeVariant(estado: string) {
 export default async function RegistrarPagoPage({
   params,
 }: RegistrarPagoPageProps) {
-  const resumen = await obtenerResumenClienteParaCobrador(params.id);
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (user.rol !== "cobrador") {
+    redirect(`/${user.rol}`);
+  }
+
+  const [resumen, cajaCobrador, usuarioCobrador] = await Promise.all([
+    obtenerResumenClienteParaCobrador(params.id),
+    obtenerCajaCobradorResumen(user.userId),
+    obtenerUsuarioPorId(user.userId),
+  ]);
 
   if (!resumen) {
     notFound();
   }
 
   const { cliente, periodosPendientes, totalPendiente } = resumen;
+  const limiteCajaCobrador = usuarioCobrador?.limiteCajaCobrador || 100000;
   const tieneDeuda = totalPendiente > 0;
 
   return (
@@ -132,6 +150,8 @@ export default async function RegistrarPagoPage({
         <CobroForm
           clienteId={cliente.id}
           periodosPendientes={periodosPendientes}
+          saldoCajaActual={cajaCobrador.saldoActual}
+          limiteCajaCobrador={limiteCajaCobrador}
         />
       </div>
 

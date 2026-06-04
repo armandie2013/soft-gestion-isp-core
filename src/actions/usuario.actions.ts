@@ -35,6 +35,31 @@ async function requireAdmin() {
   return user;
 }
 
+function formMoneyToNumber(value: FormDataEntryValue | null) {
+  const raw = String(value || "100000").trim();
+
+  if (!raw) {
+    return 100000;
+  }
+
+  const normalized = raw.replace(/[^\d.,]/g, "");
+
+  if (!normalized) {
+    return 100000;
+  }
+
+  if (normalized.includes(",") && normalized.includes(".")) {
+    const limpio = normalized.replace(/\./g, "").replace(",", ".");
+    return Number(limpio || 100000);
+  }
+
+  if (normalized.includes(",")) {
+    return Number(normalized.replace(",", ".") || 100000);
+  }
+
+  return Number(normalized || 100000);
+}
+
 export async function actualizarUsuarioAction(
   _prevState: UsuarioActionState,
   formData: FormData,
@@ -42,6 +67,10 @@ export async function actualizarUsuarioAction(
   await requireAdmin();
 
   const id = String(formData.get("id") || "");
+  const limiteCajaCobrador = Math.max(
+    formMoneyToNumber(formData.get("limiteCajaCobrador")),
+    100000,
+  );
 
   const result = await actualizarUsuario({
     id,
@@ -51,6 +80,7 @@ export async function actualizarUsuarioAction(
     email: String(formData.get("email") || ""),
     rol: String(formData.get("rol") || "cliente") as any,
     estado: String(formData.get("estado") || "activo") as any,
+    limiteCajaCobrador,
   });
 
   if (!result.ok) {
@@ -59,6 +89,8 @@ export async function actualizarUsuarioAction(
 
   revalidatePath("/usuarios");
   revalidatePath(`/usuarios/${id}/editar`);
+  revalidatePath("/admin/caja-cobradores");
+  revalidatePath("/cobrador/caja");
 
   return result;
 }

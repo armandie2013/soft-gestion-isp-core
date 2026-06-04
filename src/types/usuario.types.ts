@@ -15,6 +15,7 @@ export type UsuarioSafe = {
   rol: UserRole;
   estado: UserStatus;
   debeCambiarPassword: boolean;
+  limiteCajaCobrador: number;
   clienteId?: string | null;
   creadoEn: string;
   actualizadoEn: string;

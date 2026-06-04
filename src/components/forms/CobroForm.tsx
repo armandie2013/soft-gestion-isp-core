@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Loader2, Save, WalletCards } from "lucide-react";
+import {
+  AlertTriangle,
+  CalendarDays,
+  Loader2,
+  Save,
+  WalletCards,
+} from "lucide-react";
 import {
   registrarPagoCobradorAction,
   type CobroActionState,
@@ -14,6 +20,8 @@ import type { PeriodoCuentaClienteSafe } from "@/types/movimiento-financiero.typ
 type CobroFormProps = {
   clienteId: string;
   periodosPendientes: PeriodoCuentaClienteSafe[];
+  saldoCajaActual: number;
+  limiteCajaCobrador: number;
 };
 
 const initialState: CobroActionState = {
@@ -103,7 +111,12 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
   );
 }
 
-export function CobroForm({ clienteId, periodosPendientes }: CobroFormProps) {
+export function CobroForm({
+  clienteId,
+  periodosPendientes,
+  saldoCajaActual,
+  limiteCajaCobrador,
+}: CobroFormProps) {
   const router = useRouter();
 
   const [state, formAction] = useFormState(
@@ -128,10 +141,16 @@ export function CobroForm({ clienteId, periodosPendientes }: CobroFormProps) {
     );
   }, [facturaSeleccionadaId, periodosOrdenados]);
 
+  const limiteCaja = Math.max(Number(limiteCajaCobrador || 100000), 100000);
   const importeNumerico = moneyInputToNumber(importeVisual);
+  const saldoCajaProyectado = saldoCajaActual + importeNumerico;
+  const excedeLimiteCaja =
+    importeNumerico > 0 && saldoCajaProyectado > limiteCaja;
+  const disponibleCaja = Math.max(limiteCaja - saldoCajaActual, 0);
   const hayPeriodoSeleccionado = Boolean(periodoSeleccionado);
   const importeValido = importeNumerico > 0;
-  const puedeRegistrarPago = hayPeriodoSeleccionado && importeValido;
+  const puedeRegistrarPago =
+    hayPeriodoSeleccionado && importeValido && !excedeLimiteCaja;
 
   useEffect(() => {
     if (state.ok) {
@@ -174,6 +193,43 @@ export function CobroForm({ clienteId, periodosPendientes }: CobroFormProps) {
           cobrar un período nuevo, primero deben cancelarse los períodos
           anteriores.
         </p>
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+              Caja actual
+            </p>
+            <p className="mt-1 text-sm font-semibold text-slate-950 dark:text-white">
+              {formatMoney(saldoCajaActual)}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+              Límite permitido
+            </p>
+            <p className="mt-1 text-sm font-semibold text-slate-950 dark:text-white">
+              {formatMoney(limiteCaja)}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+              Disponible para cobrar
+            </p>
+            <p
+              className={`mt-1 text-sm font-semibold ${
+                disponibleCaja > 0
+                  ? "text-emerald-700 dark:text-emerald-300"
+                  : "text-red-700 dark:text-red-300"
+              }`}
+            >
+              {formatMoney(disponibleCaja)}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
@@ -361,6 +417,27 @@ export function CobroForm({ clienteId, periodosPendientes }: CobroFormProps) {
           ) : null}
         </div>
       </div>
+
+      {excedeLimiteCaja ? (
+        <div className="rounded-[1.4rem] border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-200">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
+
+            <div className="min-w-0">
+  <p className="text-sm font-semibold">
+    No se puede registrar este cobro
+  </p>
+
+  <p className="mt-1 text-sm leading-6 opacity-90">
+    Tu caja alcanzó el límite operativo permitido. Para continuar registrando
+    cobros, primero tenés que realizar el cierre de caja correspondiente.
+  </p>
+</div>
+          </div>
+        </div>
+      ) : null}
 
       <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950/60">
         <div className="space-y-2">

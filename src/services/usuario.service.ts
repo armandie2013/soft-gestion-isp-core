@@ -39,6 +39,12 @@ export const actualizarUsuarioSchema = z.object({
   estado: z.enum(["activo", "suspendido"], {
     message: "Estado inválido.",
   }),
+
+  limiteCajaCobrador: z.coerce
+    .number({
+      message: "El límite de caja debe ser un número válido.",
+    })
+    .min(100000, "El límite mínimo de caja para un cobrador es $100.000."),
 });
 
 export const resetPasswordSchema = z.object({
@@ -67,6 +73,7 @@ function toSafeUser(usuario: any): UsuarioSafe {
     rol: usuario.rol as UserRole,
     estado: usuario.estado as UserStatus,
     debeCambiarPassword: Boolean(usuario.debeCambiarPassword),
+    limiteCajaCobrador: Number(usuario.limiteCajaCobrador || 100000),
     clienteId: usuario.clienteId ? usuario.clienteId.toString() : null,
     creadoEn: usuario.creadoEn?.toISOString?.() || "",
     actualizadoEn: usuario.actualizadoEn?.toISOString?.() || "",
@@ -108,7 +115,16 @@ export async function actualizarUsuario(input: ActualizarUsuarioInput) {
     };
   }
 
-  const { id, nombre, apellido, dni, email, rol, estado } = parsed.data;
+  const {
+    id,
+    nombre,
+    apellido,
+    dni,
+    email,
+    rol,
+    estado,
+    limiteCajaCobrador,
+  } = parsed.data;
 
   if (!validarObjectId(id)) {
     return {
@@ -119,7 +135,7 @@ export async function actualizarUsuario(input: ActualizarUsuarioInput) {
 
   await connectDB();
 
-  const usuario = await Usuario.findById(id);
+  const usuario = await Usuario.findById(id).lean();
 
   if (!usuario) {
     return {
@@ -130,6 +146,7 @@ export async function actualizarUsuario(input: ActualizarUsuarioInput) {
 
   const emailNormalizado = email.toLowerCase().trim();
   const dniNormalizado = dni.trim();
+  const limiteFinal = Math.max(Number(limiteCajaCobrador || 100000), 100000);
 
   const existeEmail = await Usuario.findOne({
     email: emailNormalizado,
@@ -155,14 +172,31 @@ export async function actualizarUsuario(input: ActualizarUsuarioInput) {
     };
   }
 
-  usuario.nombre = nombre.trim();
-  usuario.apellido = apellido.trim();
-  usuario.dni = dniNormalizado;
-  usuario.email = emailNormalizado;
-  usuario.rol = rol;
-  usuario.estado = estado;
+  const updateResult = await Usuario.updateOne(
+    { _id: id },
+    {
+      $set: {
+        nombre: nombre.trim(),
+        apellido: apellido.trim(),
+        dni: dniNormalizado,
+        email: emailNormalizado,
+        rol,
+        estado,
+        limiteCajaCobrador: limiteFinal,
+      },
+    },
+    {
+      runValidators: true,
+      strict: false,
+    },
+  );
 
-  await usuario.save();
+  if (updateResult.matchedCount === 0) {
+    return {
+      ok: false,
+      message: "No se pudo actualizar el usuario.",
+    };
+  }
 
   return {
     ok: true,

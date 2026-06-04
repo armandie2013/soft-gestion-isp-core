@@ -150,6 +150,26 @@ function ordenarPeriodosPendientesPorAntiguedad(periodos: any[]) {
   });
 }
 
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 2,
+  }).format(value || 0);
+}
+
+async function obtenerLimiteCajaCobrador(cobradorId: string) {
+  const cobradorRaw = await Usuario.findById(cobradorId)
+    .select("limiteCajaCobrador rol")
+    .lean();
+
+  if (!cobradorRaw || cobradorRaw.rol !== "cobrador") {
+    return 100000;
+  }
+
+  return Math.max(Number(cobradorRaw.limiteCajaCobrador || 100000), 100000);
+}
+
 async function obtenerSaldoActualCliente(clienteId: string) {
   const ultimoMovimiento = await MovimientoFinanciero.findOne({ clienteId })
     .sort({ fecha: -1, creadoEn: -1 })
@@ -339,16 +359,16 @@ export async function registrarPagoCobrador(
 
   const estadoCuenta = await obtenerEstadoCuentaCliente(clienteId);
 
-if (!estadoCuenta) {
-  return {
-    ok: false,
-    message: "No se pudo obtener el estado de cuenta del cliente.",
-  };
-}
+  if (!estadoCuenta) {
+    return {
+      ok: false,
+      message: "No se pudo obtener el estado de cuenta del cliente.",
+    };
+  }
 
-const periodosPendientesOrdenados = ordenarPeriodosPendientesPorAntiguedad(
-  estadoCuenta.periodos.filter((periodo) => periodo.saldoPeriodo > 0),
-);
+  const periodosPendientesOrdenados = ordenarPeriodosPendientesPorAntiguedad(
+    estadoCuenta.periodos.filter((periodo) => periodo.saldoPeriodo > 0),
+  );
 
   const primerPeriodoPendiente = periodosPendientesOrdenados[0] || null;
 
@@ -373,15 +393,26 @@ const periodosPendientesOrdenados = ordenarPeriodosPendientesPorAntiguedad(
   if (importe > detallePeriodo.periodo.saldoPeriodo) {
     return {
       ok: false,
-      message: `El pago no puede superar el saldo del período (${new Intl.NumberFormat(
-        "es-AR",
-        {
-          style: "currency",
-          currency: "ARS",
-        },
-      ).format(detallePeriodo.periodo.saldoPeriodo)}).`,
+      message: `El pago no puede superar el saldo del período (${formatMoney(
+        detallePeriodo.periodo.saldoPeriodo,
+      )}).`,
     };
   }
+
+  const [saldoActualCaja, limiteCajaCobrador] = await Promise.all([
+    obtenerSaldoCajaCobrador(cobrador.userId),
+    obtenerLimiteCajaCobrador(cobrador.userId),
+  ]);
+
+  const saldoCajaProyectado = saldoActualCaja + importe;
+
+  if (saldoCajaProyectado > limiteCajaCobrador) {
+  return {
+    ok: false,
+    message:
+      "No se puede registrar este cobro porque tu caja alcanzó el límite operativo permitido. Realizá el cierre de caja correspondiente antes de continuar.",
+  };
+}
 
   const saldoActualCliente = await obtenerSaldoActualCliente(clienteId);
   const nuevoSaldoCliente = saldoActualCliente - importe;
@@ -423,7 +454,6 @@ const periodosPendientesOrdenados = ordenarPeriodosPendientesPorAntiguedad(
     firmaVerificacion,
   });
 
-  const saldoActualCaja = await obtenerSaldoCajaCobrador(cobrador.userId);
   const nuevoSaldoCaja = saldoActualCaja + importe;
 
   await CajaCobrador.create({
@@ -521,13 +551,9 @@ export async function generarCodigoCierreCaja(
 
   return {
     ok: true,
-    message: `Código generado correctamente para ${new Intl.NumberFormat(
-      "es-AR",
-      {
-        style: "currency",
-        currency: "ARS",
-      },
-    ).format(caja.saldoActual)}.`,
+    message: `Código generado correctamente para ${formatMoney(
+      caja.saldoActual,
+    )}.`,
     codigo: toSafeCodigo(codigo),
   };
 }
@@ -585,13 +611,9 @@ export async function validarCodigoCierreCajaCobrador(
 
   return {
     ok: true,
-    message: `Código válido para cerrar caja por ${new Intl.NumberFormat(
-      "es-AR",
-      {
-        style: "currency",
-        currency: "ARS",
-      },
-    ).format(caja.saldoActual)}.`,
+    message: `Código válido para cerrar caja por ${formatMoney(
+      caja.saldoActual,
+    )}.`,
     importe: caja.saldoActual,
   };
 }
