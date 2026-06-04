@@ -1,6 +1,9 @@
+// src/app/(dashboard)/cobrador/clientes/[id]/page.tsx
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  AlertTriangle,
   CreditCard,
   Eye,
   FileText,
@@ -15,11 +18,19 @@ type CobradorClientePageProps = {
   params: {
     id: string;
   };
+  searchParams?: {
+    modo?: string;
+    dni?: string;
+  };
 };
 
 export const metadata = {
   title: "Cliente",
 };
+
+function limpiarDni(value?: string) {
+  return String(value || "").replace(/\D/g, "").slice(0, 12);
+}
 
 function formatMoney(value: number) {
   return new Intl.NumberFormat("es-AR", {
@@ -78,6 +89,7 @@ function DataLine({
 
 export default async function CobradorClientePage({
   params,
+  searchParams,
 }: CobradorClientePageProps) {
   const resumen = await obtenerResumenClienteParaCobrador(params.id);
 
@@ -87,6 +99,10 @@ export default async function CobradorClientePage({
 
   const { cliente, estadoCuenta, totalPendiente } = resumen;
   const tieneDeuda = totalPendiente > 0;
+
+  const dniHabilitante = limpiarDni(searchParams?.dni);
+  const vieneDeCircuitoPago =
+    searchParams?.modo === "pago" && dniHabilitante === cliente.dni;
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-4">
@@ -215,13 +231,26 @@ export default async function CobradorClientePage({
             </div>
           </div>
 
-          <Link
-            href={`/cobrador/clientes/${cliente.id}/pagar`}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-cyan-200 bg-cyan-50 px-5 text-sm font-semibold text-cyan-800 shadow-sm transition hover:bg-cyan-100 active:scale-[0.99] dark:border-cyan-900/70 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400 sm:w-auto"
-          >
-            <CreditCard className="h-4 w-4" />
-            Registrar pago
-          </Link>
+          {vieneDeCircuitoPago ? (
+            <Link
+              href={`/cobrador/clientes/${cliente.id}/pagar?dni=${cliente.dni}`}
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-cyan-200 bg-cyan-50 px-5 text-sm font-semibold text-cyan-800 shadow-sm transition hover:bg-cyan-100 active:scale-[0.99] dark:border-cyan-900/70 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400 sm:w-auto"
+            >
+              <CreditCard className="h-4 w-4" />
+              Registrar pago
+            </Link>
+          ) : (
+            <div className="max-w-md rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300">
+              <div className="flex gap-2">
+                <AlertTriangle className="mt-1 h-4 w-4 shrink-0" />
+                <p>
+                  Esta ficha es solo informativa. Para registrar un pago, el
+                  cobrador debe iniciar el circuito desde Registrar un pago con
+                  DNI exacto.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

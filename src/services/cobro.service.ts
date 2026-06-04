@@ -89,6 +89,18 @@ export type UsuarioAdminCaja = {
   rol: string;
 };
 
+function getClienteNombreCompleto(cliente: any) {
+  const apellido = String(cliente?.apellido || "").trim();
+  const nombre = String(cliente?.nombre || "").trim();
+
+  const nombreCompleto = `${apellido}, ${nombre}`
+    .replace(/^,\s*/, "")
+    .replace(/,\s*$/, "")
+    .trim();
+
+  return nombreCompleto || "Cliente";
+}
+
 function toSafeCajaMovimiento(movimiento: any): CajaCobradorMovimientoSafe {
   return {
     id: movimiento._id.toString(),
@@ -111,6 +123,75 @@ function toSafeCajaMovimiento(movimiento: any): CajaCobradorMovimientoSafe {
     creadoEn: movimiento.creadoEn?.toISOString?.() || "",
     actualizadoEn: movimiento.actualizadoEn?.toISOString?.() || "",
   };
+}
+
+async function enriquecerMovimientosCaja(
+  movimientos: CajaCobradorMovimientoSafe[],
+) {
+  const clienteIds = [
+    ...new Set(
+      movimientos
+        .map((movimiento) => movimiento.clienteId)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
+
+  const facturaIds = [
+    ...new Set(
+      movimientos
+        .map((movimiento) => movimiento.facturaAsociadaId)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
+
+  const [clientesRaw, facturasRaw] = await Promise.all([
+    clienteIds.length > 0
+      ? Cliente.find({ _id: { $in: clienteIds } })
+          .select("nombre apellido dni")
+          .lean()
+      : [],
+
+    facturaIds.length > 0
+      ? MovimientoFinanciero.find({ _id: { $in: facturaIds } })
+          .select("numeroComprobante")
+          .lean()
+      : [],
+  ]);
+
+  const clientesMap = new Map<string, any>(
+    clientesRaw.map((cliente: any) => [cliente._id.toString(), cliente]),
+  );
+
+  const facturasMap = new Map<string, any>(
+    facturasRaw.map((factura: any) => [factura._id.toString(), factura]),
+  );
+
+  return movimientos.map((movimiento) => {
+    const cliente = movimiento.clienteId
+      ? clientesMap.get(movimiento.clienteId)
+      : null;
+
+    const factura = movimiento.facturaAsociadaId
+      ? facturasMap.get(movimiento.facturaAsociadaId)
+      : null;
+
+    const clienteNombre = cliente ? getClienteNombreCompleto(cliente) : "";
+    const clienteDni = cliente?.dni ? String(cliente.dni) : "";
+    const numeroFactura = factura?.numeroComprobante
+      ? String(factura.numeroComprobante)
+      : "";
+
+    return {
+      ...movimiento,
+      clienteNombre,
+      nombreCliente: clienteNombre,
+      nombreCompletoCliente: clienteNombre,
+      clienteDni,
+      dniCliente: clienteDni,
+      numeroFactura,
+      facturaNumero: numeroFactura,
+    };
+  });
 }
 
 function toSafeCodigo(codigo: any): CodigoCierreCajaSafe {
@@ -158,16 +239,22 @@ function formatMoney(value: number) {
   }).format(value || 0);
 }
 
-async function obtenerLimiteCajaCobrador(cobradorId: string) {
+async function obtenerDatosCajaCobrador(cobradorId: string) {
   const cobradorRaw = await Usuario.findById(cobradorId)
     .select("limiteCajaCobrador rol")
     .lean();
 
   if (!cobradorRaw || cobradorRaw.rol !== "cobrador") {
-    return 100000;
+    return null;
   }
 
-  return Math.max(Number(cobradorRaw.limiteCajaCobrador || 100000), 100000);
+  const limiteCajaCobrador = Number(cobradorRaw.limiteCajaCobrador ?? 100000);
+
+  return {
+    limiteCajaCobrador: Number.isFinite(limiteCajaCobrador)
+      ? limiteCajaCobrador
+      : 100000,
+  };
 }
 
 async function obtenerSaldoActualCliente(clienteId: string) {
@@ -209,7 +296,8 @@ export async function obtenerCajaCobradorResumen(
     .sort({ creadoEn: -1 })
     .lean();
 
-  const movimientos = movimientosRaw.map(toSafeCajaMovimiento);
+  const movimientosBase = movimientosRaw.map(toSafeCajaMovimiento);
+  const movimientos = await enriquecerMovimientosCaja(movimientosBase);
 
   const totalCobrado = movimientos
     .filter((movimiento) => movimiento.tipoMovimiento === "cobro")
@@ -399,20 +487,28 @@ export async function registrarPagoCobrador(
     };
   }
 
-  const [saldoActualCaja, limiteCajaCobrador] = await Promise.all([
+  const [saldoActualCaja, datosCajaCobrador] = await Promise.all([
     obtenerSaldoCajaCobrador(cobrador.userId),
-    obtenerLimiteCajaCobrador(cobrador.userId),
+    obtenerDatosCajaCobrador(cobrador.userId),
   ]);
 
+  if (!datosCajaCobrador) {
+    return {
+      ok: false,
+      message: "Cobrador no encontrado o sin permisos para registrar pagos.",
+    };
+  }
+
+  const { limiteCajaCobrador } = datosCajaCobrador;
   const saldoCajaProyectado = saldoActualCaja + importe;
 
   if (saldoCajaProyectado > limiteCajaCobrador) {
-  return {
-    ok: false,
-    message:
-      "No se puede registrar este cobro porque tu caja alcanzó el límite operativo permitido. Realizá el cierre de caja correspondiente antes de continuar.",
-  };
-}
+    return {
+      ok: false,
+      message:
+        "No se puede registrar este cobro porque tu caja alcanzó el límite operativo permitido. Realizá el cierre de caja correspondiente antes de continuar.",
+    };
+  }
 
   const saldoActualCliente = await obtenerSaldoActualCliente(clienteId);
   const nuevoSaldoCliente = saldoActualCliente - importe;
@@ -454,7 +550,9 @@ export async function registrarPagoCobrador(
     firmaVerificacion,
   });
 
-  const nuevoSaldoCaja = saldoActualCaja + importe;
+  const clienteNombre = getClienteNombreCompleto(cliente);
+  const clienteDni = cliente.dni || "-";
+  const nuevoSaldoCaja = saldoCajaProyectado;
 
   await CajaCobrador.create({
     cobradorId: cobrador.userId,
@@ -464,7 +562,7 @@ export async function registrarPagoCobrador(
     facturaAsociadaId,
     importe,
     saldoCaja: nuevoSaldoCaja,
-    descripcion: `Cobro a cliente DNI ${cliente.dni || "-"} - ${concepto}`,
+    descripcion: `Cobro a cliente ${clienteNombre} DNI ${clienteDni} - ${concepto}`,
     observacion: observacion?.trim() || "",
   });
 

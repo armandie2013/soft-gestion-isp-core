@@ -1,13 +1,16 @@
+// src/services/plan.service.ts
+
 import mongoose from "mongoose";
 import { z } from "zod";
 import { connectDB } from "@/lib/db";
 import Plan from "@/models/Plan";
 import type { PlanSafe, PlanStatus, PlanType } from "@/types/plan.types";
 
-const importeFromForm = z.coerce
+const importeEnteroFromForm = z.coerce
   .number({
     message: "El importe debe ser un número válido.",
   })
+  .int("El importe no puede tener decimales.")
   .min(0, "El importe no puede ser negativo.");
 
 export const crearPlanSchema = z.object({
@@ -30,7 +33,7 @@ export const crearPlanSchema = z.object({
     .min(2, "El detalle debe tener al menos 2 caracteres.")
     .max(300, "El detalle no puede superar los 300 caracteres."),
 
-  importe: importeFromForm,
+  importe: importeEnteroFromForm,
 
   estado: z.enum(["activo", "inactivo"], {
     message: "Estado inválido.",
@@ -53,6 +56,25 @@ function validarObjectId(id: string) {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
+function normalizarOrden(value: string) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function ordenarPlanes(a: PlanSafe, b: PlanSafe) {
+  if (a.estado !== b.estado) {
+    return a.estado === "activo" ? -1 : 1;
+  }
+
+  const nombreA = normalizarOrden(a.nombre);
+  const nombreB = normalizarOrden(b.nombre);
+
+  return nombreA.localeCompare(nombreB, "es");
+}
+
 function toSafePlan(plan: any): PlanSafe {
   return {
     id: plan._id.toString(),
@@ -69,17 +91,21 @@ function toSafePlan(plan: any): PlanSafe {
 export async function obtenerPlanes() {
   await connectDB();
 
-  const planes = await Plan.find().sort({ creadoEn: -1 }).lean();
+  const planes = await Plan.find().lean();
 
-  return planes.map(toSafePlan);
+  return planes.map(toSafePlan).sort(ordenarPlanes);
 }
 
 export async function obtenerPlanesActivos() {
   await connectDB();
 
-  const planes = await Plan.find({ estado: "activo" }).sort({ nombre: 1 }).lean();
+  const planes = await Plan.find({ estado: "activo" }).lean();
 
-  return planes.map(toSafePlan);
+  return planes
+    .map(toSafePlan)
+    .sort((a, b) =>
+      normalizarOrden(a.nombre).localeCompare(normalizarOrden(b.nombre), "es"),
+    );
 }
 
 export async function obtenerPlanPorId(id: string) {
@@ -115,7 +141,7 @@ export async function crearPlan(input: CrearPlanInput) {
   const nombreNormalizado = nombre.trim();
 
   const existe = await Plan.findOne({
-    nombre: nombreNormalizado,
+    nombre: new RegExp(`^${nombreNormalizado}$`, "i"),
   }).lean();
 
   if (existe) {
@@ -172,7 +198,7 @@ export async function actualizarPlan(input: ActualizarPlanInput) {
   const nombreNormalizado = nombre.trim();
 
   const existeNombre = await Plan.findOne({
-    nombre: nombreNormalizado,
+    nombre: new RegExp(`^${nombreNormalizado}$`, "i"),
     _id: { $ne: id },
   }).lean();
 

@@ -1,4 +1,4 @@
-// src/components/forms/EditarPlanForm.tsx
+// src/components/forms/CrearPlanForm.tsx
 
 "use client";
 
@@ -8,15 +8,10 @@ import { useFormState, useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { FileText, Loader2, RadioTower, Save, Wifi } from "lucide-react";
 import {
-  actualizarPlanAction,
+  crearPlanAction,
   type PlanActionState,
 } from "@/actions/plan.actions";
 import { CurrencyInput } from "@/components/forms/CurrencyInput";
-import type { PlanSafe } from "@/types/plan.types";
-
-type EditarPlanFormProps = {
-  plan: PlanSafe;
-};
 
 const initialState: PlanActionState = {
   ok: false,
@@ -40,7 +35,7 @@ function SubmitButton() {
       ) : (
         <>
           <Save className="h-3.5 w-3.5" />
-          Guardar cambios
+          Guardar plan
         </>
       )}
     </button>
@@ -109,20 +104,19 @@ function FormSection({
 const inputClass =
   "h-9 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950/60 dark:text-white";
 
-export function EditarPlanForm({ plan }: EditarPlanFormProps) {
+export function CrearPlanForm() {
   const router = useRouter();
-  const [state, formAction] = useFormState(actualizarPlanAction, initialState);
+  const [state, formAction] = useFormState(crearPlanAction, initialState);
 
   useEffect(() => {
     if (state.ok) {
+      router.push("/planes");
       router.refresh();
     }
   }, [router, state.ok]);
 
   return (
     <form action={formAction} className="space-y-4">
-      <input type="hidden" name="id" value={plan.id} />
-
       <FormSection
         icon={<Wifi className="h-4 w-4" />}
         eyebrow="Identificación"
@@ -137,7 +131,6 @@ export function EditarPlanForm({ plan }: EditarPlanFormProps) {
               id="nombre"
               name="nombre"
               type="text"
-              defaultValue={plan.nombre}
               placeholder="Ej: Plan Estándar + TV"
               className={inputClass}
             />
@@ -149,7 +142,7 @@ export function EditarPlanForm({ plan }: EditarPlanFormProps) {
             <select
               id="tipo"
               name="tipo"
-              defaultValue={plan.tipo}
+              defaultValue="residencial"
               className={inputClass}
             >
               <option value="residencial">Residencial</option>
@@ -167,7 +160,6 @@ export function EditarPlanForm({ plan }: EditarPlanFormProps) {
               id="detalle"
               name="detalle"
               rows={3}
-              defaultValue={plan.detalle}
               placeholder="Detalle del servicio incluido en el plan"
               className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs leading-5 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600"
             />
@@ -188,7 +180,7 @@ export function EditarPlanForm({ plan }: EditarPlanFormProps) {
             <CurrencyInput
               id="importe"
               name="importe"
-              defaultValue={plan.importe}
+              defaultValue=""
               className={inputClass}
             />
           </div>
@@ -199,7 +191,7 @@ export function EditarPlanForm({ plan }: EditarPlanFormProps) {
             <select
               id="estado"
               name="estado"
-              defaultValue={plan.estado}
+              defaultValue="activo"
               className={inputClass}
             >
               <option value="activo">Activo</option>
@@ -216,9 +208,9 @@ export function EditarPlanForm({ plan }: EditarPlanFormProps) {
         description="Esta información ayuda a mantener consistencia operativa."
       >
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300">
-          Si dejás el plan inactivo, no aparecerá para nuevas altas de clientes.
-          Los clientes que ya lo tienen asignado seguirán mostrando este plan en
-          su ficha.
+          El plan activo aparecerá disponible para nuevas altas de clientes. Si
+          lo dejás inactivo, quedará guardado pero no se podrá seleccionar en
+          nuevos clientes.
         </div>
       </FormSection>
 

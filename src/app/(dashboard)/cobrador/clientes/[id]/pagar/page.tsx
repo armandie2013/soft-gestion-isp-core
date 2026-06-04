@@ -1,21 +1,27 @@
+// src/app/(dashboard)/cobrador/clientes/[id]/pagar/page.tsx
+
 import { notFound, redirect } from "next/navigation";
 import { CreditCard, FileText, UserRound, WalletCards } from "lucide-react";
 import { CobroForm } from "@/components/forms/CobroForm";
 import { Badge } from "@/components/ui/Badge";
-import { getCurrentUser } from "@/lib/current-user";
 import { obtenerResumenClienteParaCobrador } from "@/services/cobrador.service";
-import { obtenerCajaCobradorResumen } from "@/services/cobro.service";
-import { obtenerUsuarioPorId } from "@/services/usuario.service";
 
 type RegistrarPagoPageProps = {
   params: {
     id: string;
+  };
+  searchParams?: {
+    dni?: string;
   };
 };
 
 export const metadata = {
   title: "Registrar pago",
 };
+
+function limpiarDni(value?: string) {
+  return String(value || "").replace(/\D/g, "").slice(0, 12);
+}
 
 function formatMoney(value: number) {
   return new Intl.NumberFormat("es-AR", {
@@ -33,29 +39,21 @@ function getEstadoBadgeVariant(estado: string) {
 
 export default async function RegistrarPagoPage({
   params,
+  searchParams,
 }: RegistrarPagoPageProps) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.rol !== "cobrador") {
-    redirect(`/${user.rol}`);
-  }
-
-  const [resumen, cajaCobrador, usuarioCobrador] = await Promise.all([
-    obtenerResumenClienteParaCobrador(params.id),
-    obtenerCajaCobradorResumen(user.userId),
-    obtenerUsuarioPorId(user.userId),
-  ]);
+  const resumen = await obtenerResumenClienteParaCobrador(params.id);
 
   if (!resumen) {
     notFound();
   }
 
   const { cliente, periodosPendientes, totalPendiente } = resumen;
-  const limiteCajaCobrador = usuarioCobrador?.limiteCajaCobrador || 100000;
+  const dniHabilitante = limpiarDni(searchParams?.dni);
+
+  if (!dniHabilitante || dniHabilitante !== cliente.dni) {
+    redirect("/cobrador/registrar-pago");
+  }
+
   const tieneDeuda = totalPendiente > 0;
 
   return (
@@ -150,25 +148,24 @@ export default async function RegistrarPagoPage({
         <CobroForm
           clienteId={cliente.id}
           periodosPendientes={periodosPendientes}
-          saldoCajaActual={cajaCobrador.saldoActual}
-          limiteCajaCobrador={limiteCajaCobrador}
         />
       </div>
 
-      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
+      <div className="rounded-[1.6rem] border border-cyan-200 bg-cyan-50 p-4 text-sm leading-6 text-cyan-900 dark:border-cyan-900/70 dark:bg-cyan-950/30 dark:text-cyan-200 sm:p-5">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 dark:bg-slate-950/60 dark:text-slate-300">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 dark:bg-cyan-950/50 dark:text-cyan-300">
             <FileText className="h-5 w-5" />
           </div>
 
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              Información
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
+              Circuito validado
             </p>
 
-            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Luego de registrar el pago, el movimiento quedará asentado en la
-              cuenta corriente del cliente y también en tu caja de cobrador.
+            <p className="mt-1">
+              Este pago fue habilitado desde el circuito seguro por DNI exacto.
+              Luego de registrar el pago, quedará asentado en la cuenta corriente
+              del cliente y también en tu caja de cobrador.
             </p>
           </div>
         </div>

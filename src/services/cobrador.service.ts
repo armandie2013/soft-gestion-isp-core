@@ -1,3 +1,5 @@
+// src/services/cobrador.service.ts
+
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import Cliente from "@/models/Cliente";
@@ -6,12 +8,34 @@ import { obtenerEstadoCuentaCliente } from "@/services/movimiento-financiero.ser
 import type { ClienteSafe, ClienteStatus } from "@/types/cliente.types";
 import type { PlanSafe, PlanStatus, PlanType } from "@/types/plan.types";
 
+export type BuscarClientesCobradorFiltros = {
+  q?: string;
+  nombre?: string;
+  apellido?: string;
+  dni?: string;
+  numeroCliente?: string;
+  localidad?: string;
+  provincia?: string;
+};
+
 function validarObjectId(id: string) {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
 function limpiarDni(dni: string) {
-  return dni.replace(/\D/g, "").trim();
+  return String(dni || "").replace(/\D/g, "").trim();
+}
+
+function limpiarTexto(value?: string) {
+  return String(value || "").trim();
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function crearRegexTexto(value: string) {
+  return new RegExp(escapeRegExp(value), "i");
 }
 
 function toSafePlan(plan: any): PlanSafe | null {
@@ -123,12 +147,102 @@ export async function obtenerResumenClienteParaCobrador(clienteId: string) {
   };
 }
 
+export async function buscarClientesParaCobrador(
+  filtros: BuscarClientesCobradorFiltros,
+) {
+  const q = limpiarTexto(filtros.q);
+  const nombre = limpiarTexto(filtros.nombre);
+  const apellido = limpiarTexto(filtros.apellido);
+  const dni = limpiarDni(filtros.dni || "");
+  const numeroCliente = limpiarTexto(filtros.numeroCliente);
+  const localidad = limpiarTexto(filtros.localidad);
+  const provincia = limpiarTexto(filtros.provincia);
+
+  const andConditions: any[] = [];
+
+  if (q) {
+    const qDigits = limpiarDni(q);
+    const orConditions: any[] = [];
+
+    if (qDigits.length >= 3) {
+      orConditions.push({
+        dni: qDigits.length >= 7
+          ? qDigits
+          : new RegExp(`${escapeRegExp(qDigits)}$`),
+      });
+
+      const numeroClienteValue = Number(qDigits);
+
+      if (Number.isInteger(numeroClienteValue) && numeroClienteValue > 0) {
+        orConditions.push({ numeroCliente: numeroClienteValue });
+      }
+    }
+
+    if (q.length >= 2) {
+      const textRegex = crearRegexTexto(q);
+
+      orConditions.push(
+        { nombre: textRegex },
+        { apellido: textRegex },
+        { localidad: textRegex },
+        { provincia: textRegex },
+        { direccion: textRegex },
+      );
+    }
+
+    if (orConditions.length > 0) {
+      andConditions.push({ $or: orConditions });
+    }
+  }
+
+  if (nombre.length >= 2) {
+    andConditions.push({ nombre: crearRegexTexto(nombre) });
+  }
+
+  if (apellido.length >= 2) {
+    andConditions.push({ apellido: crearRegexTexto(apellido) });
+  }
+
+  if (dni.length >= 3) {
+    andConditions.push({
+      dni: dni.length >= 7 ? dni : new RegExp(`${escapeRegExp(dni)}$`),
+    });
+  }
+
+  if (numeroCliente) {
+    const numeroClienteValue = Number(numeroCliente.replace(/\D/g, ""));
+
+    if (Number.isInteger(numeroClienteValue) && numeroClienteValue > 0) {
+      andConditions.push({ numeroCliente: numeroClienteValue });
+    }
+  }
+
+  if (localidad.length >= 2) {
+    andConditions.push({ localidad: crearRegexTexto(localidad) });
+  }
+
+  if (provincia.length >= 2) {
+    andConditions.push({ provincia: crearRegexTexto(provincia) });
+  }
+
+  if (andConditions.length === 0) {
+    return [];
+  }
+
+  await connectDB();
+
+  const clientes = await Cliente.find({ $and: andConditions })
+    .populate({ path: "planId", model: Plan })
+    .sort({ apellido: 1, nombre: 1, numeroCliente: 1 })
+    .limit(30)
+    .lean();
+
+  return clientes.map(toSafeCliente);
+}
+
 /**
  * Alias usado por la vista:
- * src/app/(dashboard)/cobrador/buscar-cliente/page.tsx
- *
- * Lo dejamos separado para no romper las funciones que ya usaban
- * buscarClientePorDniParaCobrador().
+ * src/app/(dashboard)/cobrador/registrar-pago/page.tsx
  */
 export async function buscarClienteParaCobradorPorDni(dni: string) {
   return buscarClientePorDniParaCobrador(dni);

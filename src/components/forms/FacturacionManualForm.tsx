@@ -1,13 +1,23 @@
+// src/components/forms/FacturacionManualForm.tsx
+
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { Loader2, ReceiptText } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  ReceiptText,
+  ShieldAlert,
+} from "lucide-react";
 import {
   generarFacturacionManualAction,
   type FacturacionManualActionState,
 } from "@/actions/movimiento-financiero.actions";
-import { AlertBox } from "@/components/ui/AlertBox";
-import { FormField } from "@/components/ui/FormField";
+
+type FacturacionManualFormProps = {
+  defaultMes: number;
+  defaultAnio: number;
+};
 
 const initialState: FacturacionManualActionState = {
   ok: false,
@@ -38,16 +48,16 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-transparent bg-[var(--app-primary)] px-4 text-sm font-semibold text-[var(--app-primary-foreground)] shadow-sm transition hover:bg-[var(--app-primary-hover)] disabled:cursor-not-allowed disabled:opacity-70 active:scale-[0.99] sm:w-auto"
+      className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-cyan-600 px-3 text-xs font-medium text-white shadow-lg shadow-cyan-950/10 transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-70 active:scale-[0.99] dark:bg-cyan-500 dark:text-cyan-950 dark:hover:bg-cyan-400 sm:w-auto"
     >
       {pending ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Generando facturación...
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          Generando
         </>
       ) : (
         <>
-          <ReceiptText className="h-4 w-4" />
+          <ReceiptText className="h-3.5 w-3.5" />
           Generar facturación
         </>
       )}
@@ -55,29 +65,47 @@ function SubmitButton() {
   );
 }
 
-export function FacturacionManualForm() {
+export function FacturacionManualForm({
+  defaultMes,
+  defaultAnio,
+}: FacturacionManualFormProps) {
   const [state, formAction] = useFormState(
     generarFacturacionManualAction,
     initialState,
   );
 
-  const now = new Date();
-
   return (
-    <form action={formAction} className="space-y-5">
-      <AlertBox variant="warning" title="Importante">
-        Esta acción generará una factura mensual para todos los clientes activos
-        con plan contratado. Si un cliente ya tiene factura para el mes y año
-        seleccionado, se omitirá para evitar duplicados.
-      </AlertBox>
+    <form action={formAction} className="space-y-4">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300">
+        <div className="flex gap-2">
+          <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Mes a facturar" htmlFor="referenciaMes">
+          <div>
+            <p className="font-medium">Importante</p>
+
+            <p className="mt-1">
+              Esta acción generará una factura mensual para todos los clientes
+              activos con plan contratado. Si un cliente ya tiene factura para el
+              mes y año seleccionado, se omitirá para evitar duplicados.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label
+            htmlFor="referenciaMes"
+            className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400"
+          >
+            Mes a facturar
+          </label>
+
           <select
             id="referenciaMes"
             name="referenciaMes"
-            defaultValue={now.getMonth() + 1}
-            className="app-input"
+            defaultValue={defaultMes}
+            className="h-9 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950/60 dark:text-white"
           >
             {meses.map((mes) => (
               <option key={mes.value} value={mes.value}>
@@ -85,40 +113,66 @@ export function FacturacionManualForm() {
               </option>
             ))}
           </select>
-        </FormField>
+        </div>
 
-        <FormField label="Año" htmlFor="referenciaAnio">
+        <div>
+          <label
+            htmlFor="referenciaAnio"
+            className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400"
+          >
+            Año
+          </label>
+
           <input
             id="referenciaAnio"
             name="referenciaAnio"
             type="number"
-            defaultValue={now.getFullYear()}
-            className="app-input"
+            defaultValue={defaultAnio}
+            className="h-9 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950/60 dark:text-white"
           />
-        </FormField>
+        </div>
       </div>
 
-      <FormField label="Observación" htmlFor="observacion">
+      <div>
+        <label
+          htmlFor="observacion"
+          className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400"
+        >
+          Observación
+        </label>
+
         <textarea
           id="observacion"
           name="observacion"
           rows={3}
           placeholder="Opcional"
-          className="app-textarea"
+          className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs leading-5 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600"
         />
-      </FormField>
+      </div>
 
       {state.message ? (
-        <AlertBox variant={state.ok ? "success" : "danger"}>
-          <p>{state.message}</p>
+        <div
+          className={`rounded-2xl border p-3 text-xs leading-5 ${
+            state.ok
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300"
+              : "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300"
+          }`}
+        >
+          <div className="flex gap-2">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
 
-          {state.ok ? (
-            <p className="mt-2 text-xs">
-              Generadas: {state.generadas || 0} · Omitidas:{" "}
-              {state.omitidas || 0}
-            </p>
-          ) : null}
-        </AlertBox>
+            <div>
+              <p>{state.message}</p>
+
+              {state.ok ? (
+                <p className="mt-1 text-[11px]">
+                  Generadas: {state.generadas || 0} · Omitidas:{" "}
+                  {state.omitidas || 0}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </div>
       ) : null}
 
       <div className="flex justify-end">

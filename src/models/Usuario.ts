@@ -1,3 +1,5 @@
+// src/models/Usuario.ts
+
 import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
 import { USER_ROLES, USER_STATUSES } from "@/types/usuario.types";
 
@@ -61,6 +63,12 @@ const UsuarioSchema = new Schema(
       index: true,
     },
 
+    limiteCajaCobrador: {
+      type: Number,
+      default: undefined,
+      min: [100000, "El límite mínimo de caja es $ 100.000,00."],
+    },
+
     debeCambiarPassword: {
       type: Boolean,
       default: false,
@@ -73,13 +81,6 @@ const UsuarioSchema = new Schema(
       ref: "Cliente",
       default: null,
       index: true,
-    },
-
-    limiteCajaCobrador: {
-      type: Number,
-      required: true,
-      default: 100000,
-      min: [100000, "El límite mínimo de caja del cobrador es $100.000."],
     },
 
     ultimoAcceso: {

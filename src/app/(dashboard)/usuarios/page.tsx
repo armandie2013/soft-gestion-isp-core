@@ -8,7 +8,6 @@ import {
   Search,
   ShieldCheck,
   UserRound,
-  UserPlus,
   UsersRound,
   WalletCards,
 } from "lucide-react";
@@ -38,6 +37,7 @@ type UsuariosPageProps = {
 
 type StatCardProps = {
   title: string;
+  shortTitle?: string;
   value: string;
   description: string;
   icon: typeof UsersRound;
@@ -57,30 +57,32 @@ const toneClasses = {
 
 function StatCard({
   title,
+  shortTitle,
   value,
   description,
   icon: Icon,
   tone,
 }: StatCardProps) {
   return (
-    <div className="flex h-full min-h-[122px] flex-col justify-between rounded-[1.35rem] border border-slate-200 bg-white/85 p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/75">
-      <div className="flex items-start gap-3">
+    <div className="flex h-full min-h-[78px] flex-col justify-between rounded-2xl border border-slate-200 bg-white/85 p-2.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/75 sm:min-h-[122px] sm:rounded-[1.35rem] sm:p-3.5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${toneClasses[tone]}`}
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10 sm:rounded-2xl ${toneClasses[tone]}`}
         >
           <Icon className="h-4 w-4" />
         </div>
 
         <div className="min-w-0">
-          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
-            {title}
+          <p className="truncate text-[9px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400 sm:text-[10px] sm:tracking-[0.15em]">
+            <span className="sm:hidden">{shortTitle || title}</span>
+            <span className="hidden sm:inline">{title}</span>
           </p>
 
-          <p className="mt-1 text-xl font-medium tracking-tight text-slate-950 dark:text-white">
+          <p className="mt-0.5 text-lg font-medium leading-none tracking-tight text-slate-950 dark:text-white sm:mt-1 sm:text-xl">
             {value}
           </p>
 
-          <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
+          <p className="mt-1 hidden text-xs leading-5 text-slate-600 dark:text-slate-400 sm:block">
             {description}
           </p>
         </div>
@@ -133,12 +135,6 @@ function filtrarUsuarios({
 }
 
 const quickActions = [
-  {
-    label: "Registrar usuario",
-    description: "Crear una cuenta desde el registro",
-    href: "/registro",
-    icon: UserPlus,
-  },
   {
     label: "Ver administradores",
     description: "Filtrar usuarios con acceso total",
@@ -209,9 +205,10 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
 
   return (
     <PageShell maxWidth="wide">
-      <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-4 items-stretch gap-2 sm:grid-cols-2 sm:gap-3 xl:grid-cols-5">
         <StatCard
           title="Usuarios totales"
+          shortTitle="Usuarios"
           value={String(totalUsuarios)}
           description="Todos los usuarios registrados."
           icon={UsersRound}
@@ -220,6 +217,7 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
 
         <StatCard
           title="Administradores"
+          shortTitle="Admin"
           value={String(totalAdmins)}
           description="Acceso completo al sistema."
           icon={ShieldCheck}
@@ -228,6 +226,7 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
 
         <StatCard
           title="Cobradores"
+          shortTitle="Cobr."
           value={String(totalCobradores)}
           description="Usuarios con cobranza asignada."
           icon={WalletCards}
@@ -242,19 +241,21 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
           tone="violet"
         />
 
-        <StatCard
-          title="Pendientes"
-          value={String(totalCambioRequerido)}
-          description="Usuarios con cambio requerido."
-          icon={Clock3}
-          tone={totalCambioRequerido > 0 ? "red" : "emerald"}
-        />
+        <div className="hidden xl:block">
+          <StatCard
+            title="Pendientes"
+            value={String(totalCambioRequerido)}
+            description="Usuarios con cambio requerido."
+            icon={Clock3}
+            tone={totalCambioRequerido > 0 ? "red" : "emerald"}
+          />
+        </div>
       </div>
 
       <DashboardGrid>
         <DashboardMain>
           <div className="rounded-[1.45rem] border border-slate-200 bg-white/80 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
-            <div className="mb-2.5 flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="mb-2.5 flex flex-col gap-2.5">
               <div>
                 <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
                   Usuarios
@@ -263,15 +264,12 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
                 <h1 className="mt-0.5 text-base font-medium tracking-tight text-slate-950 dark:text-white">
                   Gestión de usuarios
                 </h1>
-              </div>
 
-              <Link
-                href="/registro"
-                className="inline-flex h-8 items-center justify-center gap-2 rounded-lg bg-cyan-600 px-3 text-[11px] font-medium text-white shadow-lg shadow-cyan-950/10 transition hover:bg-cyan-700 active:scale-[0.99] dark:bg-cyan-500 dark:text-cyan-950 dark:hover:bg-cyan-400"
-              >
-                <UserPlus className="h-3.5 w-3.5" />
-                Registrar usuario
-              </Link>
+                <p className="mt-1 hidden max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400 sm:block">
+                  Administrá roles, estado de acceso y seguridad de los usuarios
+                  que se registraron en el sistema.
+                </p>
+              </div>
             </div>
 
             <form
@@ -352,7 +350,7 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
               </p>
 
               <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
-                Atajos para administrar usuarios
+                Filtros rápidos de usuarios
               </h2>
             </div>
 

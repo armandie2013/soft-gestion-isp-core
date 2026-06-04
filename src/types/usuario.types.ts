@@ -1,3 +1,5 @@
+// src/types/usuario.types.ts
+
 export const USER_ROLES = ["admin", "cobrador", "cliente"] as const;
 
 export type UserRole = (typeof USER_ROLES)[number];
@@ -14,10 +16,9 @@ export type UsuarioSafe = {
   email: string;
   rol: UserRole;
   estado: UserStatus;
+  limiteCajaCobrador?: number | null;
   debeCambiarPassword: boolean;
-  limiteCajaCobrador: number;
   clienteId?: string | null;
   creadoEn: string;
   actualizadoEn: string;
-  ultimoAcceso?: string | null;
 };
