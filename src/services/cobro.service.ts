@@ -25,6 +25,8 @@ import type {
   CodigoCierreCajaSafe,
 } from "@/types/cobro.types";
 
+const LIMITE_CAJA_MINIMO = 100000;
+
 export const registrarPagoCobradorSchema = z.object({
   clienteId: z
     .string()
@@ -248,12 +250,14 @@ async function obtenerDatosCajaCobrador(cobradorId: string) {
     return null;
   }
 
-  const limiteCajaCobrador = Number(cobradorRaw.limiteCajaCobrador ?? 100000);
+  const limiteCajaCobrador = Number(
+    cobradorRaw.limiteCajaCobrador ?? LIMITE_CAJA_MINIMO,
+  );
 
   return {
     limiteCajaCobrador: Number.isFinite(limiteCajaCobrador)
-      ? limiteCajaCobrador
-      : 100000,
+      ? Math.max(limiteCajaCobrador, LIMITE_CAJA_MINIMO)
+      : LIMITE_CAJA_MINIMO,
   };
 }
 
@@ -314,6 +318,30 @@ export async function obtenerCajaCobradorResumen(
     totalCierres,
     saldoActual,
     movimientos,
+  };
+}
+
+export async function obtenerContextoCobroCobrador(cobradorId: string) {
+  await connectDB();
+
+  const [saldoCajaActual, datosCajaCobrador] = await Promise.all([
+    obtenerSaldoCajaCobrador(cobradorId),
+    obtenerDatosCajaCobrador(cobradorId),
+  ]);
+
+  if (!datosCajaCobrador) {
+    return null;
+  }
+
+  const limiteCajaCobrador = Math.max(
+    Number(datosCajaCobrador.limiteCajaCobrador || LIMITE_CAJA_MINIMO),
+    LIMITE_CAJA_MINIMO,
+  );
+
+  return {
+    saldoCajaActual,
+    limiteCajaCobrador,
+    disponibleCaja: Math.max(limiteCajaCobrador - saldoCajaActual, 0),
   };
 }
 

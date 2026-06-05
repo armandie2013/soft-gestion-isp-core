@@ -18,7 +18,10 @@ import {
   WalletCards,
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/current-user";
-import { obtenerCajaCobradorResumen } from "@/services/cobro.service";
+import {
+  obtenerCajaCobradorResumen,
+  obtenerContextoCobroCobrador,
+} from "@/services/cobro.service";
 import { PageShell } from "@/components/ui/PageShell";
 import {
   DashboardAside,
@@ -267,7 +270,7 @@ function StatCard({
   tone,
 }: StatCardProps) {
   return (
-    <div className="flex h-full min-h-[88px] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-300 bg-white p-3 shadow-sm shadow-slate-200/70 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none xl:min-h-[96px] xl:p-3">
+    <div className="flex h-full min-h-[88px] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-300 bg-white p-3 shadow-sm shadow-slate-200/70 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none xl:min-h-[96px]">
       <div className="flex min-w-0 items-start gap-3">
         <div
           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${toneClasses[tone]}`}
@@ -297,13 +300,15 @@ function StatCard({
 function CajaPrincipalCard({
   saldoActual,
   totalCobradoHoy,
-  ultimoCierre,
+  limiteCajaCobrador,
+  disponibleCaja,
 }: {
   saldoActual: number;
   totalCobradoHoy: number;
-  ultimoCierre?: CajaCobradorMovimientoSafe;
+  limiteCajaCobrador: number;
+  disponibleCaja: number;
 }) {
-  const cajaAbierta = saldoActual > 0;
+  const disponiblePositivo = disponibleCaja > 0;
 
   return (
     <div className="relative overflow-hidden rounded-[1.45rem] border border-cyan-400 bg-gradient-to-br from-white via-cyan-50 to-sky-100 p-4 shadow-md shadow-cyan-900/10 dark:border-cyan-500/50 dark:bg-slate-900/80 dark:bg-none dark:shadow-cyan-950/30 xl:p-4">
@@ -357,28 +362,27 @@ function CajaPrincipalCard({
 
           <div className="min-w-0 border-x border-cyan-200 px-2 dark:border-slate-800">
             <p className="truncate text-[9px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-              Último cierre
+              Límite caja
             </p>
 
             <p className="mt-1 truncate text-xs font-medium text-slate-950 dark:text-white xl:text-sm">
-              {formatDateTime(ultimoCierre?.creadoEn)}
+              {formatMoney(limiteCajaCobrador)}
             </p>
           </div>
 
           <div className="min-w-0 pl-1">
             <p className="truncate text-[9px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-              Estado de caja
+              Disponible
             </p>
 
             <p
-              className={`mt-1 inline-flex items-center gap-1.5 truncate text-xs font-medium xl:text-sm ${
-                cajaAbierta
+              className={`mt-1 truncate text-xs font-medium xl:text-sm ${
+                disponiblePositivo
                   ? "text-emerald-700 dark:text-emerald-300"
-                  : "text-slate-500 dark:text-slate-400"
+                  : "text-red-700 dark:text-red-300"
               }`}
             >
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
-              {cajaAbierta ? "Abierta" : "Sin saldo"}
+              {formatMoney(disponibleCaja)}
             </p>
           </div>
         </div>
@@ -518,7 +522,13 @@ export default async function CobradorDashboardPage() {
     redirect("/login");
   }
 
-  const caja = await obtenerCajaCobradorResumen(cobradorId);
+  const [caja, contextoCobro] = await Promise.all([
+    obtenerCajaCobradorResumen(cobradorId),
+    obtenerContextoCobroCobrador(cobradorId),
+  ]);
+
+  const limiteCajaCobrador = contextoCobro?.limiteCajaCobrador || 100000;
+  const disponibleCaja = Math.max(limiteCajaCobrador - caja.saldoActual, 0);
 
   const movimientos = caja.movimientos || [];
   const cobros = movimientos.filter(
@@ -560,12 +570,12 @@ export default async function CobradorDashboardPage() {
         />
 
         <StatCard
-          title="Disponible para cierre"
-          shortTitle="Caja"
-          value={formatCompactMoney(caja.saldoActual)}
-          description="Saldo actual pendiente de cierre."
+          title="Disponible para cobrar"
+          shortTitle="Disponible"
+          value={formatCompactMoney(disponibleCaja)}
+          description="Margen disponible antes del cierre de caja."
           icon={WalletCards}
-          tone={caja.saldoActual > 0 ? "amber" : "emerald"}
+          tone={disponibleCaja > 0 ? "amber" : "red"}
         />
 
         <div className="hidden xl:block">
@@ -584,7 +594,8 @@ export default async function CobradorDashboardPage() {
           <CajaPrincipalCard
             saldoActual={caja.saldoActual}
             totalCobradoHoy={totalCobradoHoy}
-            ultimoCierre={ultimoCierre}
+            limiteCajaCobrador={limiteCajaCobrador}
+            disponibleCaja={disponibleCaja}
           />
 
           <div className="rounded-[1.35rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-200/80 dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-none">
@@ -715,6 +726,34 @@ export default async function CobradorDashboardPage() {
               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 dark:border-slate-800">
                 <span className="inline-flex items-center gap-2 text-[11px] text-slate-700 dark:text-slate-300">
                   <Banknote className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+                  Disponible
+                </span>
+
+                <span
+                  className={`text-right text-[11px] font-medium ${
+                    disponibleCaja > 0
+                      ? "text-emerald-700 dark:text-emerald-300"
+                      : "text-red-700 dark:text-red-300"
+                  }`}
+                >
+                  {formatMoney(disponibleCaja)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 dark:border-slate-800">
+                <span className="inline-flex items-center gap-2 text-[11px] text-slate-700 dark:text-slate-300">
+                  <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+                  Límite caja
+                </span>
+
+                <span className="text-right text-[11px] font-medium text-slate-950 dark:text-white">
+                  {formatMoney(limiteCajaCobrador)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 dark:border-slate-800">
+                <span className="inline-flex items-center gap-2 text-[11px] text-slate-700 dark:text-slate-300">
+                  <Banknote className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
                   Cobros del día
                 </span>
 
@@ -807,8 +846,9 @@ export default async function CobradorDashboardPage() {
             <p className="font-medium">Importante</p>
 
             <p className="mt-1">
-              Cuando tu caja tenga saldo, el cierre debe validarse con el código
-              generado por administración.
+              Cuando tu caja alcance el límite disponible, deberás realizar el
+              cierre con el código generado por administración antes de seguir
+              cobrando.
             </p>
           </div>
         </DashboardAside>
