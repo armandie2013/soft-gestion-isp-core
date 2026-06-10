@@ -2188,7 +2188,7 @@ function MobileMovimientosList({
 }: {
   movimientos: Array<{
     id: string;
-    fecha: string;
+    fecha: string | null;
     tipoMovimiento: string;
     detalle: string;
     importe: number;
