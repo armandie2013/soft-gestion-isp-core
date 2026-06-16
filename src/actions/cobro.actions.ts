@@ -182,6 +182,8 @@ import {
 export type CobroActionState = {
   ok: boolean;
   message: string;
+  movimientoId?: string;
+  numeroComprobante?: number;
 };
 
 export type CodigoCierreActionState = {
@@ -307,7 +309,9 @@ export async function registrarPagoCobradorAction(
   );
 
   await registrarAuditLog({
-    action: result.ok ? "COBRO_REGISTRAR_PAGO_SUCCESS" : "COBRO_REGISTRAR_PAGO_FAILED",
+    action: result.ok
+      ? "COBRO_REGISTRAR_PAGO_SUCCESS"
+      : "COBRO_REGISTRAR_PAGO_FAILED",
     resultado: result.ok ? "success" : "failure",
     actor: buildAuditActor(user),
     entidadTipo: "Pago",
