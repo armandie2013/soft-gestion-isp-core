@@ -998,6 +998,7 @@
 
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import type { ReactNode } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -1020,6 +1021,7 @@ import {
   DashboardGrid,
   DashboardMain,
 } from "@/components/ui/DashboardGrid";
+import { CopyDniButton } from "@/components/ui/CopyDniButton";
 import { getCurrentUser } from "@/lib/current-user";
 import { obtenerResumenClienteParaCobrador } from "@/services/cobrador.service";
 
@@ -1162,23 +1164,29 @@ function InfoPill({
   label,
   value,
   icon: Icon,
+  action,
 }: {
   label: string;
   value?: string | number | null;
   icon: LucideIcon;
+  action?: ReactNode;
 }) {
   return (
     <div className="flex min-w-0 items-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 dark:border-slate-800 dark:bg-slate-950/60">
       <Icon className="h-5 w-5 shrink-0 text-cyan-700 dark:text-cyan-300" />
 
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-[9px] font-medium uppercase tracking-[0.13em] text-slate-500 dark:text-slate-400">
           {label}
         </p>
 
-        <p className="mt-1 truncate text-sm font-medium leading-5 text-slate-950 dark:text-white sm:text-base">
-          {value || "-"}
-        </p>
+        <div className="mt-1 flex min-w-0 items-center gap-2">
+          <p className="min-w-0 truncate text-sm font-medium leading-5 text-slate-950 dark:text-white sm:text-base">
+            {value || "-"}
+          </p>
+
+          {action ? <div className="shrink-0">{action}</div> : null}
+        </div>
       </div>
     </div>
   );
@@ -1299,7 +1307,18 @@ function ClienteConfirmadoCard({
 
       <div className="p-4 sm:p-5">
         <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">
-          <InfoPill label="DNI" value={cliente.dni} icon={IdCard} />
+          <InfoPill
+            label="DNI"
+            value={cliente.dni}
+            icon={IdCard}
+            action={
+              <CopyDniButton
+                dni={cliente.dni}
+                iconOnly
+                className="rounded-xl"
+              />
+            }
+          />
 
           <InfoPill
             label="Cliente N°"

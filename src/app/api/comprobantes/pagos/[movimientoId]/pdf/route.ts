@@ -390,7 +390,7 @@ function renderComprobantePagoHtml({
         </div>
 
         <div class="line">
-          <span class="label">Saldo posterior</span>
+          <span class="label">Deuda Actual</span>
           <span class="value">${escapeHtml(
             formatMoney(comprobante.saldoClienteDespuesDelPago),
           )}</span>

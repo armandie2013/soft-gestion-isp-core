@@ -730,7 +730,7 @@ export function CobroForm({
     }
 
     const elapsed = Date.now() - processingStartedAtRef.current;
-    const remaining = Math.max(0, 7000 - elapsed);
+    const remaining = Math.max(0, 10000 - elapsed);
 
     const timer = window.setTimeout(() => {
       setProcesandoPago(false);
@@ -943,7 +943,7 @@ export function CobroForm({
             </h3>
 
             <p className="mx-auto mt-2 max-w-[290px] text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Esperá un momento. Estamos guardando el pago y generando el
+              Esperá un momento. Estamos procesando el pago y generando el
               comprobante.
             </p>
 
