@@ -160,7 +160,7 @@ export default async function ComprobantePagoPage({
               <DataLine label="Concepto" value={comprobante.concepto} />
               <DataLine label="Cobrador" value={comprobante.cobradorNombre} />
               <DataLine
-                label="Saldo posterior"
+                label="Deuda Actual"
                 value={formatMoney(comprobante.saldoClienteDespuesDelPago)}
               />
             </div>
