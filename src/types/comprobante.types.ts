@@ -1,3 +1,74 @@
+// export type ComprobantePagoClienteSafe = {
+//   movimientoId: string;
+//   numeroComprobante: number;
+//   fecha: string;
+
+//   codigoVerificacion: string;
+//   firmaVerificacion: string;
+//   firmaCorta: string;
+//   urlVerificacion: string;
+
+//   clienteId: string;
+//   clienteNumero: number;
+//   clienteNombre: string;
+//   clienteApellido: string;
+//   clienteDni: string;
+//   clienteDireccion: string;
+//   clienteLocalidad: string;
+//   clienteProvincia: string;
+
+//   periodoLabel: string;
+//   facturaNumeroComprobante: number | null;
+//   concepto: string;
+//   importePagado: number;
+//   observacion: string;
+
+//   cobradorId: string;
+//   cobradorNombre: string;
+
+//   saldoClienteDespuesDelPago: number;
+// };
+
+// export type ComprobanteCierreCajaSafe = {
+//   cierreId: string;
+//   fechaCierre: string;
+
+//   cobradorId: string;
+//   cobradorNombre: string;
+//   cobradorEmail: string;
+
+//   importeCerrado: number;
+//   saldoCajaDespuesDelCierre: number;
+
+//   codigo: string;
+//   codigoEstado: string;
+//   codigoGeneradoPor: string;
+//   codigoCreadoEn: string | null;
+//   codigoUsadoEn: string | null;
+
+//   descripcion: string;
+//   observacion: string;
+// };
+
+// export type VerificacionPagoSafe = {
+//   valido: boolean;
+//   mensaje: string;
+
+//   numeroComprobante?: number;
+//   fecha?: string;
+//   codigoVerificacion?: string;
+//   firmaCorta?: string;
+
+//   clienteNombre?: string;
+//   clienteDni?: string;
+
+//   periodoLabel?: string;
+//   facturaNumeroComprobante?: number | null;
+//   concepto?: string;
+//   importePagado?: number;
+//   cobradorNombre?: string;
+// };
+
 export type ComprobantePagoClienteSafe = {
   movimientoId: string;
   numeroComprobante: number;
@@ -27,6 +98,13 @@ export type ComprobantePagoClienteSafe = {
   cobradorNombre: string;
 
   saldoClienteDespuesDelPago: number;
+
+  estadoComprobante: string;
+  estaCorregidoParcialmente: boolean;
+  importeValidoFinal: number;
+  importeCorregido: number;
+  comprobanteCorreccionId: string | null;
+  comprobanteCorreccionNumero: number | null;
 };
 
 export type ComprobanteCierreCajaSafe = {
@@ -66,5 +144,10 @@ export type VerificacionPagoSafe = {
   facturaNumeroComprobante?: number | null;
   concepto?: string;
   importePagado?: number;
+  estadoComprobante?: string;
+  estaCorregidoParcialmente?: boolean;
+  importeValidoFinal?: number;
+  importeCorregido?: number;
+  comprobanteCorreccionNumero?: number | null;
   cobradorNombre?: string;
 };

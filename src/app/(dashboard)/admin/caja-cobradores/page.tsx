@@ -371,6 +371,434 @@
 //   );
 // }
 
+// // src/app/(dashboard)/admin/caja-cobradores/page.tsx
+
+// import Link from "next/link";
+// import { redirect } from "next/navigation";
+// import {
+//   ArrowRight,
+//   Banknote,
+//   CheckCircle2,
+//   KeyRound,
+//   ShieldAlert,
+//   UsersRound,
+//   WalletCards,
+// } from "lucide-react";
+// import { getCurrentUser } from "@/lib/current-user";
+// import { obtenerAdminCajaCobradoresResumen } from "@/services/cobro.service";
+// import { AdminCobradoresCajaTable } from "@/components/tables/AdminCobradoresCajaTable";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+
+// export const metadata = {
+//   title: "Caja cobradores",
+// };
+
+// type StatCardProps = {
+//   title: string;
+//   value: string;
+//   description: string;
+//   icon: typeof WalletCards;
+//   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
+// };
+
+// const cardBase =
+//   "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
+
+// const innerCardBase =
+//   "overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none";
+
+// const toneClasses = {
+//   cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
+//   emerald:
+//     "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
+//   amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
+//   red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
+//   violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
+// };
+
+// function formatMoney(value: number) {
+//   return new Intl.NumberFormat("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//     maximumFractionDigits: 2,
+//   }).format(value || 0);
+// }
+
+// function formatCompactMoney(value: number) {
+//   const amount = Number(value || 0);
+//   const abs = Math.abs(amount);
+
+//   if (abs >= 1_000_000) {
+//     return `$ ${(abs / 1_000_000).toLocaleString("es-AR", {
+//       maximumFractionDigits: 1,
+//     })} M`;
+//   }
+
+//   const integerPart = Math.round(abs)
+//     .toString()
+//     .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${integerPart}`;
+// }
+
+// function StatCard({
+//   title,
+//   value,
+//   description,
+//   icon: Icon,
+//   tone,
+// }: StatCardProps) {
+//   return (
+//     <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
+//       <div className="flex items-start gap-3">
+//         <div
+//           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${toneClasses[tone]}`}
+//         >
+//           <Icon className="h-4 w-4" />
+//         </div>
+
+//         <div className="min-w-0">
+//           <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+//             {title}
+//           </p>
+
+//           <p
+//             className={`mt-1 truncate text-xl font-semibold tracking-tight ${
+//               tone === "red"
+//                 ? "text-red-700 dark:text-red-300"
+//                 : "text-slate-950 dark:text-white"
+//             }`}
+//             title={value}
+//           >
+//             {value}
+//           </p>
+
+//           <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
+//             {description}
+//           </p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// const quickActions = [
+//   {
+//     label: "Ver cierres realizados",
+//     description: "Consultar historial de cierres",
+//     href: "/admin/caja-cobradores/cierres",
+//     icon: CheckCircle2,
+//   },
+//   {
+//     label: "Usuarios cobradores",
+//     description: "Filtrar usuarios cobradores",
+//     href: "/usuarios?rol=cobrador",
+//     icon: UsersRound,
+//   },
+//   {
+//     label: "Panel administrador",
+//     description: "Volver al dashboard",
+//     href: "/admin",
+//     icon: Banknote,
+//   },
+// ];
+
+// export default async function AdminCajaCobradoresPage() {
+//   const user = await getCurrentUser();
+
+//   if (!user) {
+//     redirect("/login");
+//   }
+
+//   if (user.rol !== "admin") {
+//     redirect(`/${user.rol}`);
+//   }
+
+//   const resumen = await obtenerAdminCajaCobradoresResumen();
+
+//   const cobradoresConCodigo = resumen.cobradores.filter(
+//     (cobrador) => cobrador.codigoPendiente,
+//   );
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//       <div className="lg:hidden">
+//         <div className="mb-3 px-1">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+//             Caja cobradores
+//           </p>
+
+//           <h1 className="mt-0.5 text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
+//             Gestión de caja
+//           </h1>
+
+//           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
+//             Saldos, códigos y cierres de cobradores.
+//           </p>
+//         </div>
+
+//         <AdminCobradoresCajaTable cobradores={resumen.cobradores} />
+//       </div>
+
+//       <div className="hidden lg:block">
+//         <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
+//           <StatCard
+//             title="En caja cobradores"
+//             value={formatCompactMoney(resumen.totalSaldoCobradores)}
+//             description="Pendiente de cierre."
+//             icon={WalletCards}
+//             tone={resumen.totalSaldoCobradores > 0 ? "red" : "emerald"}
+//           />
+
+//           <StatCard
+//             title="Recibido por admin"
+//             value={formatCompactMoney(resumen.totalRecibidoAdmin)}
+//             description="Cierres confirmados."
+//             icon={Banknote}
+//             tone="cyan"
+//           />
+
+//           <StatCard
+//             title="Con saldo"
+//             value={String(resumen.cantidadCobradoresConSaldo)}
+//             description={`De ${resumen.cantidadCobradores} cobradores.`}
+//             icon={ShieldAlert}
+//             tone={resumen.cantidadCobradoresConSaldo > 0 ? "amber" : "emerald"}
+//           />
+
+//           <StatCard
+//             title="Códigos"
+//             value={String(resumen.cantidadCodigosPendientes)}
+//             description="Pendientes de uso."
+//             icon={KeyRound}
+//             tone={resumen.cantidadCodigosPendientes > 0 ? "amber" : "emerald"}
+//           />
+
+//           <StatCard
+//             title="Cierres realizados"
+//             value={String(resumen.cantidadCierresRealizados)}
+//             description="Historial registrado."
+//             icon={CheckCircle2}
+//             tone="violet"
+//           />
+//         </div>
+
+//         <div className="mt-5">
+//           <DashboardGrid>
+//             <DashboardMain>
+//               <div className={`${cardBase} p-3.5`}>
+//                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+//                   <div className="flex min-w-0 items-start gap-3">
+//                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+//                       <WalletCards className="h-4 w-4" />
+//                     </div>
+
+//                     <div className="min-w-0">
+//                       <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+//                         Caja cobradores
+//                       </p>
+
+//                       <h1 className="mt-0.5 text-base font-medium tracking-tight text-slate-950 dark:text-white">
+//                         Gestión de caja de cobradores
+//                       </h1>
+
+//                       <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400">
+//                         Visualizá saldos, cierres confirmados y códigos
+//                         pendientes.
+//                       </p>
+//                     </div>
+//                   </div>
+
+//                   <Link
+//                     href="/admin/caja-cobradores/cierres"
+//                     className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 text-xs font-medium text-slate-700 shadow-sm shadow-slate-300/40 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-200 dark:shadow-none dark:hover:bg-slate-800"
+//                   >
+//                     Ver cierres
+//                     <ArrowRight className="h-3.5 w-3.5" />
+//                   </Link>
+//                 </div>
+//               </div>
+
+//               <AdminCobradoresCajaTable cobradores={resumen.cobradores} />
+//             </DashboardMain>
+
+//             <DashboardAside>
+//               <div className={`${cardBase} p-3.5`}>
+//                 <div className="mb-3 flex items-start justify-between gap-3">
+//                   <div>
+//                     <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+//                       Acciones rápidas
+//                     </p>
+
+//                     <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+//                       Atajos del módulo
+//                     </h2>
+//                   </div>
+
+//                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+//                     <ArrowRight className="h-4 w-4" />
+//                   </div>
+//                 </div>
+
+//                 <div className="grid gap-2">
+//                   {quickActions.map((item) => {
+//                     const Icon = item.icon;
+
+//                     return (
+//                       <Link
+//                         key={item.href + item.label}
+//                         href={item.href}
+//                         className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-300 bg-white px-3 py-2.5 text-xs font-medium text-slate-700 shadow-sm shadow-slate-300/40 transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-200 dark:shadow-none dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+//                       >
+//                         <span className="flex min-w-0 items-center gap-2.5">
+//                           <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500 transition group-hover:text-cyan-700 dark:text-slate-400 dark:group-hover:text-cyan-300" />
+
+//                           <span className="min-w-0">
+//                             <span className="block truncate">{item.label}</span>
+//                             <span className="block truncate text-[11px] font-normal text-slate-500 dark:text-slate-400">
+//                               {item.description}
+//                             </span>
+//                           </span>
+//                         </span>
+
+//                         <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//                       </Link>
+//                     );
+//                   })}
+//                 </div>
+//               </div>
+
+//               <div className={`${cardBase} p-3.5`}>
+//                 <div className="mb-3 flex items-start justify-between gap-3">
+//                   <div>
+//                     <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+//                       Estado de caja
+//                     </p>
+
+//                     <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+//                       Información general
+//                     </h2>
+//                   </div>
+
+//                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+//                     <WalletCards className="h-4 w-4" />
+//                   </div>
+//                 </div>
+
+//                 <div className={innerCardBase}>
+//                   <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+//                     <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+//                       <WalletCards className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+//                       Total en caja
+//                     </span>
+
+//                     <span
+//                       className={`text-right text-xs font-medium ${
+//                         resumen.totalSaldoCobradores > 0
+//                           ? "text-red-700 dark:text-red-300"
+//                           : "text-emerald-700 dark:text-emerald-300"
+//                       }`}
+//                     >
+//                       {formatMoney(resumen.totalSaldoCobradores)}
+//                     </span>
+//                   </div>
+
+//                   <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+//                     <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+//                       <Banknote className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+//                       Recibido admin
+//                     </span>
+
+//                     <span className="text-right text-xs font-medium text-cyan-700 dark:text-cyan-300">
+//                       {formatMoney(resumen.totalRecibidoAdmin)}
+//                     </span>
+//                   </div>
+
+//                   <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+//                     <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+//                       <ShieldAlert className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+//                       Cobradores con saldo
+//                     </span>
+
+//                     <span className="text-right text-xs font-medium text-amber-700 dark:text-amber-300">
+//                       {resumen.cantidadCobradoresConSaldo}
+//                     </span>
+//                   </div>
+
+//                   <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+//                     <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+//                       <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+//                       Códigos pendientes
+//                     </span>
+
+//                     <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+//                       {resumen.cantidadCodigosPendientes}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               <div className={`${cardBase} p-3.5`}>
+//                 <div className="mb-3 flex items-start justify-between gap-3">
+//                   <div>
+//                     <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+//                       Códigos activos
+//                     </p>
+
+//                     <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+//                       Pendientes de validación
+//                     </h2>
+//                   </div>
+
+//                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+//                     <KeyRound className="h-4 w-4" />
+//                   </div>
+//                 </div>
+
+//                 <div className="grid gap-2">
+//                   {cobradoresConCodigo.length === 0 ? (
+//                     <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-xs text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-400">
+//                       No hay códigos activos.
+//                     </div>
+//                   ) : (
+//                     cobradoresConCodigo.map((cobrador) => (
+//                       <div
+//                         key={cobrador.cobradorId}
+//                         className="rounded-2xl border border-slate-300 bg-white px-3 py-2.5 shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/50 dark:shadow-none"
+//                       >
+//                         <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
+//                           {cobrador.apellido}, {cobrador.nombre}
+//                         </p>
+
+//                         <div className="mt-1 flex items-center justify-between gap-2">
+//                           <span className="font-mono text-sm font-medium text-amber-700 dark:text-amber-300">
+//                             {cobrador.codigoPendiente?.codigo}
+//                           </span>
+
+//                           <span className="text-[11px] text-slate-500 dark:text-slate-400">
+//                             {formatMoney(
+//                               cobrador.codigoPendiente?.importe || 0,
+//                             )}
+//                           </span>
+//                         </div>
+//                       </div>
+//                     ))
+//                   )}
+//                 </div>
+//               </div>
+//             </DashboardAside>
+//           </DashboardGrid>
+//         </div>
+//       </div>
+//     </PageShell>
+//   );
+// }
+
 // src/app/(dashboard)/admin/caja-cobradores/page.tsx
 
 import Link from "next/link";
@@ -379,6 +807,7 @@ import {
   ArrowRight,
   Banknote,
   CheckCircle2,
+  History,
   KeyRound,
   ShieldAlert,
   UsersRound,
@@ -387,6 +816,7 @@ import {
 import { getCurrentUser } from "@/lib/current-user";
 import { obtenerAdminCajaCobradoresResumen } from "@/services/cobro.service";
 import { AdminCobradoresCajaTable } from "@/components/tables/AdminCobradoresCajaTable";
+import { AdminCajaMovimientosRecientes } from "@/components/sections/AdminCajaMovimientosRecientes";
 import { PageShell } from "@/components/ui/PageShell";
 import {
   DashboardAside,
@@ -538,11 +968,15 @@ export default async function AdminCajaCobradoresPage() {
           </h1>
 
           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-            Saldos, códigos y cierres de cobradores.
+            Saldos, códigos, cierres y ajustes post-cierre.
           </p>
         </div>
 
         <AdminCobradoresCajaTable cobradores={resumen.cobradores} />
+
+        <div className="mt-3">
+          <AdminCajaMovimientosRecientes cobradores={resumen.cobradores} />
+        </div>
       </div>
 
       <div className="hidden lg:block">
@@ -572,11 +1006,11 @@ export default async function AdminCajaCobradoresPage() {
           />
 
           <StatCard
-            title="Códigos"
-            value={String(resumen.cantidadCodigosPendientes)}
-            description="Pendientes de uso."
-            icon={KeyRound}
-            tone={resumen.cantidadCodigosPendientes > 0 ? "amber" : "emerald"}
+            title="Post-cierre"
+            value={formatCompactMoney(resumen.totalAjustesPostCierre)}
+            description="Diferencias posteriores."
+            icon={History}
+            tone={resumen.totalAjustesPostCierre > 0 ? "amber" : "emerald"}
           />
 
           <StatCard
@@ -608,8 +1042,8 @@ export default async function AdminCajaCobradoresPage() {
                       </h1>
 
                       <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400">
-                        Visualizá saldos, cierres confirmados y códigos
-                        pendientes.
+                        Visualizá saldos, cierres confirmados, códigos
+                        pendientes y correcciones posteriores al cierre.
                       </p>
                     </div>
                   </div>
@@ -625,6 +1059,8 @@ export default async function AdminCajaCobradoresPage() {
               </div>
 
               <AdminCobradoresCajaTable cobradores={resumen.cobradores} />
+
+              <AdminCajaMovimientosRecientes cobradores={resumen.cobradores} />
             </DashboardMain>
 
             <DashboardAside>
@@ -716,6 +1152,17 @@ export default async function AdminCajaCobradoresPage() {
 
                     <span className="text-right text-xs font-medium text-cyan-700 dark:text-cyan-300">
                       {formatMoney(resumen.totalRecibidoAdmin)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+                    <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+                      <History className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+                      Ajustes post-cierre
+                    </span>
+
+                    <span className="text-right text-xs font-medium text-amber-700 dark:text-amber-300">
+                      {formatMoney(resumen.totalAjustesPostCierre)}
                     </span>
                   </div>
 
