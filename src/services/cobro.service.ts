@@ -1752,9 +1752,7 @@ function getClienteNombreCompleto(cliente: any) {
 
 function getEstadoCajaMovimiento(movimiento: any): CajaCobradorEstado {
   if (movimiento.estadoCaja === "cerrado") return "cerrado";
-
   if (movimiento.estadoCaja === "abierto") return "abierto";
-
   if (movimiento.cierreCajaId || movimiento.cerradoEn) return "cerrado";
 
   return "abierto";
@@ -2034,7 +2032,8 @@ export async function obtenerCajaCobradorResumen(
     )
     .reduce((acc, movimiento) => acc + movimiento.importe, 0);
 
-  const saldoActual = totalCobrado - totalCierres - totalAjustesCorreccion;
+  const saldoActual =
+    totalCobrado - totalCierres - totalAjustesCorreccion - totalAjustesPostCierre;
 
   return {
     totalCobrado,
@@ -2408,7 +2407,10 @@ export async function obtenerContextoCorreccionPago(
       "No se encontró el movimiento de caja asociado a este pago.";
   }
 
-  if (correccionExistente || pago.estadoComprobante === "corregido_parcialmente") {
+  if (
+    correccionExistente ||
+    pago.estadoComprobante === "corregido_parcialmente"
+  ) {
     puedeCorregir = false;
     motivoNoPuedeCorregir =
       "Este comprobante ya tiene una corrección asociada.";
@@ -2449,7 +2451,7 @@ export async function obtenerContextoCorreccionPago(
     cobroYaCerrado,
     cierreCajaId: cierreAsociado?._id?.toString?.() || null,
     cierreCajaFecha: cierreAsociado?.creadoEn?.toISOString?.() || null,
-    correccionImpactaCajaActual: !cobroYaCerrado,
+    correccionImpactaCajaActual: true,
     correccionImpactaCierreAnterior: cobroYaCerrado,
     puedeCorregir,
     motivoNoPuedeCorregir,
@@ -2578,9 +2580,7 @@ export async function corregirPagoCobrador(
   const saldoActualCliente = await obtenerSaldoActualCliente(contexto.clienteId);
   const nuevoSaldoCliente = Number((saldoActualCliente + diferencia).toFixed(2));
   const saldoCajaActual = await obtenerSaldoCajaCobrador(contexto.cobradorId);
-  const nuevoSaldoCaja = cobroYaCerrado
-    ? saldoCajaActual
-    : Number((saldoCajaActual - diferencia).toFixed(2));
+  const nuevoSaldoCaja = Number((saldoCajaActual - diferencia).toFixed(2));
 
   const numeroComprobanteCorreccion = await obtenerSiguienteNumeroComprobante();
   const fechaCorreccion = new Date();
@@ -2593,7 +2593,7 @@ export async function corregirPagoCobrador(
   )}. Diferencia corregida: ${formatMoney(diferencia)}.`;
 
   const observacion = cobroYaCerrado
-    ? `${observacionBase} Corrección posterior al cierre de caja. No afecta la caja actual del cobrador.`
+    ? `${observacionBase} Corrección posterior al cierre de caja. Se descuenta como saldo pendiente de la próxima caja del cobrador.`
     : `${observacionBase} Corrección aplicada sobre caja abierta del cobrador.`;
 
   const correccion = await MovimientoFinanciero.create({
@@ -2662,7 +2662,7 @@ export async function corregirPagoCobrador(
     message: cobroYaCerrado
       ? `Pago corregido correctamente. Se generó el comprobante de corrección N° ${numeroComprobanteCorreccion} por ${formatMoney(
           diferencia,
-        )}. La corrección quedó asociada al cierre de caja anterior y no modificó la caja actual.`
+        )}. La corrección quedó asociada al cierre anterior y se descontó como saldo pendiente de la próxima caja del cobrador.`
       : `Pago corregido correctamente. Se generó el comprobante de corrección N° ${numeroComprobanteCorreccion} por ${formatMoney(
           diferencia,
         )}. La diferencia fue descontada de la caja actual del cobrador.`,

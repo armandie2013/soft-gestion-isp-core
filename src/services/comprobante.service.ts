@@ -337,6 +337,14 @@ function getAppPublicUrl() {
   return process.env.APP_PUBLIC_URL || "http://localhost:3000";
 }
 
+async function obtenerSaldoActualCliente(clienteId: string) {
+  const ultimoMovimiento = await MovimientoFinanciero.findOne({ clienteId })
+    .sort({ fecha: -1, creadoEn: -1 })
+    .lean();
+
+  return Number(ultimoMovimiento?.saldo || 0);
+}
+
 async function asegurarVerificacionPago(movimiento: any, cliente: any) {
   if (movimiento.codigoVerificacion && movimiento.firmaVerificacion) {
     return {
@@ -417,6 +425,10 @@ export async function obtenerComprobantePagoCliente(
     return null;
   }
 
+  const saldoActualCliente = await obtenerSaldoActualCliente(
+    cliente._id.toString(),
+  );
+
   const verificacion = await asegurarVerificacionPago(movimiento, cliente);
 
   const cobradorNombre = cobrador
@@ -474,7 +486,7 @@ export async function obtenerComprobantePagoCliente(
     cobradorId: movimiento.creadoPorUsuarioId?.toString?.() || "",
     cobradorNombre,
 
-    saldoClienteDespuesDelPago: Number(movimiento.saldo || 0),
+    saldoClienteDespuesDelPago: saldoActualCliente,
 
     estadoComprobante,
     estaCorregidoParcialmente,
