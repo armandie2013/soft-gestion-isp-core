@@ -387,6 +387,50 @@ export async function generarCodigoCierreCajaAction(
   };
 }
 
+export async function generarCodigoCierreCajaModalAction(
+  _prevState: CodigoCierreActionState,
+  formData: FormData,
+): Promise<CodigoCierreActionState> {
+  const user = await requireAdmin();
+  const requestMeta = getRequestMeta();
+
+  const cobradorId = String(formData.get("cobradorId") || "");
+
+  const result = await generarCodigoCierreCaja(
+    {
+      cobradorId,
+    },
+    buildUser(user),
+  );
+
+  await registrarAuditLog({
+    action: result.ok
+      ? "CAJA_GENERAR_CODIGO_CIERRE_SUCCESS"
+      : "CAJA_GENERAR_CODIGO_CIERRE_FAILED",
+    resultado: result.ok ? "success" : "failure",
+    actor: buildAuditActor(user),
+    entidadTipo: "CierreCaja",
+    entidadId: cobradorId,
+    entidadLabel: cobradorId,
+    mensaje: result.message,
+    metadata: {
+      cobradorId,
+      importe: result.codigo?.importe ?? null,
+      codigoGenerado: Boolean(result.codigo?.codigo),
+      ok: result.ok,
+      origen: "modal_admin_caja_cobradores",
+    },
+    request: requestMeta,
+  });
+
+  return {
+    ok: result.ok,
+    message: result.message,
+    codigo: result.codigo?.codigo,
+    importe: result.codigo?.importe,
+  };
+}
+
 export async function validarCodigoCierreCajaAction(
   _prevState: CodigoCierreActionState,
   formData: FormData,
