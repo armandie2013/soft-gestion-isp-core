@@ -2682,6 +2682,7 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
   Banknote,
@@ -2698,7 +2699,11 @@ import {
   Wifi,
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/current-user";
-import { obtenerAdminDashboardResumen } from "@/services/admin-dashboard.service";
+import {
+  obtenerAdminDashboardResumen,
+  type AdminDashboardCobradorCard,
+  type AdminDashboardUltimoMovimiento,
+} from "@/services/admin-dashboard.service";
 import { PageShell } from "@/components/ui/PageShell";
 import {
   DashboardAside,
@@ -2774,12 +2779,110 @@ function getInitials(name: string) {
     .join("");
 }
 
+function getSaldoTone(value: number) {
+  if (value > 0) {
+    return "text-red-700 dark:text-red-300";
+  }
+
+  if (value < 0) {
+    return "text-sky-700 dark:text-sky-300";
+  }
+
+  return "text-emerald-700 dark:text-emerald-300";
+}
+
+function getMobileCobradorEstado(cobrador: AdminDashboardCobradorCard) {
+  if (cobrador.tieneCodigoPendiente) {
+    return {
+      label: "Código activo",
+      title: "Código pendiente",
+      amount:
+        cobrador.codigoPendienteImporte > 0
+          ? cobrador.codigoPendienteImporte
+          : cobrador.saldoActual,
+      description: "Tiene código de cierre generado y pendiente.",
+      border:
+        "border-amber-300 bg-amber-50 dark:border-amber-900/70 dark:bg-amber-950/25",
+      text: "text-amber-700 dark:text-amber-300",
+      pill:
+        "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+    };
+  }
+
+  if (cobrador.saldoActual > 0) {
+    return {
+      label: "Pendiente",
+      title: "Caja actual",
+      amount: cobrador.saldoActual,
+      description: "Saldo positivo pendiente de cierre.",
+      border:
+        "border-red-300 bg-red-50 dark:border-red-900/70 dark:bg-red-950/25",
+      text: "text-red-700 dark:text-red-300",
+      pill:
+        "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+    };
+  }
+
+  if (cobrador.saldoActual < 0) {
+    return {
+      label: "A compensar",
+      title: "Caja actual",
+      amount: cobrador.saldoActual,
+      description: "Saldo negativo a compensar con próximos cobros.",
+      border:
+        "border-sky-300 bg-sky-50 dark:border-sky-900/70 dark:bg-sky-950/25",
+      text: "text-sky-700 dark:text-sky-300",
+      pill:
+        "border-sky-300 bg-sky-50 text-sky-700 dark:border-sky-900/70 dark:bg-sky-950/35 dark:text-sky-300",
+    };
+  }
+
+  return {
+    label: "Al día",
+    title: "Caja actual",
+    amount: cobrador.saldoActual,
+    description: "Sin saldo pendiente ni código activo.",
+    border:
+      "border-emerald-300 bg-emerald-50 dark:border-emerald-900/70 dark:bg-emerald-950/25",
+    text: "text-emerald-700 dark:text-emerald-300",
+    pill:
+      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+  };
+}
+
+function ordenarCobradoresMobile(cobradores: AdminDashboardCobradorCard[]) {
+  return [...cobradores].sort((a, b) => {
+    const prioridadA = a.tieneCodigoPendiente
+      ? 1
+      : a.saldoActual > 0
+        ? 2
+        : a.saldoActual < 0
+          ? 3
+          : 4;
+
+    const prioridadB = b.tieneCodigoPendiente
+      ? 1
+      : b.saldoActual > 0
+        ? 2
+        : b.saldoActual < 0
+          ? 3
+          : 4;
+
+    if (prioridadA !== prioridadB) return prioridadA - prioridadB;
+
+    const nombreA = a.nombreCompleto.toLowerCase();
+    const nombreB = b.nombreCompleto.toLowerCase();
+
+    return nombreA.localeCompare(nombreB);
+  });
+}
+
 type StatCardProps = {
   title: string;
   value: string;
   description: string;
   href: string;
-  icon: typeof Banknote;
+  icon: LucideIcon;
   tone: "dark" | "red" | "cyan" | "violet" | "amber";
 };
 
@@ -2792,10 +2895,7 @@ const statToneClasses = {
 };
 
 const cardBase =
-  "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
-
-const innerCardBase =
-  "rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-200/70 dark:border-slate-800 dark:bg-slate-950/55 dark:shadow-none";
+  "rounded-[1.35rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
 
 function StatCard({
   title,
@@ -2808,7 +2908,7 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="group flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 transition hover:-translate-y-0.5 hover:border-cyan-400 hover:bg-white hover:shadow-md hover:shadow-cyan-950/10 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none dark:hover:border-cyan-700 dark:hover:bg-cyan-950/20 dark:hover:shadow-md dark:hover:shadow-cyan-950/25"
+      className="group flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 transition hover:-translate-y-0.5 hover:border-cyan-400 hover:bg-white hover:shadow-md hover:shadow-cyan-950/10 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none dark:hover:border-cyan-700 dark:hover:bg-cyan-950/20"
     >
       <div className="flex items-start gap-3">
         <div
@@ -2840,13 +2940,13 @@ function StatCard({
 
       <div className="mt-2 flex items-center justify-end border-t border-slate-300 pt-2 text-[11px] font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
         Ver detalle
-        <ArrowRight className="ml-1.5 h-3.5 w-3.5 text-slate-500 transition group-hover:translate-x-0.5 group-hover:text-cyan-700 dark:text-slate-400 dark:group-hover:text-cyan-300" />
+        <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition group-hover:translate-x-0.5 group-hover:text-cyan-700 dark:group-hover:text-cyan-300" />
       </div>
     </Link>
   );
 }
 
-function MobileHeroCard({
+function MobileTopResumen({
   totalCuentaAdmin,
   totalEnCajaCobradores,
 }: {
@@ -2854,47 +2954,61 @@ function MobileHeroCard({
   totalEnCajaCobradores: number;
 }) {
   return (
-    <div className="rounded-[1.45rem] border border-cyan-300 bg-gradient-to-br from-slate-50 via-cyan-50 to-sky-100 p-4 shadow-sm shadow-cyan-950/10 dark:border-cyan-900/80 dark:bg-slate-900/80 dark:bg-none">
-      <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
-          <ShieldCheck className="h-5 w-5" />
-        </div>
-
+    <div className="rounded-[1.35rem] border border-cyan-300 bg-cyan-50/80 p-3 shadow-sm shadow-cyan-950/10 dark:border-cyan-900/70 dark:bg-cyan-950/20 dark:shadow-none">
+      <div className="mb-3 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
-            Administración
+            Resumen principal
           </p>
 
-          <h1 className="mt-1 text-2xl font-medium tracking-tight text-slate-950 dark:text-white">
-            Panel principal
-          </h1>
+          <h2 className="mt-0.5 truncate text-sm font-medium text-slate-950 dark:text-white">
+            Estado de caja general
+          </h2>
+        </div>
 
-          <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-            Vista rápida de caja, cobradores y movimientos.
-          </p>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-700 ring-1 ring-cyan-200 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
+          <WalletCards className="h-4 w-4" />
         </div>
       </div>
 
-      <div className="mt-4 grid gap-2">
-        <div className="rounded-2xl border border-slate-300 bg-white/85 px-3 py-2.5 shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/45 dark:shadow-none">
-          <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
-            Cuenta administración
-          </p>
+      <div className="grid gap-2">
+        <Link
+          href="/admin/caja-cobradores/cierres"
+          className="rounded-2xl border border-slate-300 bg-white px-3 py-3 shadow-sm shadow-slate-200/60 transition hover:border-cyan-300 hover:bg-cyan-50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
+                En administración
+              </p>
 
-          <p className="mt-1 truncate text-3xl font-medium tracking-tight text-slate-950 dark:text-white">
-            {formatMoney(totalCuentaAdmin)}
-          </p>
-        </div>
+              <p className="mt-1 break-words text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
+                {formatMoney(totalCuentaAdmin)}
+              </p>
+            </div>
 
-        <div className="rounded-2xl border border-red-300 bg-red-50 px-3 py-2.5 shadow-sm shadow-red-950/5 dark:border-red-900/70 dark:bg-red-950/25 dark:shadow-none">
-          <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-red-700 dark:text-red-300">
-            En cobradores
-          </p>
+            <Banknote className="h-5 w-5 shrink-0 text-cyan-700 dark:text-cyan-300" />
+          </div>
+        </Link>
 
-          <p className="mt-1 truncate text-2xl font-medium tracking-tight text-red-700 dark:text-red-300">
-            {formatMoney(totalEnCajaCobradores)}
-          </p>
-        </div>
+        <Link
+          href="/admin/caja-cobradores"
+          className="rounded-2xl border border-red-300 bg-red-50 px-3 py-3 shadow-sm shadow-red-950/5 transition hover:border-red-400 hover:bg-red-100 dark:border-red-900/70 dark:bg-red-950/25 dark:shadow-none dark:hover:bg-red-950/40"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-red-700 dark:text-red-300">
+                En cobradores
+              </p>
+
+              <p className="mt-1 break-words text-2xl font-semibold tracking-tight text-red-700 dark:text-red-300">
+                {formatMoney(totalEnCajaCobradores)}
+              </p>
+            </div>
+
+            <WalletCards className="h-5 w-5 shrink-0 text-red-700 dark:text-red-300" />
+          </div>
+        </Link>
       </div>
     </div>
   );
@@ -2913,6 +3027,37 @@ function MobileResumenOperativo({
   totalCobradores: number;
   facturasEmitidas: number;
 }) {
+  const items = [
+    {
+      label: "Clientes",
+      value: clientesActivos,
+      icon: UsersRound,
+      className:
+        "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 ring-emerald-200 dark:ring-emerald-900/70",
+    },
+    {
+      label: "Planes",
+      value: planesActivos,
+      icon: Wifi,
+      className:
+        "text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/30 ring-cyan-200 dark:ring-cyan-900/70",
+    },
+    {
+      label: "Cobradores",
+      value: totalCobradores,
+      icon: UsersRound,
+      className:
+        "text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 ring-red-200 dark:ring-red-900/70",
+    },
+    {
+      label: "Facturas",
+      value: facturasEmitidas,
+      icon: FileText,
+      className:
+        "text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 ring-amber-200 dark:ring-amber-900/70",
+    },
+  ];
+
   return (
     <div className={`${cardBase} p-3`}>
       <div className="mb-3">
@@ -2925,76 +3070,43 @@ function MobileResumenOperativo({
         </h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className={`${innerCardBase} px-3 py-2.5`}>
-          <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-            Clientes activos
-          </p>
+      <div className="grid grid-cols-4 gap-2">
+        {items.map((item) => {
+          const Icon = item.icon;
 
-          <p className="mt-1 text-xl font-medium text-slate-950 dark:text-white">
-            {clientesActivos}
-          </p>
-        </div>
-
-        <div className={`${innerCardBase} px-3 py-2.5`}>
-          <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-            Planes activos
-          </p>
-
-          <p className="mt-1 text-xl font-medium text-slate-950 dark:text-white">
-            {planesActivos}
-          </p>
-        </div>
-
-        <div className={`${innerCardBase} px-3 py-2.5`}>
-          <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-            Cobradores
-          </p>
-
-          <p className="mt-1 text-xl font-medium text-slate-950 dark:text-white">
-            {totalCobradores}
-          </p>
-        </div>
-
-        <div className={`${innerCardBase} px-3 py-2.5`}>
-          <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-            Facturas
-          </p>
-
-          <p className="mt-1 text-xl font-medium text-slate-950 dark:text-white">
-            {facturasEmitidas}
-          </p>
-        </div>
-
-        <div
-          className={`col-span-2 rounded-2xl border px-3 py-2.5 shadow-sm ${
-            codigosPendientes > 0
-              ? "border-red-300 bg-red-50 shadow-red-950/5 dark:border-red-900/70 dark:bg-red-950/30 dark:shadow-none"
-              : "border-emerald-300 bg-emerald-50 shadow-emerald-950/5 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:shadow-none"
-          }`}
-        >
-          <div className="flex items-center justify-between gap-3">
-            <p
-              className={`text-[9px] font-medium uppercase tracking-[0.14em] ${
-                codigosPendientes > 0
-                  ? "text-red-700 dark:text-red-300"
-                  : "text-emerald-700 dark:text-emerald-300"
-              }`}
+          return (
+            <div
+              key={item.label}
+              className="min-w-0 rounded-2xl border border-slate-300 bg-white px-2 py-2.5 text-center shadow-sm shadow-slate-200/70 dark:border-slate-800 dark:bg-slate-950/55 dark:shadow-none"
             >
-              Códigos pendientes
-            </p>
+              <div
+                className={`mx-auto flex h-8 w-8 items-center justify-center rounded-xl ring-1 ${item.className}`}
+              >
+                <Icon className="h-4 w-4" />
+              </div>
 
-            <p
-              className={`text-xl font-medium ${
-                codigosPendientes > 0
-                  ? "text-red-700 dark:text-red-300"
-                  : "text-emerald-700 dark:text-emerald-300"
-              }`}
-            >
-              {codigosPendientes}
-            </p>
-          </div>
-        </div>
+              <p className="mt-2 truncate text-[9px] font-medium uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
+                {item.label}
+              </p>
+
+              <p className="mt-0.5 text-xl font-semibold text-slate-950 dark:text-white">
+                {item.value}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-2 flex items-center justify-between gap-3 rounded-2xl border border-emerald-300 bg-emerald-50 px-3 py-2.5 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300">
+        <span className="inline-flex min-w-0 items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+
+          <span className="truncate text-[10px] font-medium uppercase tracking-[0.13em]">
+            Códigos pendientes
+          </span>
+        </span>
+
+        <span className="text-xl font-semibold">{codigosPendientes}</span>
       </div>
     </div>
   );
@@ -3004,7 +3116,7 @@ function MobileAuditoriaAccess() {
   return (
     <Link
       href="/admin/auditoria"
-      className={`${cardBase} group flex items-center justify-between gap-3 p-3 transition hover:-translate-y-0.5 hover:border-cyan-400 hover:bg-white dark:hover:border-cyan-700 dark:hover:bg-cyan-950/20`}
+      className={`${cardBase} group flex items-center justify-between gap-3 p-3 transition hover:border-cyan-300 hover:bg-white dark:hover:border-cyan-800 dark:hover:bg-cyan-950/20`}
     >
       <div className="flex min-w-0 items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-700 ring-1 ring-red-100 dark:bg-red-950/50 dark:text-red-300 dark:ring-red-900">
@@ -3016,11 +3128,11 @@ function MobileAuditoriaAccess() {
             Auditoría
           </p>
 
-          <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
+          <h2 className="mt-0.5 truncate text-sm font-medium text-slate-950 dark:text-white">
             Registros del sistema
           </h2>
 
-          <p className="mt-0.5 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+          <p className="mt-0.5 line-clamp-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
             Accesos, cobros, cierres y cambios administrativos.
           </p>
         </div>
@@ -3034,28 +3146,22 @@ function MobileAuditoriaAccess() {
 function MobileCobradorCard({
   cobrador,
 }: {
-  cobrador: {
-    cobradorId: string;
-    nombreCompleto: string;
-    email: string;
-    saldoActual: number;
-    ultimoRetiroImporte: number;
-    ultimoRetiroFecha: string | null;
-    tieneCodigoPendiente: boolean;
-    codigoPendienteImporte: number;
-  };
+  cobrador: AdminDashboardCobradorCard;
 }) {
-  const tieneSaldoPendiente = cobrador.saldoActual > 0;
+  const estado = getMobileCobradorEstado(cobrador);
 
   return (
-    <div className="rounded-[1.2rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
-      <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-100 text-xs font-semibold text-cyan-800 ring-1 ring-cyan-200 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
+    <Link
+      href="/admin/caja-cobradores"
+      className="block rounded-[1.15rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none"
+    >
+      <div className="flex min-w-0 items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-100 text-[11px] font-semibold text-cyan-800 ring-1 ring-cyan-200 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
           {getInitials(cobrador.nombreCompleto)}
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-start justify-between gap-2">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-slate-950 dark:text-white">
                 {cobrador.nombreCompleto}
@@ -3067,77 +3173,106 @@ function MobileCobradorCard({
             </div>
 
             <span
-              className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-                tieneSaldoPendiente
-                  ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
-                  : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-              }`}
+              className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${estado.pill}`}
             >
-              {tieneSaldoPendiente ? "Pendiente" : "Al día"}
+              {estado.label}
             </span>
           </div>
 
-          <div
-            className={`mt-2 rounded-2xl border px-3 py-2 ${
-              tieneSaldoPendiente
-                ? "border-red-200 bg-red-50 dark:border-red-900/70 dark:bg-red-950/25"
-                : "border-slate-300 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/70"
-            }`}
-          >
-            <div className="flex items-center justify-between gap-3">
+          <div className="mt-2 grid gap-2">
+            <div className={`rounded-2xl border px-3 py-2 ${estado.border}`}>
               <p
-                className={`text-[9px] font-medium uppercase tracking-[0.14em] ${
-                  tieneSaldoPendiente
-                    ? "text-red-700 dark:text-red-300"
-                    : "text-slate-500 dark:text-slate-400"
-                }`}
+                className={`text-[10px] font-medium uppercase tracking-[0.14em] ${estado.text}`}
               >
-                Caja actual
+                {estado.title}
               </p>
 
-              {cobrador.tieneCodigoPendiente ? (
-                <span className="shrink-0 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[9px] font-medium text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300">
-                  Código activo
-                </span>
-              ) : null}
+              <p
+                className={`mt-1 break-words text-2xl font-semibold tracking-tight ${estado.text}`}
+              >
+                {formatMoney(estado.amount)}
+              </p>
             </div>
 
-            <p
-              className={`mt-1 truncate text-2xl font-semibold tracking-tight ${
-                tieneSaldoPendiente
-                  ? "text-red-700 dark:text-red-300"
-                  : "text-slate-950 dark:text-white"
-              }`}
-            >
-              {formatMoney(cobrador.saldoActual)}
-            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="min-w-0 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/70">
+                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                  Último retiro
+                </p>
+
+                <p className="mt-1 truncate text-sm font-medium text-slate-950 dark:text-white">
+                  {formatMoney(cobrador.ultimoRetiroImporte)}
+                </p>
+              </div>
+
+              <div className="min-w-0 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 text-right dark:border-slate-800 dark:bg-slate-900/70">
+                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                  Fecha
+                </p>
+
+                <p className="mt-1 truncate text-sm font-medium text-slate-950 dark:text-white">
+                  {formatDate(cobrador.ultimoRetiroFecha)}
+                </p>
+              </div>
+            </div>
+
+            {estado.description ? (
+              <p className="rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 text-[11px] leading-4 text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400">
+                {estado.description}
+              </p>
+            ) : null}
           </div>
-
-          <div className="mt-2 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/70">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                Último retiro
-              </p>
-
-              <p className="shrink-0 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                {formatDate(cobrador.ultimoRetiroFecha)}
-              </p>
-            </div>
-
-            <p className="mt-1 truncate text-sm font-medium text-slate-950 dark:text-white">
-              {formatMoney(cobrador.ultimoRetiroImporte)}
-            </p>
-          </div>
-
-          {cobrador.tieneCodigoPendiente ? (
-            <div className="mt-2 rounded-2xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300">
-              Código pendiente por{" "}
-              <span className="font-medium">
-                {formatMoney(cobrador.codigoPendienteImporte)}
-              </span>
-            </div>
-          ) : null}
         </div>
+      </div>
+    </Link>
+  );
+}
+
+function MobileCobradorGroup({
+  title,
+  description,
+  index,
+  cobradores,
+}: {
+  title: string;
+  description: string;
+  index: number;
+  cobradores: AdminDashboardCobradorCard[];
+}) {
+  if (cobradores.length === 0) {
+    return null;
+  }
+
+  const groupColor =
+    index === 1
+      ? "text-amber-700 dark:text-amber-300"
+      : index === 2
+        ? "text-red-700 dark:text-red-300"
+        : index === 3
+          ? "text-sky-700 dark:text-sky-300"
+          : "text-emerald-700 dark:text-emerald-300";
+
+  return (
+    <div className="rounded-[1.2rem] border border-slate-300 bg-slate-50/80 p-2.5 dark:border-slate-800 dark:bg-slate-950/35">
+      <div className="mb-2 px-1">
+        <p
+          className={`text-[10px] font-medium uppercase tracking-[0.16em] ${groupColor}`}
+        >
+          {title}
+        </p>
+
+        <p className="mt-0.5 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+          {description}
+        </p>
+      </div>
+
+      <div className="grid gap-2">
+        {cobradores.map((cobrador) => (
+          <MobileCobradorCard
+            key={cobrador.cobradorId}
+            cobrador={cobrador}
+          />
+        ))}
       </div>
     </div>
   );
@@ -3146,22 +3281,26 @@ function MobileCobradorCard({
 function MobileCobradoresList({
   cobradores,
 }: {
-  cobradores: Array<{
-    cobradorId: string;
-    nombreCompleto: string;
-    email: string;
-    saldoActual: number;
-    ultimoRetiroImporte: number;
-    ultimoRetiroFecha: string | null;
-    tieneCodigoPendiente: boolean;
-    codigoPendienteImporte: number;
-  }>;
+  cobradores: AdminDashboardCobradorCard[];
 }) {
-  const cobradoresConSaldo = cobradores.filter(
-    (cobrador) => cobrador.saldoActual > 0 || cobrador.tieneCodigoPendiente,
+  const ordenados = ordenarCobradoresMobile(cobradores);
+
+  const conCodigo = ordenados.filter(
+    (cobrador) => cobrador.tieneCodigoPendiente,
   );
 
-  const listado = cobradoresConSaldo.length > 0 ? cobradoresConSaldo : cobradores;
+  const pendientes = ordenados.filter(
+    (cobrador) => cobrador.saldoActual > 0 && !cobrador.tieneCodigoPendiente,
+  );
+
+  const aCompensar = ordenados.filter(
+    (cobrador) => cobrador.saldoActual < 0 && !cobrador.tieneCodigoPendiente,
+  );
+
+  const alDia = ordenados.filter(
+    (cobrador) =>
+      cobrador.saldoActual === 0 && !cobrador.tieneCodigoPendiente,
+  );
 
   return (
     <div className={`${cardBase} p-3`}>
@@ -3175,13 +3314,13 @@ function MobileCobradoresList({
             Vista rápida de cajas
           </h2>
 
-          <p className="mt-0.5 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
-            Prioriza saldos pendientes y códigos activos.
+          <p className="mt-0.5 line-clamp-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+            Todos los cobradores ordenados por prioridad.
           </p>
         </div>
 
         <div className="shrink-0 rounded-2xl border border-slate-300 bg-white px-3 py-2 text-right shadow-sm shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
-          <p className="text-[9px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Total
           </p>
 
@@ -3191,20 +3330,87 @@ function MobileCobradoresList({
         </div>
       </div>
 
-      {listado.length === 0 ? (
+      {cobradores.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-xs text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-400">
           Todavía no hay usuarios con rol cobrador.
         </div>
       ) : (
         <div className="grid gap-2">
-          {listado.slice(0, 5).map((cobrador) => (
-            <MobileCobradorCard
-              key={cobrador.cobradorId}
-              cobrador={cobrador}
-            />
-          ))}
+          <MobileCobradorGroup
+            title="Con código activo"
+            description="Cobradores con código de cierre pendiente."
+            index={1}
+            cobradores={conCodigo}
+          />
+
+          <MobileCobradorGroup
+            title="Pendientes de cierre"
+            description="Cobradores con saldo positivo pendiente de cierre."
+            index={2}
+            cobradores={pendientes}
+          />
+
+          <MobileCobradorGroup
+            title="Saldo a compensar"
+            description="Cobradores con saldo negativo operativo."
+            index={3}
+            cobradores={aCompensar}
+          />
+
+          <MobileCobradorGroup
+            title="Al día"
+            description="Cobradores sin saldo pendiente ni código activo."
+            index={4}
+            cobradores={alDia}
+          />
+
+          <Link
+            href="/admin/caja-cobradores"
+            className="mt-1 flex h-10 items-center justify-center gap-2 border-t border-slate-300 pt-3 text-xs font-medium text-cyan-700 transition hover:text-cyan-800 dark:border-slate-800 dark:text-cyan-300 dark:hover:text-cyan-200"
+          >
+            Ver todos los cobradores
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       )}
+    </div>
+  );
+}
+
+function MobileMovimientoCard({
+  movimiento,
+}: {
+  movimiento: AdminDashboardUltimoMovimiento;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/45 dark:border-slate-800 dark:bg-slate-950/55 dark:shadow-none">
+      <div className="min-w-0">
+        <div className="flex min-w-0 items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-slate-950 dark:text-white">
+              {movimientoLabel(movimiento.tipoMovimiento)}
+            </p>
+
+            <p className="mt-0.5 line-clamp-2 text-xs leading-4 text-slate-500 dark:text-slate-400">
+              {movimiento.detalle}
+            </p>
+          </div>
+
+          <p className="max-w-[135px] shrink-0 break-words text-right text-sm font-medium leading-5 text-slate-950 dark:text-white">
+            {formatMoney(movimiento.importe)}
+          </p>
+        </div>
+
+        <div className="mt-2 flex min-w-0 items-center justify-between gap-2 border-t border-slate-200 pt-2 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+          <span className="min-w-0 truncate">
+            {movimiento.usuarioNombre} · {movimiento.usuarioRol}
+          </span>
+
+          <span className="shrink-0 text-right">
+            {formatDateTime(movimiento.fecha)}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -3212,18 +3418,10 @@ function MobileCobradoresList({
 function MobileMovimientosList({
   movimientos,
 }: {
-  movimientos: Array<{
-    id: string;
-    fecha: string | null;
-    tipoMovimiento: string;
-    detalle: string;
-    importe: number;
-    usuarioNombre: string;
-    usuarioRol: string;
-  }>;
+  movimientos: AdminDashboardUltimoMovimiento[];
 }) {
   return (
-    <div className={`${cardBase} p-3`}>
+    <div className={`${cardBase} overflow-hidden p-3`}>
       <div className="mb-3">
         <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
           Movimientos recientes
@@ -3240,37 +3438,11 @@ function MobileMovimientosList({
         </div>
       ) : (
         <div className="grid gap-2">
-          {movimientos.slice(0, 5).map((movimiento) => (
-            <div
+          {movimientos.slice(0, 4).map((movimiento) => (
+            <MobileMovimientoCard
               key={movimiento.id}
-              className="rounded-2xl border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/45 dark:border-slate-800 dark:bg-slate-950/55 dark:shadow-none"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-950 dark:text-white">
-                    {movimientoLabel(movimiento.tipoMovimiento)}
-                  </p>
-
-                  <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">
-                    {movimiento.detalle}
-                  </p>
-                </div>
-
-                <p className="shrink-0 text-right text-sm font-medium text-slate-950 dark:text-white">
-                  {formatMoney(movimiento.importe)}
-                </p>
-              </div>
-
-              <div className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 pt-2 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
-                <span className="truncate">
-                  {movimiento.usuarioNombre} · {movimiento.usuarioRol}
-                </span>
-
-                <span className="shrink-0">
-                  {formatDateTime(movimiento.fecha)}
-                </span>
-              </div>
-            </div>
+              movimiento={movimiento}
+            />
           ))}
         </div>
       )}
@@ -3293,9 +3465,9 @@ export default async function AdminPage() {
   const fechaActual = new Date().toISOString();
 
   return (
-    <PageShell maxWidth="wide">
+    <PageShell maxWidth="wide" className="max-lg:space-y-3 max-lg:pb-20">
       <div className="space-y-3 lg:hidden">
-        <MobileHeroCard
+        <MobileTopResumen
           totalCuentaAdmin={resumen.totalCuentaAdmin}
           totalEnCajaCobradores={resumen.totalEnCajaCobradores}
         />
@@ -3437,23 +3609,21 @@ export default async function AdminPage() {
 
                             <div className="min-w-0">
                               <p
-                                className={`truncate text-sm font-semibold ${
-                                  tieneSaldoPendiente
-                                    ? "text-red-700 dark:text-red-300"
-                                    : "text-slate-950 dark:text-white"
-                                }`}
+                                className={`truncate text-sm font-semibold ${getSaldoTone(
+                                  cobrador.saldoActual,
+                                )}`}
                               >
                                 {formatMoney(cobrador.saldoActual)}
                               </p>
 
                               <p className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">
-                                Último cierre:{" "}
-                                {formatDate(cobrador.ultimoRetiroFecha)}
+                                Total cobrado:{" "}
+                                {formatMoney(cobrador.totalCobrado)}
                               </p>
                             </div>
 
                             <div className="min-w-0">
-                              <p className="truncate text-xs font-medium text-slate-800 dark:text-slate-200">
+                              <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
                                 {formatMoney(cobrador.ultimoRetiroImporte)}
                               </p>
 
@@ -3516,7 +3686,7 @@ export default async function AdminPage() {
                   </div>
                 ) : (
                   <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none">
-                    <div className="grid grid-cols-[130px_105px_1fr_120px_105px] border-b border-slate-300 bg-slate-100 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
+                    <div className="grid grid-cols-[145px_120px_minmax(0,1fr)_130px_110px] border-b border-slate-300 bg-slate-100 px-3 py-2.5 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
                       <span>Fecha</span>
                       <span>Tipo</span>
                       <span>Detalle</span>
@@ -3528,18 +3698,18 @@ export default async function AdminPage() {
                       {resumen.ultimosMovimientos.map((movimiento) => (
                         <div
                           key={movimiento.id}
-                          className="grid grid-cols-[130px_105px_1fr_120px_105px] items-center gap-3 px-3 py-2.5"
+                          className="grid grid-cols-[145px_120px_minmax(0,1fr)_130px_110px] items-center gap-3 px-3 py-3"
                         >
-                          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                          <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">
                             {formatDateTime(movimiento.fecha)}
                           </p>
 
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+                            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
                               <ReceiptText className="h-3.5 w-3.5" />
                             </span>
 
-                            <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+                            <span className="truncate text-xs font-medium text-slate-800 dark:text-slate-200">
                               {movimientoLabel(movimiento.tipoMovimiento)}
                             </span>
                           </div>
@@ -3555,7 +3725,7 @@ export default async function AdminPage() {
                             </p>
                           </div>
 
-                          <p className="text-xs font-semibold text-slate-950 dark:text-white">
+                          <p className="truncate text-xs font-semibold text-slate-950 dark:text-white">
                             {formatMoney(movimiento.importe)}
                           </p>
 

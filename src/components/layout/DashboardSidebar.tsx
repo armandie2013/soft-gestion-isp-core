@@ -174,7 +174,7 @@ type DashboardSidebarProps = {
 const linksByRole = {
   admin: [
     {
-      label: "Panel admin",
+      label: "Panel General",
       href: "/admin",
       icon: ShieldCheck,
     },
