@@ -1,3 +1,36 @@
+// // src/components/layout/DashboardShell.tsx
+
+// import type { ReactNode } from "react";
+// import type { AuthTokenPayload } from "@/lib/jwt";
+// import { DashboardHeader } from "@/components/layout/DashboardHeader";
+// import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
+// import { MobileNav } from "@/components/layout/MobileNav";
+
+// type DashboardShellProps = {
+//   user: AuthTokenPayload;
+//   children: ReactNode;
+// };
+
+// export function DashboardShell({ user, children }: DashboardShellProps) {
+//   return (
+//     <div className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+//       <div className="flex min-h-screen">
+//         <DashboardSidebar rol={user.rol} />
+
+//         <div className="flex min-w-0 flex-1 flex-col">
+//           <DashboardHeader user={user} />
+
+//           <main className="flex-1 px-3 py-4 safe-bottom sm:px-4 sm:py-5 lg:px-4 xl:px-5 2xl:px-6">
+//             {children}
+//           </main>
+//         </div>
+//       </div>
+
+//       <MobileNav rol={user.rol} />
+//     </div>
+//   );
+// }
+
 // src/components/layout/DashboardShell.tsx
 
 import type { ReactNode } from "react";
@@ -13,14 +46,14 @@ type DashboardShellProps = {
 
 export function DashboardShell({ user, children }: DashboardShellProps) {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+    <div className="min-h-screen bg-[var(--app-bg)] text-[var(--app-text)]">
       <div className="flex min-h-screen">
         <DashboardSidebar rol={user.rol} />
 
         <div className="flex min-w-0 flex-1 flex-col">
           <DashboardHeader user={user} />
 
-          <main className="flex-1 px-3 py-4 safe-bottom sm:px-4 sm:py-5 lg:px-4 xl:px-5 2xl:px-6">
+          <main className="flex-1 px-3 py-4 safe-bottom sm:px-4 sm:py-5 lg:px-5 xl:px-6 2xl:px-7">
             {children}
           </main>
         </div>

@@ -3,38 +3,37 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /*
-    Paleta modo claro inspirada en la imagen:
-    azul grisáceo, blanco azulado, celeste suave y sombras livianas.
-  */
-  --background: #eef6ff;
-  --foreground: #344155;
+  --font-app:
+  Roboto, "Segoe UI Variable", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 
-  --app-bg: #eef6ff;
-  --app-bg-soft: #f7fbff;
+  --background: #f3f4f6;
+  --foreground: #1f2937;
 
-  --app-surface: rgba(255, 255, 255, 0.82);
+  --app-bg: #eef1f5;
+  --app-bg-soft: #f8fafc;
+
+  --app-surface: rgba(255, 255, 255, 0.9);
   --app-surface-solid: #ffffff;
-  --app-surface-soft: #f4f9ff;
+  --app-surface-soft: #f6f8fb;
 
-  --app-card: rgba(255, 255, 255, 0.9);
+  --app-card: rgba(255, 255, 255, 0.94);
   --app-card-solid: #ffffff;
 
-  --app-border: #d7e4f2;
-  --app-border-strong: #b9cbe0;
+  --app-border: #d7dde6;
+  --app-border-strong: #b9c3d0;
 
-  --app-primary: #7f98b6;
-  --app-primary-hover: #6f88a6;
-  --app-primary-soft: #dce9f7;
+  --app-primary: #2563eb;
+  --app-primary-hover: #1d4ed8;
+  --app-primary-soft: #e8f0ff;
   --app-primary-foreground: #ffffff;
 
-  --app-accent: #9db9d8;
-  --app-accent-soft: #e6f1fb;
+  --app-accent: #3b82f6;
+  --app-accent-soft: #eff6ff;
 
-  --app-text: #344155;
-  --app-text-strong: #263244;
-  --app-muted: #6c7a8c;
-  --app-muted-soft: #8a9aac;
+  --app-text: #374151;
+  --app-text-strong: #111827;
+  --app-muted: #6b7280;
+  --app-muted-soft: #9ca3af;
 
   --app-danger: #dc2626;
   --app-danger-soft: #fee2e2;
@@ -45,8 +44,8 @@
   --app-warning: #d97706;
   --app-warning-soft: #fef3c7;
 
-  --app-shadow: 0 18px 45px rgba(80, 106, 135, 0.16);
-  --app-shadow-soft: 0 10px 28px rgba(80, 106, 135, 0.1);
+  --app-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+  --app-shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.07);
 
   --card: var(--app-card-solid);
   --card-foreground: var(--app-text-strong);
@@ -60,49 +59,46 @@
 }
 
 .dark {
-  /*
-    Modo oscuro conservado como venimos trabajando.
-  */
-  --background: #020617;
-  --foreground: #e2e8f0;
+  --background: #111827;
+  --foreground: #e5e7eb;
 
-  --app-bg: #020617;
-  --app-bg-soft: #0f172a;
+  --app-bg: #0f172a;
+  --app-bg-soft: #111827;
 
-  --app-surface: rgba(15, 23, 42, 0.78);
-  --app-surface-solid: #0f172a;
-  --app-surface-soft: #111827;
+  --app-surface: rgba(17, 24, 39, 0.9);
+  --app-surface-solid: #111827;
+  --app-surface-soft: #1f2937;
 
-  --app-card: rgba(15, 23, 42, 0.86);
-  --app-card-solid: #0f172a;
+  --app-card: rgba(17, 24, 39, 0.92);
+  --app-card-solid: #111827;
 
-  --app-border: #1e293b;
-  --app-border-strong: #334155;
+  --app-border: #334155;
+  --app-border-strong: #475569;
 
-  --app-primary: #06b6d4;
-  --app-primary-hover: #22d3ee;
-  --app-primary-soft: rgba(8, 145, 178, 0.18);
-  --app-primary-foreground: #083344;
+  --app-primary: #3b82f6;
+  --app-primary-hover: #60a5fa;
+  --app-primary-soft: rgba(59, 130, 246, 0.14);
+  --app-primary-foreground: #ffffff;
 
-  --app-accent: #38bdf8;
-  --app-accent-soft: rgba(56, 189, 248, 0.12);
+  --app-accent: #60a5fa;
+  --app-accent-soft: rgba(96, 165, 250, 0.12);
 
-  --app-text: #e2e8f0;
-  --app-text-strong: #f8fafc;
-  --app-muted: #94a3b8;
-  --app-muted-soft: #64748b;
+  --app-text: #d1d5db;
+  --app-text-strong: #f9fafb;
+  --app-muted: #9ca3af;
+  --app-muted-soft: #6b7280;
 
   --app-danger: #f87171;
-  --app-danger-soft: rgba(127, 29, 29, 0.35);
+  --app-danger-soft: rgba(127, 29, 29, 0.32);
 
   --app-success: #34d399;
-  --app-success-soft: rgba(6, 78, 59, 0.35);
+  --app-success-soft: rgba(6, 78, 59, 0.32);
 
   --app-warning: #fbbf24;
-  --app-warning-soft: rgba(120, 53, 15, 0.35);
+  --app-warning-soft: rgba(120, 53, 15, 0.32);
 
-  --app-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-  --app-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.26);
+  --app-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
+  --app-shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.22);
 
   --card: var(--app-card-solid);
   --card-foreground: var(--app-text-strong);
@@ -123,26 +119,27 @@ html {
   min-height: 100%;
   background: var(--app-bg);
   color: var(--app-text);
+  font-family: var(--font-app);
+  text-rendering: optimizeLegibility;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 12% 8%, rgba(157, 185, 216, 0.35), transparent 26rem),
-    radial-gradient(circle at 92% 18%, rgba(220, 233, 247, 0.75), transparent 28rem),
-    linear-gradient(180deg, var(--app-bg-soft) 0%, var(--app-bg) 42%, #e4f0fc 100%);
+    radial-gradient(circle at 14% 8%, rgba(37, 99, 235, 0.08), transparent 24rem),
+    radial-gradient(circle at 94% 16%, rgba(148, 163, 184, 0.14), transparent 28rem),
+    linear-gradient(180deg, var(--app-bg-soft) 0%, var(--app-bg) 48%, #e7ebf0 100%);
   color: var(--app-text);
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .dark body {
   background:
-    radial-gradient(circle at top left, rgba(6, 182, 212, 0.1), transparent 28rem),
-    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.08), transparent 30rem),
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 28rem),
+    radial-gradient(circle at bottom right, rgba(100, 116, 139, 0.1), transparent 30rem),
     var(--app-bg);
 }
 
@@ -153,39 +150,38 @@ textarea {
   font: inherit;
 }
 
+button {
+  letter-spacing: 0;
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
 ::selection {
-  background: rgba(127, 152, 182, 0.35);
+  background: rgba(37, 99, 235, 0.22);
 }
 
 .dark ::selection {
-  background: rgba(6, 182, 212, 0.35);
+  background: rgba(59, 130, 246, 0.28);
 }
 
 .safe-bottom {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
-/*
-  Clases utilitarias propias para no repetir estilos largos.
-  Las usamos dentro de componentes base y también pueden servir en vistas puntuales.
-*/
-
 .app-page-bg {
   background:
-    radial-gradient(circle at 12% 8%, rgba(157, 185, 216, 0.35), transparent 26rem),
-    radial-gradient(circle at 92% 18%, rgba(220, 233, 247, 0.75), transparent 28rem),
-    linear-gradient(180deg, var(--app-bg-soft) 0%, var(--app-bg) 42%, #e4f0fc 100%);
+    radial-gradient(circle at 14% 8%, rgba(37, 99, 235, 0.08), transparent 24rem),
+    radial-gradient(circle at 94% 16%, rgba(148, 163, 184, 0.14), transparent 28rem),
+    linear-gradient(180deg, var(--app-bg-soft) 0%, var(--app-bg) 48%, #e7ebf0 100%);
 }
 
 .dark .app-page-bg {
   background:
-    radial-gradient(circle at top left, rgba(6, 182, 212, 0.1), transparent 28rem),
-    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.08), transparent 30rem),
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 28rem),
+    radial-gradient(circle at bottom right, rgba(100, 116, 139, 0.1), transparent 30rem),
     var(--app-bg);
 }
 
@@ -193,13 +189,13 @@ a {
   background: var(--app-card);
   border: 1px solid var(--app-border);
   box-shadow: var(--app-shadow-soft);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
 }
 
 .app-input {
-  height: 2.75rem;
+  height: 2.65rem;
   width: 100%;
-  border-radius: 0.9rem;
+  border-radius: 0.625rem;
   border: 1px solid var(--app-border);
   background: var(--app-surface-solid);
   padding: 0 0.75rem;
@@ -214,21 +210,21 @@ a {
 
 .app-input:focus {
   border-color: var(--app-primary);
-  box-shadow: 0 0 0 4px rgba(127, 152, 182, 0.16);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
 }
 
 .dark .app-input {
-  background: #020617;
+  background: #0f172a;
 }
 
 .dark .app-input:focus {
-  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.12);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 }
 
 .app-textarea {
   width: 100%;
   resize: none;
-  border-radius: 0.9rem;
+  border-radius: 0.625rem;
   border: 1px solid var(--app-border);
   background: var(--app-surface-solid);
   padding: 0.75rem;
@@ -243,19 +239,19 @@ a {
 
 .app-textarea:focus {
   border-color: var(--app-primary);
-  box-shadow: 0 0 0 4px rgba(127, 152, 182, 0.16);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
 }
 
 .dark .app-textarea {
-  background: #020617;
+  background: #0f172a;
 }
 
 .dark .app-textarea:focus {
-  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.12);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
 }
 
 .app-label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--app-text);
 }
@@ -263,6 +259,202 @@ a {
 .app-muted {
   color: var(--app-muted);
 }
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 15px;
+  }
+
+  .text-\[9px\] {
+    font-size: 0.6875rem !important;
+    line-height: 0.95rem !important;
+  }
+
+  .text-\[10px\] {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+
+  .text-\[11px\] {
+    font-size: 0.8125rem !important;
+    line-height: 1.1rem !important;
+  }
+
+  .text-xs {
+    font-size: 0.875rem !important;
+    line-height: 1.3rem !important;
+  }
+
+  .text-sm {
+    font-size: 0.9375rem !important;
+    line-height: 1.4rem !important;
+  }
+}
+
+.rounded-\[1\.45rem\],
+.rounded-\[1\.35rem\],
+.rounded-\[1\.2rem\],
+.rounded-\[1\.15rem\],
+.rounded-3xl {
+  border-radius: 1rem !important;
+}
+
+.rounded-2xl {
+  border-radius: 0.875rem !important;
+}
+
+.rounded-xl {
+  border-radius: 0.625rem !important;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem !important;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1) !important;
+}
+
+.shadow-sm {
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06) !important;
+}
+
+.shadow-md {
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08) !important;
+}
+
+.dark .shadow-lg,
+.dark .shadow-sm,
+.dark .shadow-md {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+}
+
+.bg-cyan-50 {
+  background-color: #eff6ff !important;
+}
+
+.bg-cyan-100 {
+  background-color: #dbeafe !important;
+}
+
+.bg-cyan-500,
+.bg-cyan-600 {
+  background-color: #2563eb !important;
+}
+
+.hover\:bg-cyan-700:hover {
+  background-color: #1d4ed8 !important;
+}
+
+.hover\:bg-cyan-50:hover {
+  background-color: #eff6ff !important;
+}
+
+.text-cyan-200 {
+  color: #bfdbfe !important;
+}
+
+.text-cyan-300 {
+  color: #93c5fd !important;
+}
+
+.text-cyan-600,
+.text-cyan-700,
+.text-cyan-800 {
+  color: #1d4ed8 !important;
+}
+
+.border-cyan-100 {
+  border-color: #dbeafe !important;
+}
+
+.border-cyan-200,
+.border-cyan-300 {
+  border-color: #bfdbfe !important;
+}
+
+.focus\:border-cyan-500:focus {
+  border-color: #2563eb !important;
+}
+
+.focus\:ring-cyan-500\/10:focus {
+  --tw-ring-color: rgba(37, 99, 235, 0.14) !important;
+}
+
+.ring-cyan-100 {
+  --tw-ring-color: #dbeafe !important;
+}
+
+.shadow-cyan-950\/10 {
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1) !important;
+}
+
+.dark .dark\:bg-cyan-950\/20 {
+  background-color: rgba(30, 64, 175, 0.14) !important;
+}
+
+.dark .dark\:bg-cyan-950\/30 {
+  background-color: rgba(30, 64, 175, 0.16) !important;
+}
+
+.dark .dark\:bg-cyan-950\/40 {
+  background-color: rgba(30, 64, 175, 0.18) !important;
+}
+
+.dark .dark\:bg-cyan-950\/50,
+.dark .dark\:bg-cyan-950\/60 {
+  background-color: rgba(30, 64, 175, 0.22) !important;
+}
+
+.dark .dark\:bg-cyan-500 {
+  background-color: #3b82f6 !important;
+}
+
+.dark .dark\:hover\:bg-cyan-400:hover {
+  background-color: #60a5fa !important;
+}
+
+.dark .dark\:text-cyan-950 {
+  color: #eff6ff !important;
+}
+
+.dark .dark\:text-cyan-300,
+.dark .dark\:text-cyan-200 {
+  color: #93c5fd !important;
+}
+
+.dark .dark\:border-cyan-800 {
+  border-color: #1d4ed8 !important;
+}
+
+.dark .dark\:border-cyan-900 {
+  border-color: #1e3a8a !important;
+}
+
+.dark .dark\:focus\:border-cyan-700:focus {
+  border-color: #3b82f6 !important;
+}
+
+.dark .dark\:ring-cyan-900 {
+  --tw-ring-color: #1e3a8a !important;
+}
+
+input,
+select,
+textarea {
+  letter-spacing: 0;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6b7280;
+}
+
 @media print {
   body {
     background: white !important;
@@ -286,5 +478,55 @@ a {
 
   .print\:shadow-none {
     box-shadow: none !important;
+  }
+}
+
+/*
+  Ajuste de peso visual para Roboto.
+  Roboto se ve más pesada que otras fuentes cuando se usa mucho font-semibold.
+  Bajamos los pesos para que el dashboard respire mejor.
+*/
+
+.font-semibold {
+  font-weight: 500 !important;
+}
+
+.font-bold {
+  font-weight: 500 !important;
+}
+
+strong,
+b {
+  font-weight: 500;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font-weight: inherit;
+}
+
+/*
+  Los títulos muy espaciados en mayúsculas se ven pesados con Roboto.
+  Reducimos un poco el tracking visual en escritorio.
+*/
+
+@media (min-width: 1024px) {
+  .tracking-\[0\.16em\] {
+    letter-spacing: 0.12em !important;
+  }
+
+  .tracking-\[0\.18em\] {
+    letter-spacing: 0.13em !important;
+  }
+
+  .tracking-\[0\.14em\] {
+    letter-spacing: 0.11em !important;
+  }
+
+  .tracking-\[0\.12em\] {
+    letter-spacing: 0.09em !important;
   }
 }

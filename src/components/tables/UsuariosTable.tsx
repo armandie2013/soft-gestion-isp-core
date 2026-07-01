@@ -1,3 +1,308 @@
+// // src/components/tables/UsuariosTable.tsx
+
+// import Link from "next/link";
+// import type { ReactNode } from "react";
+// import {
+//   CalendarClock,
+//   IdCard,
+//   KeyRound,
+//   Mail,
+//   Pencil,
+//   ShieldCheck,
+//   UserRound,
+// } from "lucide-react";
+// import { EmptyState } from "@/components/ui/EmptyState";
+// import type { UsuarioSafe } from "@/types/usuario.types";
+
+// type UsuariosTableProps = {
+//   usuarios: UsuarioSafe[];
+//   totalUsuarios: number;
+// };
+
+// function formatDate(value?: string | null) {
+//   if (!value) return "-";
+
+//   return new Intl.DateTimeFormat("es-AR", {
+//     day: "2-digit",
+//     month: "2-digit",
+//     year: "numeric",
+//   }).format(new Date(value));
+// }
+
+// function formatDateTime(value?: string | null) {
+//   if (!value) return "Nunca";
+
+//   return new Intl.DateTimeFormat("es-AR", {
+//     day: "2-digit",
+//     month: "2-digit",
+//     year: "numeric",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   }).format(new Date(value));
+// }
+
+// function getInitials(usuario: UsuarioSafe) {
+//   const nombre = `${usuario.nombre} ${usuario.apellido}`
+//     .split(" ")
+//     .map((part) => part.trim())
+//     .filter(Boolean);
+
+//   if (nombre.length === 0) return "US";
+
+//   return nombre
+//     .slice(0, 2)
+//     .map((part) => part[0]?.toUpperCase())
+//     .join("");
+// }
+
+// function rolLabel(rol: string) {
+//   if (rol === "admin") return "Admin";
+//   if (rol === "cobrador") return "Cobrador";
+//   return "Cliente";
+// }
+
+// function rolClass(rol: string) {
+//   if (rol === "admin") {
+//     return "border-cyan-200 bg-cyan-50 text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-300";
+//   }
+
+//   if (rol === "cobrador") {
+//     return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300";
+//   }
+
+//   return "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900/70 dark:bg-violet-950/40 dark:text-violet-300";
+// }
+
+// function estadoClass(estado: string) {
+//   if (estado === "activo") {
+//     return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300";
+//   }
+
+//   return "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300";
+// }
+
+// function seguridadClass(debeCambiarPassword: boolean) {
+//   if (debeCambiarPassword) {
+//     return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300";
+//   }
+
+//   return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300";
+// }
+
+// function Pill({
+//   children,
+//   className,
+// }: {
+//   children: ReactNode;
+//   className: string;
+// }) {
+//   return (
+//     <span
+//       className={`inline-flex w-fit items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-5 ${className}`}
+//     >
+//       {children}
+//     </span>
+//   );
+// }
+
+// export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
+//   if (usuarios.length === 0) {
+//     return (
+//       <EmptyState
+//         title="No se encontraron usuarios."
+//         description="Probá limpiar los filtros o cambiar el texto de búsqueda."
+//       />
+//     );
+//   }
+
+//   return (
+//     <>
+//       <div className="hidden overflow-hidden rounded-[1.45rem] border border-slate-200 bg-white/80 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 md:block">
+//         <div className="overflow-x-auto">
+//           <table className="w-full min-w-[1040px] table-fixed text-left text-xs xl:min-w-0">
+//             <colgroup>
+//               <col className="w-[20%]" />
+//               <col className="w-[21%]" />
+//               <col className="w-[9%]" />
+//               <col className="w-[9%]" />
+//               <col className="w-[10%]" />
+//               <col className="w-[12%]" />
+//               <col className="w-[13%]" />
+//               <col className="w-[6%]" />
+//             </colgroup>
+
+//             <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[0.13em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400">
+//               <tr>
+//                 <th className="px-3 py-2.5 font-medium">Usuario</th>
+//                 <th className="px-3 py-2.5 font-medium">Email</th>
+//                 <th className="px-3 py-2.5 font-medium">DNI</th>
+//                 <th className="px-3 py-2.5 font-medium">Rol</th>
+//                 <th className="px-3 py-2.5 font-medium">Estado</th>
+//                 <th className="px-3 py-2.5 font-medium">Seguridad</th>
+//                 <th className="px-3 py-2.5 font-medium">Último acceso</th>
+//                 <th className="px-3 py-2.5 text-right font-medium">Acción</th>
+//               </tr>
+//             </thead>
+
+//             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+//               {usuarios.map((usuario) => (
+//                 <tr
+//                   key={usuario.id}
+//                   className="transition hover:bg-slate-50/80 dark:hover:bg-slate-950/35"
+//                 >
+//                   <td className="px-3 py-3">
+//                     <div className="flex min-w-0 items-center gap-2.5">
+//                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-[10px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+//                         {getInitials(usuario)}
+//                       </div>
+
+//                       <div className="min-w-0">
+//                         <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
+//                           {usuario.apellido}, {usuario.nombre}
+//                         </p>
+
+//                         <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+//                           Creado {formatDate(usuario.creadoEn)}
+//                         </p>
+//                       </div>
+//                     </div>
+//                   </td>
+
+//                   <td className="px-3 py-3">
+//                     <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+//                       {usuario.email}
+//                     </p>
+//                   </td>
+
+//                   <td className="px-3 py-3">
+//                     <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+//                       {usuario.dni || "-"}
+//                     </p>
+//                   </td>
+
+//                   <td className="px-3 py-3">
+//                     <Pill className={rolClass(usuario.rol)}>
+//                       {rolLabel(usuario.rol)}
+//                     </Pill>
+//                   </td>
+
+//                   <td className="px-3 py-3">
+//                     <Pill className={estadoClass(usuario.estado)}>
+//                       <span className="h-1.5 w-1.5 rounded-full bg-current" />
+//                       {usuario.estado === "activo" ? "Activo" : "Suspendido"}
+//                     </Pill>
+//                   </td>
+
+//                   <td className="px-3 py-3">
+//                     <Pill className={seguridadClass(usuario.debeCambiarPassword)}>
+//                       <ShieldCheck className="h-3 w-3" />
+//                       {usuario.debeCambiarPassword ? "Cambiar" : "Clave OK"}
+//                     </Pill>
+//                   </td>
+
+//                   <td className="px-3 py-3">
+//                     <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+//                       {formatDateTime(usuario.ultimoAcceso)}
+//                     </p>
+//                   </td>
+
+//                   <td className="px-3 py-3 text-right">
+//                     <Link
+//                       href={`/usuarios/${usuario.id}/editar`}
+//                       className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+//                       title="Editar usuario"
+//                     >
+//                       <Pencil className="h-3.5 w-3.5" />
+//                     </Link>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+
+//         <div className="flex items-center justify-between border-t border-slate-200 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+//           <span>
+//             Mostrando {usuarios.length} de {totalUsuarios} usuarios
+//           </span>
+
+//           <span>Vista administrativa</span>
+//         </div>
+//       </div>
+
+//       <div className="grid gap-3 md:hidden">
+//         {usuarios.map((usuario) => (
+//           <div
+//             key={usuario.id}
+//             className="rounded-[1.5rem] border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70"
+//           >
+//             <div className="flex items-start justify-between gap-3">
+//               <div className="flex min-w-0 gap-3">
+//                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-xs font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+//                   {getInitials(usuario)}
+//                 </div>
+
+//                 <div className="min-w-0">
+//                   <h2 className="truncate text-sm font-medium text-slate-950 dark:text-white">
+//                     {usuario.apellido}, {usuario.nombre}
+//                   </h2>
+
+//                   <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-slate-500 dark:text-slate-400">
+//                     <Mail className="h-3.5 w-3.5" />
+//                     {usuario.email}
+//                   </p>
+
+//                   <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-slate-500 dark:text-slate-400">
+//                     <IdCard className="h-3.5 w-3.5" />
+//                     DNI {usuario.dni || "-"}
+//                   </p>
+//                 </div>
+//               </div>
+
+//               <Pill className={estadoClass(usuario.estado)}>
+//                 {usuario.estado === "activo" ? "Activo" : "Suspendido"}
+//               </Pill>
+//             </div>
+
+//             <div className="mt-4 flex flex-wrap gap-2">
+//               <Pill className={rolClass(usuario.rol)}>
+//                 <UserRound className="h-3.5 w-3.5" />
+//                 {rolLabel(usuario.rol)}
+//               </Pill>
+
+//               <Pill className={seguridadClass(usuario.debeCambiarPassword)}>
+//                 <KeyRound className="h-3.5 w-3.5" />
+//                 {usuario.debeCambiarPassword ? "Cambio requerido" : "Clave OK"}
+//               </Pill>
+//             </div>
+
+//             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400">
+//               <div className="flex items-center justify-between gap-3">
+//                 <span className="inline-flex items-center gap-1.5">
+//                   <CalendarClock className="h-3.5 w-3.5" />
+//                   Último acceso
+//                 </span>
+
+//                 <span className="text-right">
+//                   {formatDateTime(usuario.ultimoAcceso)}
+//                 </span>
+//               </div>
+//             </div>
+
+//             <Link
+//               href={`/usuarios/${usuario.id}/editar`}
+//               className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+//             >
+//               <Pencil className="h-4 w-4" />
+//               Editar usuario
+//             </Link>
+//           </div>
+//         ))}
+//       </div>
+//     </>
+//   );
+// }
+
 // src/components/tables/UsuariosTable.tsx
 
 import Link from "next/link";
@@ -10,6 +315,7 @@ import {
   Pencil,
   ShieldCheck,
   UserRound,
+  WalletCards,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { UsuarioSafe } from "@/types/usuario.types";
@@ -22,15 +328,23 @@ type UsuariosTableProps = {
 function formatDate(value?: string | null) {
   if (!value) return "-";
 
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "-";
+
   return new Intl.DateTimeFormat("es-AR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function formatDateTime(value?: string | null) {
   if (!value) return "Nunca";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "Nunca";
 
   return new Intl.DateTimeFormat("es-AR", {
     day: "2-digit",
@@ -38,7 +352,15 @@ function formatDateTime(value?: string | null) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(new Date(value));
+  }).format(date);
+}
+
+function formatMoney(value?: number | null) {
+  const amount = Number(value || 0);
+  const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  return `$ ${formattedInteger},${decimalPart}`;
 }
 
 function getInitials(usuario: UsuarioSafe) {
@@ -63,30 +385,30 @@ function rolLabel(rol: string) {
 
 function rolClass(rol: string) {
   if (rol === "admin") {
-    return "border-cyan-200 bg-cyan-50 text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-300";
+    return "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700/80 dark:bg-blue-950/35 dark:text-blue-300";
   }
 
   if (rol === "cobrador") {
-    return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300";
+    return "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700/80 dark:bg-amber-950/35 dark:text-amber-300";
   }
 
-  return "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900/70 dark:bg-violet-950/40 dark:text-violet-300";
+  return "border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-700/80 dark:bg-violet-950/35 dark:text-violet-300";
 }
 
 function estadoClass(estado: string) {
   if (estado === "activo") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300";
+    return "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700/80 dark:bg-emerald-950/35 dark:text-emerald-300";
   }
 
-  return "border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300";
+  return "border-red-300 bg-red-50 text-red-700 dark:border-red-700/80 dark:bg-red-950/35 dark:text-red-300";
 }
 
 function seguridadClass(debeCambiarPassword: boolean) {
   if (debeCambiarPassword) {
-    return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300";
+    return "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700/80 dark:bg-amber-950/35 dark:text-amber-300";
   }
 
-  return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300";
+  return "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700/80 dark:bg-emerald-950/35 dark:text-emerald-300";
 }
 
 function Pill({
@@ -98,10 +420,52 @@ function Pill({
 }) {
   return (
     <span
-      className={`inline-flex w-fit items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium leading-5 ${className}`}
+      className={`inline-flex w-fit items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium leading-5 ${className}`}
     >
       {children}
     </span>
+  );
+}
+
+function ExtraInfo({ usuario }: { usuario: UsuarioSafe }) {
+  if (usuario.rol === "cobrador") {
+    return (
+      <div className="min-w-0">
+        <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
+          {formatMoney(usuario.limiteCajaCobrador)}
+        </p>
+
+        <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+          Límite de caja
+        </p>
+      </div>
+    );
+  }
+
+  if (usuario.rol === "cliente") {
+    return (
+      <div className="min-w-0">
+        <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
+          {usuario.clienteId ? "Vinculado" : "Sin vínculo"}
+        </p>
+
+        <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+          Cliente asociado
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-w-0">
+      <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
+        {usuario.esProtegido ? "Protegido" : "Admin"}
+      </p>
+
+      <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+        Acceso administrativo
+      </p>
+    </div>
   );
 }
 
@@ -117,51 +481,53 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
 
   return (
     <>
-      <div className="hidden overflow-hidden rounded-[1.45rem] border border-slate-200 bg-white/80 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 md:block">
+      <div className="hidden overflow-hidden rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80 md:block">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1040px] table-fixed text-left text-xs xl:min-w-0">
+          <table className="w-full min-w-[1160px] table-fixed text-left text-[13px] xl:min-w-0">
             <colgroup>
               <col className="w-[20%]" />
-              <col className="w-[21%]" />
+              <col className="w-[20%]" />
               <col className="w-[9%]" />
               <col className="w-[9%]" />
-              <col className="w-[10%]" />
-              <col className="w-[12%]" />
+              <col className="w-[9%]" />
               <col className="w-[13%]" />
-              <col className="w-[6%]" />
+              <col className="w-[12%]" />
+              <col className="w-[8%]" />
             </colgroup>
 
-            <thead className="border-b border-slate-200 bg-slate-50 text-[10px] uppercase tracking-[0.13em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400">
+            <thead className="border-b border-slate-300 bg-slate-100 text-[11px] uppercase tracking-[0.09em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2.5 font-medium">Usuario</th>
                 <th className="px-3 py-2.5 font-medium">Email</th>
                 <th className="px-3 py-2.5 font-medium">DNI</th>
                 <th className="px-3 py-2.5 font-medium">Rol</th>
                 <th className="px-3 py-2.5 font-medium">Estado</th>
-                <th className="px-3 py-2.5 font-medium">Seguridad</th>
+                <th className="px-3 py-2.5 font-medium">Datos</th>
                 <th className="px-3 py-2.5 font-medium">Último acceso</th>
-                <th className="px-3 py-2.5 text-right font-medium">Acción</th>
+                <th className="px-3 py-2.5 text-right font-medium">
+                  Acción
+                </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {usuarios.map((usuario) => (
                 <tr
                   key={usuario.id}
-                  className="transition hover:bg-slate-50/80 dark:hover:bg-slate-950/35"
+                  className="transition hover:bg-blue-50/55 dark:hover:bg-blue-950/12"
                 >
                   <td className="px-3 py-3">
                     <div className="flex min-w-0 items-center gap-2.5">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-[10px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[11px] font-medium text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
                         {getInitials(usuario)}
                       </div>
 
                       <div className="min-w-0">
-                        <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
+                        <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
                           {usuario.apellido}, {usuario.nombre}
                         </p>
 
-                        <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+                        <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
                           Creado {formatDate(usuario.creadoEn)}
                         </p>
                       </div>
@@ -169,13 +535,13 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
                   </td>
 
                   <td className="px-3 py-3">
-                    <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+                    <p className="truncate text-[13px] text-slate-600 dark:text-slate-300">
                       {usuario.email}
                     </p>
                   </td>
 
                   <td className="px-3 py-3">
-                    <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+                    <p className="truncate text-[13px] text-slate-600 dark:text-slate-300">
                       {usuario.dni || "-"}
                     </p>
                   </td>
@@ -194,25 +560,33 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
                   </td>
 
                   <td className="px-3 py-3">
-                    <Pill className={seguridadClass(usuario.debeCambiarPassword)}>
-                      <ShieldCheck className="h-3 w-3" />
-                      {usuario.debeCambiarPassword ? "Cambiar" : "Clave OK"}
-                    </Pill>
+                    <ExtraInfo usuario={usuario} />
                   </td>
 
                   <td className="px-3 py-3">
-                    <p className="truncate text-xs text-slate-600 dark:text-slate-300">
-                      {formatDateTime(usuario.ultimoAcceso)}
-                    </p>
+                    <div className="min-w-0">
+                      <p className="truncate text-[13px] text-slate-600 dark:text-slate-300">
+                        {formatDateTime(usuario.ultimoAcceso)}
+                      </p>
+
+                      <Pill
+                        className={seguridadClass(
+                          usuario.debeCambiarPassword,
+                        )}
+                      >
+                        <ShieldCheck className="h-3 w-3" />
+                        {usuario.debeCambiarPassword ? "Cambiar" : "Clave OK"}
+                      </Pill>
+                    </div>
                   </td>
 
                   <td className="px-3 py-3 text-right">
                     <Link
                       href={`/usuarios/${usuario.id}/editar`}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+                      className="inline-flex h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-medium text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-blue-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30"
                       title="Editar usuario"
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      Editar
                     </Link>
                   </td>
                 </tr>
@@ -221,7 +595,7 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-200 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+        <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[12px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
           <span>
             Mostrando {usuarios.length} de {totalUsuarios} usuarios
           </span>
@@ -234,11 +608,11 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
         {usuarios.map((usuario) => (
           <div
             key={usuario.id}
-            className="rounded-[1.5rem] border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70"
+            className="rounded-xl border border-slate-300 bg-white/95 p-3 shadow-md shadow-slate-300/45 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-xs font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-medium text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
                   {getInitials(usuario)}
                 </div>
 
@@ -264,7 +638,7 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
               </Pill>
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               <Pill className={rolClass(usuario.rol)}>
                 <UserRound className="h-3.5 w-3.5" />
                 {rolLabel(usuario.rol)}
@@ -272,11 +646,24 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
 
               <Pill className={seguridadClass(usuario.debeCambiarPassword)}>
                 <KeyRound className="h-3.5 w-3.5" />
-                {usuario.debeCambiarPassword ? "Cambio requerido" : "Clave OK"}
+                {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
               </Pill>
             </div>
 
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400">
+            <div className="mt-3 grid gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400">
+              {usuario.rol === "cobrador" ? (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center gap-1.5">
+                    <WalletCards className="h-3.5 w-3.5" />
+                    Límite de caja
+                  </span>
+
+                  <span className="text-right font-medium text-slate-950 dark:text-white">
+                    {formatMoney(usuario.limiteCajaCobrador)}
+                  </span>
+                </div>
+              ) : null}
+
               <div className="flex items-center justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5">
                   <CalendarClock className="h-3.5 w-3.5" />
@@ -287,11 +674,16 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
                   {formatDateTime(usuario.ultimoAcceso)}
                 </span>
               </div>
+
+              <div className="flex items-center justify-between gap-3">
+                <span>Creado</span>
+                <span className="text-right">{formatDate(usuario.creadoEn)}</span>
+              </div>
             </div>
 
             <Link
               href={`/usuarios/${usuario.id}/editar`}
-              className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+              className="mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-blue-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30"
             >
               <Pencil className="h-4 w-4" />
               Editar usuario
