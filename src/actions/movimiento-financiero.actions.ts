@@ -505,14 +505,11 @@ export async function generarFacturacionManualAction(
   const referenciaMes = Number(formData.get("referenciaMes") || 0);
   const referenciaAnio = Number(formData.get("referenciaAnio") || 0);
   const observacion = String(formData.get("observacion") || "");
-  const fechaCorte = String(formData.get("fechaCorte") || "");
-
   const result = await generarFacturacionManual(
     {
       referenciaMes,
       referenciaAnio,
       observacion,
-      fechaCorte,
       origenFacturacion: "manual",
     },
     buildCreador(user),
@@ -533,7 +530,6 @@ export async function generarFacturacionManualAction(
       generadas: result.generadas ?? null,
       omitidas: result.omitidas ?? null,
       ajustes: result.ajustes ?? null,
-      fechaCorte,
       tieneObservacion: Boolean(observacion.trim()),
       ok: result.ok,
     },

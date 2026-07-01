@@ -1,14 +1,6 @@
 import { NextResponse } from "next/server";
 import { generarFacturacionManual } from "@/services/movimiento-financiero.service";
 
-function getInputDate(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
 function getPeriodoSiguiente(date: Date) {
   const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
 
@@ -46,13 +38,10 @@ export async function GET(request: Request) {
 
   const now = new Date();
   const periodoSiguiente = getPeriodoSiguiente(now);
-  const fechaCorte = getInputDate(now);
-
   const result = await generarFacturacionManual(
     {
       referenciaMes: periodoSiguiente.mes,
       referenciaAnio: periodoSiguiente.anio,
-      fechaCorte,
       observacion: "Ejecución automática por cron.",
       origenFacturacion: "cron",
     },

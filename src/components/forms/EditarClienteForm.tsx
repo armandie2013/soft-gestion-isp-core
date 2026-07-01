@@ -1255,22 +1255,19 @@ export function EditarClienteForm({
               </div>
             </div>
 
-            <div>
-              <FieldLabel htmlFor="fechaCambioPlan" optional>
-                Cambio de plan
-              </FieldLabel>
+            <div className="rounded-2xl border border-slate-300 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/70">
+              <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+                Último cambio de plan
+              </p>
 
-              <div className="relative">
-                <input
-                  id="fechaCambioPlan"
-                  name="fechaCambioPlan"
-                  type="date"
-                  defaultValue={getTodayInputDate()}
-                  className={`${inputClass} pr-9`}
-                />
+              <p className="mt-1 text-sm font-medium text-slate-950 dark:text-white">
+                {cliente.ultimoCambioPlan || "Sin cambios registrados"}
+              </p>
 
-                <CalendarDays className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-              </div>
+              <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                Si cambiás el plan y guardás, el sistema registra el cambio con
+                la fecha actual automáticamente.
+              </p>
             </div>
 
             <div className="rounded-2xl border border-slate-300 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/70">
