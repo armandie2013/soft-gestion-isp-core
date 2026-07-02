@@ -858,32 +858,32 @@
 
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import {
   CalendarDays,
   Eye,
   FileText,
+  IdCard,
   MapPin,
   Pencil,
-  Search,
+  Phone,
   Trash2,
   UserRound,
   Wifi,
-  X,
 } from "lucide-react";
 import { eliminarClienteAction } from "@/actions/cliente.actions";
-import { EmptyState } from "@/components/ui/EmptyState";
 import type { ClienteSafe } from "@/types/cliente.types";
 
 type ClientesTableProps = {
   clientes: ClienteSafe[];
+  totalClientes: number;
 };
 
-const cardBase =
-  "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
+const panelClass =
+  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
 
-function formatMoney(value: number) {
+function formatMoney(value?: number | null) {
   const amount = Number(value || 0);
   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -917,14 +917,6 @@ function estadoClass(estado: string) {
   }
 
   return "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300";
-}
-
-function normalizarTexto(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
 }
 
 function getInitials(cliente: ClienteSafe) {
@@ -966,7 +958,7 @@ function ActionIconLink({
   return (
     <Link
       href={href}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-600 shadow-sm shadow-slate-300/40 transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300 dark:shadow-none dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm shadow-slate-300/35 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
       title={title}
     >
       {icon}
@@ -974,334 +966,285 @@ function ActionIconLink({
   );
 }
 
+function EmptyClientesPanel() {
+  return (
+    <section className={`${panelClass} mt-3 px-4 py-10 text-center`}>
+      <p className="text-sm font-semibold text-slate-950 dark:text-white">
+        No se encontraron clientes.
+      </p>
+
+      <p className="mt-2 text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+        Probá limpiar los filtros o cambiar el texto de búsqueda.
+      </p>
+    </section>
+  );
+}
+
 function MobileClienteCard({ cliente }: { cliente: ClienteSafe }) {
   return (
-    <article className="rounded-[1.25rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-100 text-xs font-semibold text-cyan-800 ring-1 ring-cyan-200 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
-            {getInitials(cliente)}
+    <article className="overflow-hidden rounded-[1.25rem] border border-slate-300 bg-white shadow-lg shadow-slate-400/35 ring-1 ring-white/80 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/25 dark:ring-slate-800/80">
+      <div className="border-b border-slate-200 bg-white px-3.5 py-3.5 dark:border-slate-700 dark:bg-slate-900">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-xs font-semibold text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
+              {getInitials(cliente)}
+            </div>
+
+            <div className="min-w-0">
+              <h2 className="truncate text-[14px] font-semibold text-slate-950 dark:text-white">
+                {cliente.apellido}, {cliente.nombre}
+              </h2>
+
+              <p className="mt-1 flex items-center gap-1.5 truncate text-[12px] text-slate-600 dark:text-slate-400">
+                <IdCard className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                N° {cliente.numeroCliente} · DNI {cliente.dni || "-"}
+              </p>
+
+              <p className="mt-1 flex items-center gap-1.5 truncate text-[12px] text-slate-600 dark:text-slate-400">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                {cliente.telefono || "Sin teléfono"}
+              </p>
+            </div>
           </div>
 
-          <div className="min-w-0">
-            <h2 className="truncate text-sm font-semibold text-slate-950 dark:text-white">
-              {cliente.apellido}, {cliente.nombre}
-            </h2>
-
-            <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
-              N° {cliente.numeroCliente} · DNI {cliente.dni || "-"}
-            </p>
-          </div>
-        </div>
-
-        <EstadoPill estado={cliente.estado} />
-      </div>
-
-      <div className="mt-3 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400">
-        <div className="flex items-center justify-between gap-3">
-          <span className="inline-flex min-w-0 items-center gap-1.5">
-            <Wifi className="h-3.5 w-3.5 shrink-0 text-cyan-700 dark:text-cyan-300" />
-            <span className="truncate">{cliente.plan?.nombre || "Sin plan"}</span>
-          </span>
-
-          <span className="shrink-0 text-right font-medium text-cyan-700 dark:text-cyan-300">
-            {cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
-          </span>
-        </div>
-
-        <div className="mt-2 flex items-center gap-1.5 border-t border-slate-300 pt-2 dark:border-slate-800">
-          <MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-          <span className="truncate">{cliente.direccion || "Sin dirección"}</span>
-        </div>
-
-        <div className="mt-2 flex items-center gap-1.5 border-t border-slate-300 pt-2 dark:border-slate-800">
-          <UserRound className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-          <span className="truncate">
-            {cliente.localidad || "-"}, {cliente.provincia || "-"}
-          </span>
-        </div>
-
-        <div className="mt-2 flex items-center gap-1.5 border-t border-slate-300 pt-2 dark:border-slate-800">
-          <CalendarDays className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-          <span className="truncate">Alta {formatDate(cliente.fechaAlta)}</span>
+          <EstadoPill estado={cliente.estado} />
         </div>
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        <Link
-          href={`/clientes/${cliente.id}`}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
-        >
-          <Eye className="h-3.5 w-3.5" />
-          Ver
-        </Link>
+      <div className="bg-slate-50 px-3.5 py-3 dark:bg-slate-950/35">
+        <div className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-[12px] text-slate-600 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 dark:shadow-black/10">
+          <div className="flex items-center justify-between gap-3">
+            <span className="inline-flex min-w-0 items-center gap-1.5">
+              <Wifi className="h-3.5 w-3.5 shrink-0 text-blue-700 dark:text-blue-300" />
+              <span className="truncate">
+                {cliente.plan?.nombre || "Sin plan"}
+              </span>
+            </span>
 
-        <Link
-          href={`/clientes/${cliente.id}/estado-cuenta`}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
-        >
-          <FileText className="h-3.5 w-3.5" />
-          Cuenta
-        </Link>
+            <span className="shrink-0 text-right font-semibold text-slate-950 dark:text-white">
+              {cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
+            </span>
+          </div>
 
-        <Link
-          href={`/clientes/${cliente.id}/editar`}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
-        >
-          <Pencil className="h-3.5 w-3.5" />
-          Editar
-        </Link>
+          <div className="mt-2 flex items-center gap-1.5 border-t border-slate-200 pt-2 dark:border-slate-700">
+            <MapPin className="h-3.5 w-3.5 shrink-0 text-blue-700 dark:text-blue-300" />
+            <span className="truncate">
+              {cliente.direccion || "Sin dirección"}
+            </span>
+          </div>
+
+          <div className="mt-2 flex items-center gap-1.5 border-t border-slate-200 pt-2 dark:border-slate-700">
+            <UserRound className="h-3.5 w-3.5 shrink-0 text-blue-700 dark:text-blue-300" />
+            <span className="truncate">
+              {cliente.localidad || "-"}, {cliente.provincia || "-"}
+            </span>
+          </div>
+
+          <div className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 pt-2 dark:border-slate-700">
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays className="h-3.5 w-3.5 text-blue-700 dark:text-blue-300" />
+              Alta
+            </span>
+
+            <span className="text-right text-slate-700 dark:text-slate-300">
+              {formatDate(cliente.fechaAlta)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <Link
+            href={`/clientes/${cliente.id}`}
+            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            Ver
+          </Link>
+
+          <Link
+            href={`/clientes/${cliente.id}/estado-cuenta`}
+            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            Cuenta
+          </Link>
+
+          <Link
+            href={`/clientes/${cliente.id}/editar`}
+            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Editar
+          </Link>
+        </div>
       </div>
     </article>
   );
 }
 
-export function ClientesTable({ clientes }: ClientesTableProps) {
-  const [busqueda, setBusqueda] = useState("");
-
-  const clientesFiltrados = useMemo(() => {
-    const query = normalizarTexto(busqueda);
-
-    if (!query) {
-      return clientes;
-    }
-
-    return clientes.filter((cliente) => {
-      const textoBuscable = normalizarTexto(
-        [
-          cliente.numeroCliente,
-          cliente.nombre,
-          cliente.apellido,
-          cliente.dni,
-          cliente.direccion,
-          cliente.localidad,
-          cliente.provincia,
-          cliente.telefono,
-          cliente.email,
-          cliente.estado,
-          cliente.plan?.nombre,
-          cliente.plan?.tipo,
-          cliente.plan?.detalle,
-          cliente.plan?.importe,
-          cliente.fechaAlta,
-        ]
-          .filter(Boolean)
-          .join(" "),
-      );
-
-      return textoBuscable.includes(query);
-    });
-  }, [busqueda, clientes]);
-
+export function ClientesTable({ clientes, totalClientes }: ClientesTableProps) {
   if (clientes.length === 0) {
-    return (
-      <EmptyState
-        title="No hay clientes cargados."
-        description="Creá el primer cliente para empezar a gestionar planes, facturación y estado de cuenta."
-      />
-    );
+    return <EmptyClientesPanel />;
   }
 
   return (
-    <div className="space-y-3">
-      <div className={`${cardBase} p-3`}>
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+    <>
+      <div className={`mt-3 hidden overflow-hidden ${panelClass} md:block`}>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1120px] table-fixed text-left text-[12px] xl:min-w-0">
+            <colgroup>
+              <col className="w-[7%]" />
+              <col className="w-[20%]" />
+              <col className="w-[9%]" />
+              <col className="w-[17%]" />
+              <col className="w-[12%]" />
+              <col className="w-[8%]" />
+              <col className="w-[14%]" />
+              <col className="w-[8%]" />
+              <col className="w-[12%]" />
+            </colgroup>
 
-            <input
-              type="text"
-              value={busqueda}
-              onChange={(event) => setBusqueda(event.target.value)}
-              placeholder="Buscar por cliente, DNI, número, localidad o plan"
-              className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 pl-9 pr-9 text-xs text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-500/10 dark:border-slate-800 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-cyan-700 dark:focus:bg-slate-900 lg:h-9"
-            />
+            <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.08em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
+              <tr>
+                <th className="px-3 py-2.5 font-medium">N°</th>
+                <th className="px-3 py-2.5 font-medium">Cliente</th>
+                <th className="px-3 py-2.5 font-medium">DNI</th>
+                <th className="px-3 py-2.5 font-medium">Dirección</th>
+                <th className="px-3 py-2.5 font-medium">Localidad</th>
+                <th className="px-3 py-2.5 font-medium">Alta</th>
+                <th className="px-3 py-2.5 font-medium">Plan</th>
+                <th className="px-3 py-2.5 font-medium">Estado</th>
+                <th className="px-3 py-2.5 text-right font-medium">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
 
-            {busqueda ? (
-              <button
-                type="button"
-                onClick={() => setBusqueda("")}
-                className="absolute right-2 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-cyan-50 hover:text-cyan-700 dark:text-slate-500 dark:hover:bg-cyan-950/40 dark:hover:text-cyan-300"
-                aria-label="Limpiar búsqueda"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            ) : null}
-          </div>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+              {clientes.map((cliente) => (
+                <tr
+                  key={cliente.id}
+                  className="transition hover:bg-blue-50/55 dark:hover:bg-blue-950/12"
+                >
+                  <td className="px-3 py-2.5">
+                    <span className="inline-flex rounded-lg bg-blue-50 px-2 py-1 text-[10px] font-medium text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
+                      {cliente.numeroCliente}
+                    </span>
+                  </td>
 
-          <div className="flex shrink-0 items-center justify-between gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 sm:justify-end">
-            <span>Total: {clientes.length}</span>
-            <span>Mostrados: {clientesFiltrados.length}</span>
-          </div>
+                  <td className="px-3 py-2.5">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-medium text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
+                        {getInitials(cliente)}
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
+                          {cliente.apellido}, {cliente.nombre}
+                        </p>
+
+                        <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+                          {cliente.telefono || "Sin teléfono"}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="px-3 py-2.5">
+                    <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+                      {cliente.dni || "-"}
+                    </p>
+                  </td>
+
+                  <td className="px-3 py-2.5">
+                    <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+                      {cliente.direccion || "-"}
+                    </p>
+                  </td>
+
+                  <td className="px-3 py-2.5">
+                    <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+                      {cliente.localidad || "-"}
+                    </p>
+
+                    <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+                      {cliente.provincia || "-"}
+                    </p>
+                  </td>
+
+                  <td className="px-3 py-2.5">
+                    <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+                      {formatDate(cliente.fechaAlta)}
+                    </p>
+                  </td>
+
+                  <td className="px-3 py-2.5">
+                    <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
+                      {cliente.plan?.nombre || "Sin plan"}
+                    </p>
+
+                    <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+                      {cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
+                    </p>
+                  </td>
+
+                  <td className="px-3 py-2.5">
+                    <EstadoPill estado={cliente.estado} />
+                  </td>
+
+                  <td className="px-3 py-2.5 text-right">
+                    <div className="flex justify-end gap-1.5">
+                      <ActionIconLink
+                        href={`/clientes/${cliente.id}`}
+                        title="Ver cliente"
+                        icon={<Eye className="h-3.5 w-3.5" />}
+                      />
+
+                      <ActionIconLink
+                        href={`/clientes/${cliente.id}/estado-cuenta`}
+                        title="Estado de cuenta"
+                        icon={<FileText className="h-3.5 w-3.5" />}
+                      />
+
+                      <ActionIconLink
+                        href={`/clientes/${cliente.id}/editar`}
+                        title="Editar cliente"
+                        icon={<Pencil className="h-3.5 w-3.5" />}
+                      />
+
+                      <form action={eliminarClienteAction}>
+                        <input type="hidden" name="id" value={cliente.id} />
+
+                        <button
+                          type="submit"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-300 bg-red-50 text-red-700 shadow-sm transition hover:bg-red-100 active:scale-[0.99] dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-300 dark:hover:bg-red-950/50"
+                          title="Eliminar cliente"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          <span>
+            Mostrando {clientes.length} de {totalClientes} clientes
+          </span>
+
+          <span>Vista administrativa</span>
         </div>
       </div>
 
-      {clientesFiltrados.length === 0 ? (
-        <EmptyState
-          title="No se encontraron clientes."
-          description="Probá con otro nombre, DNI, número de cliente, localidad o plan."
-        />
-      ) : (
-        <>
-          <div className="hidden overflow-hidden rounded-[1.45rem] border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none lg:block">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[1040px] table-fixed text-left text-xs xl:min-w-0">
-                <colgroup>
-                  <col className="w-[7%]" />
-                  <col className="w-[21%]" />
-                  <col className="w-[10%]" />
-                  <col className="w-[18%]" />
-                  <col className="w-[13%]" />
-                  <col className="w-[9%]" />
-                  <col className="w-[14%]" />
-                  <col className="w-[8%]" />
-                  <col className="w-[13%]" />
-                </colgroup>
-
-                <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.13em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
-                  <tr>
-                    <th className="px-3 py-2.5 font-medium">N°</th>
-                    <th className="px-3 py-2.5 font-medium">Cliente</th>
-                    <th className="px-3 py-2.5 font-medium">DNI</th>
-                    <th className="px-3 py-2.5 font-medium">Dirección</th>
-                    <th className="px-3 py-2.5 font-medium">Localidad</th>
-                    <th className="px-3 py-2.5 font-medium">Alta</th>
-                    <th className="px-3 py-2.5 font-medium">Plan</th>
-                    <th className="px-3 py-2.5 font-medium">Estado</th>
-                    <th className="px-3 py-2.5 text-right font-medium">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {clientesFiltrados.map((cliente) => (
-                    <tr
-                      key={cliente.id}
-                      className="transition hover:bg-slate-50/90 dark:hover:bg-cyan-950/10"
-                    >
-                      <td className="px-3 py-3">
-                        <span className="inline-flex rounded-lg bg-cyan-50 px-2 py-1 text-[10px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-                          {cliente.numeroCliente}
-                        </span>
-                      </td>
-
-                      <td className="px-3 py-3">
-                        <div className="flex min-w-0 items-center gap-2.5">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-[10px] font-medium text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
-                            {getInitials(cliente)}
-                          </div>
-
-                          <div className="min-w-0">
-                            <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
-                              {cliente.apellido}, {cliente.nombre}
-                            </p>
-
-                            <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
-                              {cliente.telefono || "Sin teléfono"}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="px-3 py-3">
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
-                          {cliente.dni}
-                        </p>
-                      </td>
-
-                      <td className="px-3 py-3">
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
-                          {cliente.direccion || "-"}
-                        </p>
-                      </td>
-
-                      <td className="px-3 py-3">
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
-                          {cliente.localidad || "-"}
-                        </p>
-
-                        <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
-                          {cliente.provincia || "-"}
-                        </p>
-                      </td>
-
-                      <td className="px-3 py-3">
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
-                          {formatDate(cliente.fechaAlta)}
-                        </p>
-                      </td>
-
-                      <td className="px-3 py-3">
-                        <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
-                          {cliente.plan?.nombre || "Sin plan"}
-                        </p>
-
-                        <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
-                          {cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
-                        </p>
-                      </td>
-
-                      <td className="px-3 py-3">
-                        <EstadoPill estado={cliente.estado} />
-                      </td>
-
-                      <td className="px-3 py-3 text-right">
-                        <div className="flex justify-end gap-1.5">
-                          <ActionIconLink
-                            href={`/clientes/${cliente.id}`}
-                            title="Ver cliente"
-                            icon={<Eye className="h-3.5 w-3.5" />}
-                          />
-
-                          <ActionIconLink
-                            href={`/clientes/${cliente.id}/estado-cuenta`}
-                            title="Estado de cuenta"
-                            icon={<FileText className="h-3.5 w-3.5" />}
-                          />
-
-                          <ActionIconLink
-                            href={`/clientes/${cliente.id}/editar`}
-                            title="Editar cliente"
-                            icon={<Pencil className="h-3.5 w-3.5" />}
-                          />
-
-                          <form action={eliminarClienteAction}>
-                            <input type="hidden" name="id" value={cliente.id} />
-
-                            <button
-                              type="submit"
-                              className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-red-300 bg-red-50 text-red-700 shadow-sm transition hover:bg-red-100 active:scale-[0.99] dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-300 dark:hover:bg-red-950/50"
-                              title="Eliminar cliente"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
-              <span>
-                Mostrando {clientesFiltrados.length} de {clientes.length}{" "}
-                clientes
-              </span>
-
-              <span>Vista administrativa</span>
-            </div>
-          </div>
-
-          <div className="grid gap-2 lg:hidden">
-            {clientesFiltrados.map((cliente) => (
-              <MobileClienteCard key={cliente.id} cliente={cliente} />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+      <div className="mt-3 grid gap-4 md:hidden">
+        {clientes.map((cliente) => (
+          <MobileClienteCard key={cliente.id} cliente={cliente} />
+        ))}
+      </div>
+    </>
   );
 }

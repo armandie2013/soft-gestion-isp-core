@@ -1255,7 +1255,22 @@ const panelClass =
   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
 
 const inputClass =
-  "h-9 w-full rounded-lg border border-slate-300 bg-white px-3 text-[13px] text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-500";
+  "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-normal text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-500";
+
+const buttonPrimaryClass =
+  "inline-flex h-8 items-center justify-center rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white transition hover:bg-blue-700 active:scale-[0.99] dark:bg-blue-500 dark:hover:bg-blue-400";
+
+const buttonSecondaryClass =
+  "inline-flex h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800";
+
+const sectionTitleClass =
+  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+const sectionSubtitleClass =
+  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+const sectionDescriptionClass =
+  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
 
 function normalizarTexto(value: string) {
   return value
@@ -1389,11 +1404,11 @@ function ResumenItem({
 
   return (
     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
-      <span className="text-[13px] text-slate-700 dark:text-slate-300">
+      <span className="text-[12px] text-slate-700 dark:text-slate-300">
         {label}
       </span>
 
-      <span className={`text-[13px] font-medium ${toneClass}`}>{value}</span>
+      <span className={`text-[12px] font-semibold ${toneClass}`}>{value}</span>
     </div>
   );
 }
@@ -1427,13 +1442,6 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
   );
 
   const totalUsuarios = usuarios.length;
-  const totalAdmins = usuarios.filter((usuario) => usuario.rol === "admin")
-    .length;
-  const totalCobradores = usuarios.filter(
-    (usuario) => usuario.rol === "cobrador",
-  ).length;
-  const totalClientes = usuarios.filter((usuario) => usuario.rol === "cliente")
-    .length;
   const totalActivos = usuarios.filter((usuario) => usuario.estado === "activo")
     .length;
   const totalSuspendidos = usuarios.filter(
@@ -1453,91 +1461,100 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
       <DashboardGrid>
         <DashboardMain>
-          <section className={`${panelClass} p-3.5`}>
-            <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-              <div className="min-w-0">
-                <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-blue-700 dark:text-blue-300">
-                  Usuarios
-                </p>
+          <section className={`${panelClass} overflow-hidden`}>
+            <div className="border-b border-slate-200 px-3.5 py-3.5 dark:border-slate-700 sm:border-b-0 sm:pb-3">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                <div className="min-w-0">
+                  <p className={sectionTitleClass}>Usuarios</p>
 
-                <h1 className="mt-0.5 text-xl font-medium tracking-tight text-slate-950 dark:text-white">
-                  Gestión de usuarios
-                </h1>
+                  <h1 className={sectionSubtitleClass}>
+                    Gestión de usuarios
+                  </h1>
 
-                <p className="mt-1 max-w-3xl text-[13px] leading-5 text-slate-600 dark:text-slate-400">
-                  Administración de accesos, roles, estados y seguridad de los
-                  usuarios registrados en el sistema.
-                </p>
+                  <p className={`${sectionDescriptionClass} max-w-3xl`}>
+                    Administración de accesos, roles, estados y seguridad de los
+                    usuarios registrados en el sistema.
+                  </p>
+                </div>
+
+                <div className="hidden shrink-0 items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 sm:flex">
+                  <UsersRound className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                  Mostrando{" "}
+                  <span className="font-semibold text-slate-950 dark:text-white">
+                    {usuariosFiltrados.length}
+                  </span>{" "}
+                  de {totalUsuarios}
+                </div>
               </div>
+            </div>
 
-              <div className="flex shrink-0 items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400">
+            <div className="px-3.5 py-3 sm:pt-0">
+              <div className="mb-3 flex items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 sm:hidden">
                 <UsersRound className="h-4 w-4 text-blue-700 dark:text-blue-300" />
                 Mostrando{" "}
-                <span className="font-medium text-slate-950 dark:text-white">
+                <span className="font-semibold text-slate-950 dark:text-white">
                   {usuariosFiltrados.length}
                 </span>{" "}
                 de {totalUsuarios}
               </div>
+
+              <form
+                action="/usuarios"
+                className="grid gap-2 rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50 lg:grid-cols-[minmax(260px,1fr)_140px_140px_145px_auto]"
+              >
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+
+                  <input
+                    name="q"
+                    defaultValue={q}
+                    placeholder="Buscar usuario"
+                    className={`${inputClass} pl-8`}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 lg:contents">
+                  <select name="rol" defaultValue={rol} className={inputClass}>
+                    <option value="todos">Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="cobrador">Cobrador</option>
+                    <option value="cliente">Cliente</option>
+                  </select>
+
+                  <select
+                    name="estado"
+                    defaultValue={estado}
+                    className={inputClass}
+                  >
+                    <option value="todos">Estados</option>
+                    <option value="activo">Activos</option>
+                    <option value="suspendido">Suspendidos</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] gap-2 lg:contents">
+                  <select
+                    name="seguridad"
+                    defaultValue={seguridad}
+                    className={inputClass}
+                  >
+                    <option value="todos">Seguridad</option>
+                    <option value="ok">Clave OK</option>
+                    <option value="cambio">Cambiar clave</option>
+                  </select>
+
+                  <div className="flex gap-2">
+                    <button type="submit" className={buttonPrimaryClass}>
+                      Filtrar
+                    </button>
+
+                    <Link href="/usuarios" className={buttonSecondaryClass}>
+                      Limpiar
+                    </Link>
+                  </div>
+                </div>
+              </form>
             </div>
-
-            <form
-              action="/usuarios"
-              className="grid gap-2 rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50 lg:grid-cols-[minmax(280px,1fr)_155px_150px_165px_auto]"
-            >
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-
-                <input
-                  name="q"
-                  defaultValue={q}
-                  placeholder="Buscar por nombre, email o DNI"
-                  className={`${inputClass} pl-9`}
-                />
-              </div>
-
-              <select name="rol" defaultValue={rol} className={inputClass}>
-                <option value="todos">Todos los roles</option>
-                <option value="admin">Admin</option>
-                <option value="cobrador">Cobrador</option>
-                <option value="cliente">Cliente</option>
-              </select>
-
-              <select
-                name="estado"
-                defaultValue={estado}
-                className={inputClass}
-              >
-                <option value="todos">Todos los estados</option>
-                <option value="activo">Activos</option>
-                <option value="suspendido">Suspendidos</option>
-              </select>
-
-              <select
-                name="seguridad"
-                defaultValue={seguridad}
-                className={inputClass}
-              >
-                <option value="todos">Seguridad</option>
-                <option value="ok">Clave OK</option>
-                <option value="cambio">Cambiar clave</option>
-              </select>
-
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="inline-flex h-9 flex-1 items-center justify-center rounded-lg bg-blue-600 px-3 text-[13px] font-medium text-white transition hover:bg-blue-700 active:scale-[0.99] dark:bg-blue-500 dark:hover:bg-blue-400 lg:flex-none"
-                >
-                  Filtrar
-                </button>
-
-                <Link
-                  href="/usuarios"
-                  className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-700 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-                >
-                  Limpiar
-                </Link>
-              </div>
-            </form>
           </section>
 
           <UsuariosTable
@@ -1549,16 +1566,12 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
         <DashboardAside>
           <section className={`${panelClass} p-3.5`}>
             <div className="mb-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-blue-700 dark:text-blue-300">
-                Filtro actual
-              </p>
+              <p className={sectionTitleClass}>Filtro actual</p>
 
-              <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
-                Vista aplicada
-              </h2>
+              <h2 className={sectionSubtitleClass}>Vista aplicada</h2>
             </div>
 
-            <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/35 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+            <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
               <ResumenItem label="Búsqueda" value={q.trim() || "Sin texto"} />
               <ResumenItem label="Rol" value={rolLabel(rol)} />
               <ResumenItem label="Estado" value={estadoLabel(estado)} />
@@ -1573,16 +1586,12 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
 
           <section className={`${panelClass} p-3.5`}>
             <div className="mb-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-blue-700 dark:text-blue-300">
-                Estado de accesos
-              </p>
+              <p className={sectionTitleClass}>Estado de accesos</p>
 
-              <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
-                Información general
-              </h2>
+              <h2 className={sectionSubtitleClass}>Información general</h2>
             </div>
 
-            <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/35 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+            <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
               <ResumenItem label="Total usuarios" value={totalUsuarios} />
               <ResumenItem
                 label="Activos"
@@ -1604,13 +1613,9 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
 
           <section className={`${panelClass} hidden p-3.5 xl:block`}>
             <div className="mb-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-blue-700 dark:text-blue-300">
-                Accesos rápidos
-              </p>
+              <p className={sectionTitleClass}>Accesos rápidos</p>
 
-              <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
-                Filtros frecuentes
-              </h2>
+              <h2 className={sectionSubtitleClass}>Filtros frecuentes</h2>
             </div>
 
             <div className="grid gap-2">
@@ -1628,7 +1633,7 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
 
                       <span className="min-w-0">
                         <span className="block truncate">{item.label}</span>
-                        <span className="block truncate text-[12px] font-normal text-slate-500 dark:text-slate-400">
+                        <span className="block truncate text-[11px] font-normal text-slate-500 dark:text-slate-400">
                           {item.description}
                         </span>
                       </span>

@@ -365,13 +365,16 @@
 
 // src/app/(dashboard)/clientes/[id]/nota-credito/page.tsx
 
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import {
   CheckCircle2,
   FileText,
   MinusCircle,
   ReceiptText,
   WalletCards,
+  Wifi,
 } from "lucide-react";
 import { NotaFinancieraForm } from "@/components/forms/NotaFinancieraForm";
 import { obtenerClientePorId } from "@/services/cliente.service";
@@ -396,28 +399,23 @@ export const metadata = {
   title: "Nota de crédito",
 };
 
-type StatCardProps = {
-  title: string;
-  value: string;
-  description: string;
-  icon: typeof ReceiptText;
-  tone: "cyan" | "emerald" | "amber" | "red" | "violet";
-};
+const panelClass =
+  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
 
-const cardBase =
-  "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
+const innerPanelClass =
+  "overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none";
 
-const innerCardBase =
-  "overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none";
+const sectionTitleClass =
+  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
 
-const toneClasses = {
-  cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
-  emerald:
-    "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
-  amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
-  red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
-  violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
-};
+const sectionSubtitleClass =
+  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+const sectionDescriptionClass =
+  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+const buttonSecondaryClass =
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900";
 
 function formatMoney(value: number) {
   const amount = Number(value || 0);
@@ -448,54 +446,53 @@ function estadoCuentaLabel(saldo: number) {
   return "Al día";
 }
 
-function estadoCuentaTone(saldo: number): "emerald" | "amber" | "red" {
-  if (saldo > 0) return "red";
-  if (saldo < 0) return "amber";
-  return "emerald";
+function estadoCuentaTone(saldo: number): "success" | "warning" | "danger" {
+  if (saldo > 0) return "danger";
+  if (saldo < 0) return "warning";
+  return "success";
 }
 
-function StatCard({
-  title,
-  value,
-  description,
-  icon: Icon,
-  tone,
-}: StatCardProps) {
+function BackButton({ clienteId }: { clienteId: string }) {
   return (
-    <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
-      <div className="flex items-start gap-3">
-        <div
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${toneClasses[tone]}`}
-        >
-          <Icon className="h-4 w-4" />
-        </div>
-
-        <div className="min-w-0">
-          <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
-            {title}
-          </p>
-
-          <p
-            className={`mt-1 truncate text-xl font-semibold tracking-tight ${
-              tone === "red"
-                ? "text-red-700 dark:text-red-300"
-                : "text-slate-950 dark:text-white"
-            }`}
-            title={value}
-          >
-            {value}
-          </p>
-
-          <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
-            {description}
-          </p>
-        </div>
-      </div>
-    </div>
+    <Link
+      href={`/clientes/${clienteId}/estado-cuenta`}
+      className={`${buttonSecondaryClass} hidden sm:inline-flex`}
+    >
+      Volver
+    </Link>
   );
 }
 
-function MobileHeader({
+function Badge({
+  children,
+  tone = "neutral",
+}: {
+  children: ReactNode;
+  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+}) {
+  const toneClass = {
+    neutral:
+      "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+    primary:
+      "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+    success:
+      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+    warning:
+      "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+    danger:
+      "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+  }[tone];
+
+  return (
+    <span
+      className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function HeaderNotaCredito({
   cliente,
   nombreCompleto,
   saldo,
@@ -505,44 +502,110 @@ function MobileHeader({
   saldo: number;
 }) {
   return (
-    <section className={`${cardBase} p-3`}>
-      <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-900">
-          <MinusCircle className="h-5 w-5" />
+    <section className={`${panelClass} p-3.5`}>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <p className={sectionTitleClass}>Nota de crédito</p>
+
+          <h1 className={sectionSubtitleClass}>Registrar crédito o descuento</h1>
+
+          <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
+            {nombreCompleto} · Cliente N° {cliente.numeroCliente} · DNI{" "}
+            {cliente.dni || "-"}
+          </p>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
-            Nota de crédito
-          </p>
+        <div className="flex flex-col items-start gap-2 lg:items-end">
+          <BackButton clienteId={cliente.id} />
 
-          <h1 className="mt-0.5 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
-            {nombreCompleto}
-          </h1>
+          <div className="flex flex-wrap gap-2 lg:justify-end">
+            <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
 
-          <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-            Cliente N° {cliente.numeroCliente} · DNI {cliente.dni || "-"}
-          </p>
+            <Badge tone="success">Reduce deuda</Badge>
 
-          <div className="mt-2 flex flex-wrap gap-2">
-            <span className="inline-flex rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300">
-              Reduce deuda
-            </span>
-
-            <span
-              className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-                saldo > 0
-                  ? "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
-                  : saldo < 0
-                    ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
-                    : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-              }`}
-            >
+            <Badge tone={estadoCuentaTone(saldo)}>
               Saldo {formatMoney(saldo)}
-            </span>
+            </Badge>
           </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+function ResumenItem({
+  icon,
+  label,
+  value,
+  tone = "neutral",
+}: {
+  icon?: ReactNode;
+  label: string;
+  value: string | number;
+  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+}) {
+  const toneClass = {
+    neutral: "text-slate-950 dark:text-white",
+    primary: "text-blue-700 dark:text-blue-300",
+    success: "text-emerald-700 dark:text-emerald-300",
+    warning: "text-amber-700 dark:text-amber-300",
+    danger: "text-red-700 dark:text-red-300",
+  }[tone];
+
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+      <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+        {icon ? (
+          <span className="shrink-0 text-blue-700 dark:text-blue-300">
+            {icon}
+          </span>
+        ) : null}
+
+        <span className="truncate">{label}</span>
+      </span>
+
+      <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function FormPanel({
+  cliente,
+  nombreCompleto,
+  facturas,
+}: {
+  cliente: any;
+  nombreCompleto: string;
+  facturas: any[];
+}) {
+  return (
+    <section className={`${panelClass} p-3.5`}>
+      <div className="mb-3 flex items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+          <MinusCircle className="h-4 w-4" />
+        </div>
+
+        <div className="min-w-0">
+          <p className={sectionTitleClass}>Movimiento financiero</p>
+
+          <h2 className={sectionSubtitleClass}>Datos de la nota de crédito</h2>
+
+          <p className={sectionDescriptionClass}>
+            Seleccioná la factura, cargá el importe y registrá el crédito o
+            descuento correspondiente.
+          </p>
+        </div>
+      </div>
+
+      <NotaFinancieraForm
+        clienteId={cliente.id}
+        tipo="credito"
+        facturas={facturas}
+        clienteNombre={nombreCompleto}
+        variant="desktop"
+      />
     </section>
   );
 }
@@ -559,83 +622,80 @@ function ResumenAside({
   facturasConSaldo: number;
 }) {
   return (
-    <div className={`${cardBase} p-3.5`}>
+    <section className={`${panelClass} p-3.5`}>
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-            Resumen
-          </p>
+          <p className={sectionTitleClass}>Resumen</p>
 
-          <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
-            Información de cuenta
-          </h2>
+          <h2 className={sectionSubtitleClass}>Información de cuenta</h2>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
           <WalletCards className="h-4 w-4" />
         </div>
       </div>
 
-      <div className={innerCardBase}>
-        <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-          <span className="text-xs text-slate-700 dark:text-slate-300">
-            Cliente
-          </span>
+      <div className={innerPanelClass}>
+        <ResumenItem
+          icon={<ReceiptText className="h-3.5 w-3.5" />}
+          label="Cliente"
+          value={`N° ${cliente.numeroCliente}`}
+          tone="primary"
+        />
 
-          <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-            N° {cliente.numeroCliente}
-          </span>
-        </div>
+        <ResumenItem
+          icon={<Wifi className="h-3.5 w-3.5" />}
+          label="Plan"
+          value={cliente.plan?.nombre || "Sin plan"}
+          tone={cliente.plan ? "success" : "warning"}
+        />
 
-        <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-          <span className="text-xs text-slate-700 dark:text-slate-300">
-            Plan
-          </span>
+        <ResumenItem
+          icon={<ReceiptText className="h-3.5 w-3.5" />}
+          label="Facturas emitidas"
+          value={cantidadFacturas}
+          tone="primary"
+        />
 
-          <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-            {cliente.plan?.nombre || "Sin plan"}
-          </span>
-        </div>
+        <ResumenItem
+          icon={<FileText className="h-3.5 w-3.5" />}
+          label="Con saldo"
+          value={facturasConSaldo}
+          tone={facturasConSaldo > 0 ? "danger" : "success"}
+        />
 
-        <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-          <span className="text-xs text-slate-700 dark:text-slate-300">
-            Facturas emitidas
-          </span>
+        <ResumenItem
+          icon={<WalletCards className="h-3.5 w-3.5" />}
+          label="Saldo actual"
+          value={formatMoney(saldo)}
+          tone={estadoCuentaTone(saldo)}
+        />
 
-          <span className="text-xs font-medium text-cyan-700 dark:text-cyan-300">
-            {cantidadFacturas}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-          <span className="text-xs text-slate-700 dark:text-slate-300">
-            Con saldo
-          </span>
-
-          <span className="text-xs font-medium text-red-700 dark:text-red-300">
-            {facturasConSaldo}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-          <span className="text-xs text-slate-700 dark:text-slate-300">
-            Saldo actual
-          </span>
-
-          <span
-            className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-              saldo > 0
-                ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
-                : saldo < 0
-                  ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-                  : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-            }`}
-          >
-            {formatMoney(saldo)}
-          </span>
-        </div>
+        <ResumenItem
+          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+          label="Estado general"
+          value={estadoCuentaLabel(saldo)}
+          tone={estadoCuentaTone(saldo)}
+        />
       </div>
-    </div>
+    </section>
+  );
+}
+
+function NotaImportante() {
+  return (
+    <section className={`${panelClass} p-3.5`}>
+      <div className="mb-3">
+        <p className={sectionTitleClass}>Importante</p>
+
+        <h2 className={sectionSubtitleClass}>Aplicación del crédito</h2>
+      </div>
+
+      <div className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2.5 text-[12px] leading-5 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300">
+        La nota de crédito reduce deuda de la factura seleccionada. No puede
+        superar el saldo actual de esa factura.
+      </div>
+    </section>
   );
 }
 
@@ -657,116 +717,37 @@ export default async function NotaCreditoPage({ params }: PageProps) {
   ).length;
 
   return (
-    <PageShell maxWidth="wide">
-      <div className="space-y-3 lg:hidden">
-        <MobileHeader
-          cliente={cliente}
-          nombreCompleto={nombreCompleto}
-          saldo={estadoCuenta.saldo}
-        />
-
-        <NotaFinancieraForm
-          clienteId={cliente.id}
-          tipo="credito"
-          facturas={facturas}
-          clienteNombre={nombreCompleto}
-        />
-      </div>
-
-      <div className="hidden lg:block">
-        <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <StatCard
-            title="Movimiento"
-            value="Crédito"
-            description="Reduce el saldo deudor."
-            icon={MinusCircle}
-            tone="emerald"
+    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+      <DashboardGrid>
+        <DashboardMain>
+          <HeaderNotaCredito
+            cliente={cliente}
+            nombreCompleto={nombreCompleto}
+            saldo={estadoCuenta.saldo}
           />
 
-          <StatCard
-            title="Saldo actual"
-            value={formatMoney(estadoCuenta.saldo)}
-            description="Antes de registrar."
-            icon={WalletCards}
-            tone={estadoCuentaTone(estadoCuenta.saldo)}
+          <div className="mt-3">
+            <FormPanel
+              cliente={cliente}
+              nombreCompleto={nombreCompleto}
+              facturas={facturas}
+            />
+          </div>
+        </DashboardMain>
+
+        <DashboardAside>
+          <ResumenAside
+            cliente={cliente}
+            saldo={estadoCuenta.saldo}
+            cantidadFacturas={cantidadFacturas}
+            facturasConSaldo={facturasConSaldo}
           />
 
-          <StatCard
-            title="Facturas"
-            value={String(cantidadFacturas)}
-            description="Emitidas al cliente."
-            icon={ReceiptText}
-            tone="cyan"
-          />
-
-          <StatCard
-            title="Con saldo"
-            value={String(facturasConSaldo)}
-            description="Disponibles para crédito."
-            icon={FileText}
-            tone={facturasConSaldo > 0 ? "red" : "emerald"}
-          />
-
-          <StatCard
-            title="Estado"
-            value={estadoCuentaLabel(estadoCuenta.saldo)}
-            description="Estado general."
-            icon={CheckCircle2}
-            tone={estadoCuentaTone(estadoCuenta.saldo)}
-          />
-        </div>
-
-        <div className="mt-5">
-          <DashboardGrid>
-            <DashboardMain>
-              <div className={`${cardBase} p-3.5`}>
-                <div>
-                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
-                    Nota de crédito
-                  </p>
-
-                  <h1 className="mt-0.5 text-base font-medium tracking-tight text-slate-950 dark:text-white">
-                    Registrar crédito o descuento
-                  </h1>
-
-                  <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400">
-                    {nombreCompleto} · DNI {cliente.dni || "-"} · Cliente N°{" "}
-                    {cliente.numeroCliente}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-3">
-                <NotaFinancieraForm
-                  clienteId={cliente.id}
-                  tipo="credito"
-                  facturas={facturas}
-                  clienteNombre={nombreCompleto}
-                  variant="desktop"
-                />
-              </div>
-            </DashboardMain>
-
-            <DashboardAside>
-              <ResumenAside
-                cliente={cliente}
-                saldo={estadoCuenta.saldo}
-                cantidadFacturas={cantidadFacturas}
-                facturasConSaldo={facturasConSaldo}
-              />
-
-              <div className="rounded-[1.45rem] border border-emerald-300 bg-emerald-50 p-3.5 text-xs leading-5 text-emerald-800 shadow-sm shadow-emerald-950/5 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-300 dark:shadow-none">
-                <p className="font-medium">Importante</p>
-
-                <p className="mt-1">
-                  La nota de crédito reduce deuda de la factura seleccionada. No
-                  puede superar el saldo actual de esa factura.
-                </p>
-              </div>
-            </DashboardAside>
-          </DashboardGrid>
-        </div>
-      </div>
+          <div className="mt-3">
+            <NotaImportante />
+          </div>
+        </DashboardAside>
+      </DashboardGrid>
     </PageShell>
   );
 }

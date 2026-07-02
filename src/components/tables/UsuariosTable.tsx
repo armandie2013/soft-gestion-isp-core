@@ -332,11 +332,11 @@ function formatDate(value?: string | null) {
 
   if (Number.isNaN(date.getTime())) return "-";
 
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(date);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
 }
 
 function formatDateTime(value?: string | null) {
@@ -346,13 +346,13 @@ function formatDateTime(value?: string | null) {
 
   if (Number.isNaN(date.getTime())) return "Nunca";
 
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 function formatMoney(value?: number | null) {
@@ -420,7 +420,7 @@ function Pill({
 }) {
   return (
     <span
-      className={`inline-flex w-fit items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium leading-5 ${className}`}
+      className={`inline-flex w-fit items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-medium leading-5 ${className}`}
     >
       {children}
     </span>
@@ -431,11 +431,11 @@ function ExtraInfo({ usuario }: { usuario: UsuarioSafe }) {
   if (usuario.rol === "cobrador") {
     return (
       <div className="min-w-0">
-        <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
+        <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
           {formatMoney(usuario.limiteCajaCobrador)}
         </p>
 
-        <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+        <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-slate-400">
           Límite de caja
         </p>
       </div>
@@ -445,11 +445,11 @@ function ExtraInfo({ usuario }: { usuario: UsuarioSafe }) {
   if (usuario.rol === "cliente") {
     return (
       <div className="min-w-0">
-        <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
+        <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
           {usuario.clienteId ? "Vinculado" : "Sin vínculo"}
         </p>
 
-        <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+        <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-slate-400">
           Cliente asociado
         </p>
       </div>
@@ -458,11 +458,11 @@ function ExtraInfo({ usuario }: { usuario: UsuarioSafe }) {
 
   return (
     <div className="min-w-0">
-      <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
+      <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
         {usuario.esProtegido ? "Protegido" : "Admin"}
       </p>
 
-      <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+      <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-slate-400">
         Acceso administrativo
       </p>
     </div>
@@ -483,19 +483,19 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
     <>
       <div className="hidden overflow-hidden rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80 md:block">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1160px] table-fixed text-left text-[13px] xl:min-w-0">
+          <table className="w-full min-w-[1120px] table-fixed text-left text-[12px] xl:min-w-0">
             <colgroup>
-              <col className="w-[20%]" />
-              <col className="w-[20%]" />
-              <col className="w-[9%]" />
-              <col className="w-[9%]" />
-              <col className="w-[9%]" />
-              <col className="w-[13%]" />
-              <col className="w-[12%]" />
+              <col className="w-[19%]" />
+              <col className="w-[18%]" />
               <col className="w-[8%]" />
+              <col className="w-[8%]" />
+              <col className="w-[8%]" />
+              <col className="w-[14%]" />
+              <col className="w-[16%]" />
+              <col className="w-[9%]" />
             </colgroup>
 
-            <thead className="border-b border-slate-300 bg-slate-100 text-[11px] uppercase tracking-[0.09em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
+            <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.08em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2.5 font-medium">Usuario</th>
                 <th className="px-3 py-2.5 font-medium">Email</th>
@@ -516,56 +516,56 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
                   key={usuario.id}
                   className="transition hover:bg-blue-50/55 dark:hover:bg-blue-950/12"
                 >
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-2.5">
                     <div className="flex min-w-0 items-center gap-2.5">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[11px] font-medium text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-medium text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
                         {getInitials(usuario)}
                       </div>
 
                       <div className="min-w-0">
-                        <p className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
+                        <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
                           {usuario.apellido}, {usuario.nombre}
                         </p>
 
-                        <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
+                        <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
                           Creado {formatDate(usuario.creadoEn)}
                         </p>
                       </div>
                     </div>
                   </td>
 
-                  <td className="px-3 py-3">
-                    <p className="truncate text-[13px] text-slate-600 dark:text-slate-300">
+                  <td className="px-3 py-2.5">
+                    <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
                       {usuario.email}
                     </p>
                   </td>
 
-                  <td className="px-3 py-3">
-                    <p className="truncate text-[13px] text-slate-600 dark:text-slate-300">
+                  <td className="px-3 py-2.5">
+                    <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
                       {usuario.dni || "-"}
                     </p>
                   </td>
 
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-2.5">
                     <Pill className={rolClass(usuario.rol)}>
                       {rolLabel(usuario.rol)}
                     </Pill>
                   </td>
 
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-2.5">
                     <Pill className={estadoClass(usuario.estado)}>
                       <span className="h-1.5 w-1.5 rounded-full bg-current" />
                       {usuario.estado === "activo" ? "Activo" : "Suspendido"}
                     </Pill>
                   </td>
 
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-2.5">
                     <ExtraInfo usuario={usuario} />
                   </td>
 
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-2.5">
                     <div className="min-w-0">
-                      <p className="truncate text-[13px] text-slate-600 dark:text-slate-300">
+                      <p className="whitespace-nowrap text-[12px] text-slate-600 dark:text-slate-300">
                         {formatDateTime(usuario.ultimoAcceso)}
                       </p>
 
@@ -580,7 +580,7 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
                     </div>
                   </td>
 
-                  <td className="px-3 py-3 text-right">
+                  <td className="px-3 py-2.5 text-right">
                     <Link
                       href={`/usuarios/${usuario.id}/editar`}
                       className="inline-flex h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-medium text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-blue-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30"
@@ -595,7 +595,7 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[12px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
           <span>
             Mostrando {usuarios.length} de {totalUsuarios} usuarios
           </span>
@@ -677,7 +677,9 @@ export function UsuariosTable({ usuarios, totalUsuarios }: UsuariosTableProps) {
 
               <div className="flex items-center justify-between gap-3">
                 <span>Creado</span>
-                <span className="text-right">{formatDate(usuario.creadoEn)}</span>
+                <span className="text-right">
+                  {formatDate(usuario.creadoEn)}
+                </span>
               </div>
             </div>
 

@@ -313,17 +313,318 @@
 //   );
 // }
 
+// // src/components/tables/EstadoCuentaTable.tsx
+
+// import Link from "next/link";
+// import { Eye, FileText, ReceiptText } from "lucide-react";
+// import { EmptyState } from "@/components/ui/EmptyState";
+// import type { PeriodoCuentaClienteSafe } from "@/types/movimiento-financiero.types";
+
+// type EstadoCuentaTableProps = {
+//   clienteId: string;
+//   periodos: PeriodoCuentaClienteSafe[];
+// };
+
+// function formatMoney(value: number) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function getPeriodoLabel(periodo: PeriodoCuentaClienteSafe) {
+//   if (periodo.estadoPeriodo === "cancelado") {
+//     return "Cancelado";
+//   }
+
+//   if (periodo.estadoPeriodo === "a_favor") {
+//     return "A favor";
+//   }
+
+//   return "Pendiente";
+// }
+
+// function getPeriodoClass(periodo: PeriodoCuentaClienteSafe) {
+//   if (periodo.estadoPeriodo === "cancelado") {
+//     return "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300";
+//   }
+
+//   if (periodo.estadoPeriodo === "a_favor") {
+//     return "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300";
+//   }
+
+//   return "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300";
+// }
+
+// function EstadoPill({ periodo }: { periodo: PeriodoCuentaClienteSafe }) {
+//   return (
+//     <span
+//       className={`inline-flex w-fit items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-medium ${getPeriodoClass(
+//         periodo,
+//       )}`}
+//     >
+//       <span className="h-1.5 w-1.5 rounded-full bg-current" />
+//       {getPeriodoLabel(periodo)}
+//     </span>
+//   );
+// }
+
+// function PeriodoMobileCard({
+//   clienteId,
+//   periodo,
+// }: {
+//   clienteId: string;
+//   periodo: PeriodoCuentaClienteSafe;
+// }) {
+//   return (
+//     <article className="rounded-[1.25rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
+//       <div className="flex items-start justify-between gap-3">
+//         <div className="flex min-w-0 gap-3">
+//           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+//             <ReceiptText className="h-4 w-4" />
+//           </div>
+
+//           <div className="min-w-0">
+//             <h2 className="truncate text-sm font-semibold text-slate-950 dark:text-white">
+//               {periodo.periodoLabel}
+//             </h2>
+
+//             <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+//               Factura N° {periodo.numeroComprobante}
+//             </p>
+//           </div>
+//         </div>
+
+//         <EstadoPill periodo={periodo} />
+//       </div>
+
+//       <p className="mt-3 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
+//         {periodo.concepto}
+//       </p>
+
+//       <div className="mt-3 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400">
+//         <div className="flex items-center justify-between gap-3">
+//           <span className="inline-flex items-center gap-1.5">
+//             <FileText className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+//             Importe facturado
+//           </span>
+
+//           <span className="shrink-0 text-right font-medium text-slate-950 dark:text-white">
+//             {formatMoney(periodo.importeOriginal)}
+//           </span>
+//         </div>
+
+//         <div className="mt-2 flex items-center justify-between gap-3 border-t border-slate-300 pt-2 dark:border-slate-800">
+//           <span className="inline-flex items-center gap-1.5">
+//             <ReceiptText className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+//             Saldo del período
+//           </span>
+
+//           <span
+//             className={`text-right font-medium ${
+//               periodo.saldoPeriodo > 0
+//                 ? "text-red-700 dark:text-red-300"
+//                 : periodo.saldoPeriodo < 0
+//                   ? "text-amber-700 dark:text-amber-300"
+//                   : "text-emerald-700 dark:text-emerald-300"
+//             }`}
+//           >
+//             {formatMoney(periodo.saldoPeriodo)}
+//           </span>
+//         </div>
+//       </div>
+
+//       <Link
+//         href={`/clientes/${clienteId}/estado-cuenta/${periodo.facturaId}`}
+//         className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+//       >
+//         <Eye className="h-3.5 w-3.5" />
+//         Ver detalle del período
+//       </Link>
+//     </article>
+//   );
+// }
+
+// function DesktopCellLink({
+//   href,
+//   children,
+//   className = "",
+// }: {
+//   href: string;
+//   children: React.ReactNode;
+//   className?: string;
+// }) {
+//   return (
+//     <Link
+//       href={href}
+//       className={`block h-full w-full px-3 py-3 ${className}`}
+//     >
+//       {children}
+//     </Link>
+//   );
+// }
+
+// export function EstadoCuentaTable({
+//   clienteId,
+//   periodos,
+// }: EstadoCuentaTableProps) {
+//   if (periodos.length === 0) {
+//     return (
+//       <EmptyState
+//         title="Este cliente todavía no tiene períodos facturados."
+//         description="Generá la facturación mensual desde Configuración para iniciar el estado de cuenta."
+//       />
+//     );
+//   }
+
+//   return (
+//     <>
+//       <div className="hidden overflow-hidden rounded-[1.45rem] border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none lg:block">
+//         <div className="overflow-x-auto">
+//           <table className="w-full min-w-[980px] table-fixed text-left text-xs xl:min-w-0">
+//             <colgroup>
+//               <col className="w-[13%]" />
+//               <col className="w-[12%]" />
+//               <col className="w-[31%]" />
+//               <col className="w-[14%]" />
+//               <col className="w-[14%]" />
+//               <col className="w-[9%]" />
+//               <col className="w-[7%]" />
+//             </colgroup>
+
+//             <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.13em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
+//               <tr>
+//                 <th className="px-3 py-2.5 font-medium">Período</th>
+//                 <th className="px-3 py-2.5 font-medium">Factura</th>
+//                 <th className="px-3 py-2.5 font-medium">Concepto</th>
+//                 <th className="px-3 py-2.5 text-right font-medium">
+//                   Facturado
+//                 </th>
+//                 <th className="px-3 py-2.5 text-right font-medium">
+//                   Saldo período
+//                 </th>
+//                 <th className="px-3 py-2.5 font-medium">Estado</th>
+//                 <th className="px-3 py-2.5 text-right font-medium">Detalle</th>
+//               </tr>
+//             </thead>
+
+//             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+//               {periodos.map((periodo) => {
+//                 const href = `/clientes/${clienteId}/estado-cuenta/${periodo.facturaId}`;
+
+//                 return (
+//                   <tr
+//                     key={periodo.facturaId}
+//                     className="group cursor-pointer transition hover:bg-cyan-50/70 dark:hover:bg-cyan-950/20"
+//                   >
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <p className="truncate text-xs font-medium text-slate-950 transition group-hover:text-cyan-800 dark:text-white dark:group-hover:text-cyan-300">
+//                           {periodo.periodoLabel}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+//                           N° {periodo.numeroComprobante}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+//                           {periodo.concepto}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href} className="text-right">
+//                         <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
+//                           {formatMoney(periodo.importeOriginal)}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href} className="text-right">
+//                         <p
+//                           className={`truncate text-xs font-medium ${
+//                             periodo.saldoPeriodo > 0
+//                               ? "text-red-700 dark:text-red-300"
+//                               : periodo.saldoPeriodo < 0
+//                                 ? "text-amber-700 dark:text-amber-300"
+//                                 : "text-emerald-700 dark:text-emerald-300"
+//                           }`}
+//                         >
+//                           {formatMoney(periodo.saldoPeriodo)}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <EstadoPill periodo={periodo} />
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href} className="text-right">
+//                         <span
+//                           className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-600 shadow-sm transition group-hover:border-cyan-300 group-hover:bg-cyan-50 group-hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300 dark:group-hover:border-cyan-800 dark:group-hover:bg-cyan-950/30 dark:group-hover:text-cyan-200"
+//                           title="Ver detalle del período"
+//                         >
+//                           <Eye className="h-3.5 w-3.5" />
+//                         </span>
+//                       </DesktopCellLink>
+//                     </td>
+//                   </tr>
+//                 );
+//               })}
+//             </tbody>
+//           </table>
+//         </div>
+
+//         <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+//           <span>
+//             Mostrando {periodos.length}{" "}
+//             {periodos.length === 1 ? "período" : "períodos"}
+//           </span>
+
+//           <span>Click en una fila para ver el detalle</span>
+//         </div>
+//       </div>
+
+//       <div className="grid gap-2 lg:hidden">
+//         {periodos.map((periodo) => (
+//           <PeriodoMobileCard
+//             key={periodo.facturaId}
+//             clienteId={clienteId}
+//             periodo={periodo}
+//           />
+//         ))}
+//       </div>
+//     </>
+//   );
+// }
+
 // src/components/tables/EstadoCuentaTable.tsx
 
 import Link from "next/link";
 import { Eye, FileText, ReceiptText } from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
 import type { PeriodoCuentaClienteSafe } from "@/types/movimiento-financiero.types";
 
 type EstadoCuentaTableProps = {
   clienteId: string;
   periodos: PeriodoCuentaClienteSafe[];
 };
+
+const panelClass =
+  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
 
 function formatMoney(value: number) {
   const amount = Number(value || 0);
@@ -370,6 +671,20 @@ function EstadoPill({ periodo }: { periodo: PeriodoCuentaClienteSafe }) {
   );
 }
 
+function EmptyEstadoCuentaPanel() {
+  return (
+    <section className={`${panelClass} px-4 py-10 text-center`}>
+      <p className="text-sm font-semibold text-slate-950 dark:text-white">
+        Este cliente todavía no tiene períodos facturados.
+      </p>
+
+      <p className="mt-2 text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+        Generá la facturación mensual para iniciar el estado de cuenta.
+      </p>
+    </section>
+  );
+}
+
 function PeriodoMobileCard({
   clienteId,
   periodo,
@@ -378,70 +693,74 @@ function PeriodoMobileCard({
   periodo: PeriodoCuentaClienteSafe;
 }) {
   return (
-    <article className="rounded-[1.25rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
-            <ReceiptText className="h-4 w-4" />
+    <article className="overflow-hidden rounded-[1.25rem] border border-slate-300 bg-white shadow-lg shadow-slate-400/35 ring-1 ring-white/80 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/25 dark:ring-slate-800/80">
+      <div className="border-b border-slate-200 bg-white px-3.5 py-3.5 dark:border-slate-700 dark:bg-slate-900">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-700/70">
+              <ReceiptText className="h-4 w-4" />
+            </div>
+
+            <div className="min-w-0">
+              <h2 className="truncate text-[14px] font-semibold text-slate-950 dark:text-white">
+                {periodo.periodoLabel}
+              </h2>
+
+              <p className="mt-1 truncate text-[12px] text-slate-600 dark:text-slate-400">
+                Factura N° {periodo.numeroComprobante}
+              </p>
+            </div>
           </div>
 
-          <div className="min-w-0">
-            <h2 className="truncate text-sm font-semibold text-slate-950 dark:text-white">
-              {periodo.periodoLabel}
-            </h2>
+          <EstadoPill periodo={periodo} />
+        </div>
 
-            <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
-              Factura N° {periodo.numeroComprobante}
-            </p>
+        <p className="mt-3 line-clamp-2 text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+          {periodo.concepto}
+        </p>
+      </div>
+
+      <div className="bg-slate-50 px-3.5 py-3 dark:bg-slate-950/35">
+        <div className="rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-[12px] text-slate-600 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 dark:shadow-black/10">
+          <div className="flex items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5 text-blue-700 dark:text-blue-300" />
+              Importe facturado
+            </span>
+
+            <span className="shrink-0 text-right font-semibold text-slate-950 dark:text-white">
+              {formatMoney(periodo.importeOriginal)}
+            </span>
+          </div>
+
+          <div className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 pt-2 dark:border-slate-700">
+            <span className="inline-flex items-center gap-1.5">
+              <ReceiptText className="h-3.5 w-3.5 text-blue-700 dark:text-blue-300" />
+              Saldo período
+            </span>
+
+            <span
+              className={`text-right font-semibold ${
+                periodo.saldoPeriodo > 0
+                  ? "text-red-700 dark:text-red-300"
+                  : periodo.saldoPeriodo < 0
+                    ? "text-amber-700 dark:text-amber-300"
+                    : "text-emerald-700 dark:text-emerald-300"
+              }`}
+            >
+              {formatMoney(periodo.saldoPeriodo)}
+            </span>
           </div>
         </div>
 
-        <EstadoPill periodo={periodo} />
+        <Link
+          href={`/clientes/${clienteId}/estado-cuenta/${periodo.facturaId}`}
+          className="mt-3 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+        >
+          <Eye className="h-4 w-4" />
+          Ver detalle
+        </Link>
       </div>
-
-      <p className="mt-3 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
-        {periodo.concepto}
-      </p>
-
-      <div className="mt-3 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400">
-        <div className="flex items-center justify-between gap-3">
-          <span className="inline-flex items-center gap-1.5">
-            <FileText className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-            Importe facturado
-          </span>
-
-          <span className="shrink-0 text-right font-medium text-slate-950 dark:text-white">
-            {formatMoney(periodo.importeOriginal)}
-          </span>
-        </div>
-
-        <div className="mt-2 flex items-center justify-between gap-3 border-t border-slate-300 pt-2 dark:border-slate-800">
-          <span className="inline-flex items-center gap-1.5">
-            <ReceiptText className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-            Saldo del período
-          </span>
-
-          <span
-            className={`text-right font-medium ${
-              periodo.saldoPeriodo > 0
-                ? "text-red-700 dark:text-red-300"
-                : periodo.saldoPeriodo < 0
-                  ? "text-amber-700 dark:text-amber-300"
-                  : "text-emerald-700 dark:text-emerald-300"
-            }`}
-          >
-            {formatMoney(periodo.saldoPeriodo)}
-          </span>
-        </div>
-      </div>
-
-      <Link
-        href={`/clientes/${clienteId}/estado-cuenta/${periodo.facturaId}`}
-        className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
-      >
-        <Eye className="h-3.5 w-3.5" />
-        Ver detalle del período
-      </Link>
     </article>
   );
 }
@@ -456,10 +775,7 @@ function DesktopCellLink({
   className?: string;
 }) {
   return (
-    <Link
-      href={href}
-      className={`block h-full w-full px-3 py-3 ${className}`}
-    >
+    <Link href={href} className={`block h-full w-full px-3 py-3 ${className}`}>
       {children}
     </Link>
   );
@@ -470,19 +786,14 @@ export function EstadoCuentaTable({
   periodos,
 }: EstadoCuentaTableProps) {
   if (periodos.length === 0) {
-    return (
-      <EmptyState
-        title="Este cliente todavía no tiene períodos facturados."
-        description="Generá la facturación mensual desde Configuración para iniciar el estado de cuenta."
-      />
-    );
+    return <EmptyEstadoCuentaPanel />;
   }
 
   return (
     <>
-      <div className="hidden overflow-hidden rounded-[1.45rem] border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none lg:block">
+      <div className="hidden overflow-hidden rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80 lg:block">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] table-fixed text-left text-xs xl:min-w-0">
+          <table className="w-full min-w-[980px] table-fixed text-left text-[12px] xl:min-w-0">
             <colgroup>
               <col className="w-[13%]" />
               <col className="w-[12%]" />
@@ -493,7 +804,7 @@ export function EstadoCuentaTable({
               <col className="w-[7%]" />
             </colgroup>
 
-            <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.13em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
+            <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.08em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2.5 font-medium">Período</th>
                 <th className="px-3 py-2.5 font-medium">Factura</th>
@@ -509,18 +820,18 @@ export function EstadoCuentaTable({
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {periodos.map((periodo) => {
                 const href = `/clientes/${clienteId}/estado-cuenta/${periodo.facturaId}`;
 
                 return (
                   <tr
                     key={periodo.facturaId}
-                    className="group cursor-pointer transition hover:bg-cyan-50/70 dark:hover:bg-cyan-950/20"
+                    className="group cursor-pointer transition hover:bg-blue-50/55 dark:hover:bg-blue-950/12"
                   >
                     <td>
                       <DesktopCellLink href={href}>
-                        <p className="truncate text-xs font-medium text-slate-950 transition group-hover:text-cyan-800 dark:text-white dark:group-hover:text-cyan-300">
+                        <p className="truncate text-[12px] font-medium text-slate-950 transition group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-300">
                           {periodo.periodoLabel}
                         </p>
                       </DesktopCellLink>
@@ -528,7 +839,7 @@ export function EstadoCuentaTable({
 
                     <td>
                       <DesktopCellLink href={href}>
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+                        <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
                           N° {periodo.numeroComprobante}
                         </p>
                       </DesktopCellLink>
@@ -536,7 +847,7 @@ export function EstadoCuentaTable({
 
                     <td>
                       <DesktopCellLink href={href}>
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+                        <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
                           {periodo.concepto}
                         </p>
                       </DesktopCellLink>
@@ -544,7 +855,7 @@ export function EstadoCuentaTable({
 
                     <td>
                       <DesktopCellLink href={href} className="text-right">
-                        <p className="truncate text-xs font-medium text-slate-950 dark:text-white">
+                        <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
                           {formatMoney(periodo.importeOriginal)}
                         </p>
                       </DesktopCellLink>
@@ -553,7 +864,7 @@ export function EstadoCuentaTable({
                     <td>
                       <DesktopCellLink href={href} className="text-right">
                         <p
-                          className={`truncate text-xs font-medium ${
+                          className={`truncate text-[12px] font-medium ${
                             periodo.saldoPeriodo > 0
                               ? "text-red-700 dark:text-red-300"
                               : periodo.saldoPeriodo < 0
@@ -575,8 +886,8 @@ export function EstadoCuentaTable({
                     <td>
                       <DesktopCellLink href={href} className="text-right">
                         <span
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-600 shadow-sm transition group-hover:border-cyan-300 group-hover:bg-cyan-50 group-hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300 dark:group-hover:border-cyan-800 dark:group-hover:bg-cyan-950/30 dark:group-hover:text-cyan-200"
-                          title="Ver detalle del período"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition group-hover:border-blue-300 group-hover:bg-blue-50 group-hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-300 dark:group-hover:border-blue-700 dark:group-hover:bg-blue-950/30 dark:group-hover:text-blue-300"
+                          title="Ver detalle"
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </span>
@@ -589,7 +900,7 @@ export function EstadoCuentaTable({
           </table>
         </div>
 
-        <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+        <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
           <span>
             Mostrando {periodos.length}{" "}
             {periodos.length === 1 ? "período" : "períodos"}
@@ -599,7 +910,7 @@ export function EstadoCuentaTable({
         </div>
       </div>
 
-      <div className="grid gap-2 lg:hidden">
+      <div className="grid gap-4 lg:hidden">
         {periodos.map((periodo) => (
           <PeriodoMobileCard
             key={periodo.facturaId}
