@@ -1473,7 +1473,7 @@ function BackButton({ clienteId }: { clienteId: string }) {
   return (
     <Link
       href={`/clientes/${clienteId}/estado-cuenta`}
-      className={`${buttonSecondaryClass} hidden sm:inline-flex`}
+      className="hidden h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
     >
       Volver
     </Link>
@@ -1597,14 +1597,6 @@ function ResumenPeriodo({ periodo }: { periodo: any }) {
         <div className="min-w-0">
           <p className={sectionTitleClass}>Resumen del período</p>
 
-          <h2
-            className={`mt-0.5 text-sm font-semibold ${getSaldoClass(
-              Number(periodo.saldoPeriodo || 0),
-            )}`}
-          >
-            {formatMoney(periodo.saldoPeriodo)}
-          </h2>
-
           <p className={sectionDescriptionClass}>
             Saldo calculado con factura base, pagos aplicados y notas asociadas
             al período.
@@ -1612,13 +1604,51 @@ function ResumenPeriodo({ periodo }: { periodo: any }) {
         </div>
       </div>
 
-      <div className="grid gap-2 md:grid-cols-3 xl:grid-cols-5">
+      <div className="md:hidden">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+            Saldo del período
+          </p>
+
+          <p
+            className={`mt-1 truncate text-[22px] font-semibold ${getSaldoClass(
+              Number(periodo.saldoPeriodo || 0),
+            )}`}
+          >
+            {formatMoney(periodo.saldoPeriodo)}
+          </p>
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                Facturado
+              </p>
+
+              <p className="mt-1 text-[16px] font-semibold text-slate-950 dark:text-white">
+                {formatMoney(periodo.importeOriginal)}
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                Estado
+              </p>
+
+              <div className="mt-1">
+                <EstadoPill estado={periodo.estadoPeriodo} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden gap-2 md:grid md:grid-cols-3 xl:grid-cols-5">
         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Facturado
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+          <p className="mt-1 truncate text-[18px] font-semibold text-slate-950 dark:text-white">
             {formatMoney(periodo.importeOriginal)}
           </p>
         </div>
@@ -1628,7 +1658,7 @@ function ResumenPeriodo({ periodo }: { periodo: any }) {
             Notas débito
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-red-700 dark:text-red-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-red-700 dark:text-red-300">
             {formatMoney(periodo.totalNotasDebito)}
           </p>
         </div>
@@ -1638,7 +1668,7 @@ function ResumenPeriodo({ periodo }: { periodo: any }) {
             Pagos
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-emerald-700 dark:text-emerald-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
             {formatMoney(periodo.totalPagos)}
           </p>
         </div>
@@ -1648,7 +1678,7 @@ function ResumenPeriodo({ periodo }: { periodo: any }) {
             Notas crédito
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-emerald-700 dark:text-emerald-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
             {formatMoney(periodo.totalNotasCredito)}
           </p>
         </div>

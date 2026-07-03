@@ -1293,7 +1293,7 @@ function BackButton() {
   return (
     <Link
       href="/clientes"
-      className={`${buttonSecondaryClass} hidden sm:inline-flex`}
+      className="hidden h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
     >
       Volver
     </Link>
@@ -1448,8 +1448,18 @@ function ResumenFinanciero({
         <div className="min-w-0">
           <p className={sectionTitleClass}>Resumen financiero</p>
 
-          <h2
-            className={`mt-0.5 text-sm font-semibold ${
+          <p className={sectionDescriptionClass}>{saldoTexto(saldo)}</p>
+        </div>
+      </div>
+
+      <div className="md:hidden">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+            Saldo final
+          </p>
+
+          <p
+            className={`mt-1 truncate text-[22px] font-semibold ${
               saldo > 0
                 ? "text-red-700 dark:text-red-300"
                 : saldo < 0
@@ -1458,19 +1468,45 @@ function ResumenFinanciero({
             }`}
           >
             {formatMoney(saldo)}
-          </h2>
+          </p>
 
-          <p className={sectionDescriptionClass}>{saldoTexto(saldo)}</p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                Pendientes
+              </p>
+
+              <p
+                className={`mt-1 text-[16px] font-semibold ${
+                  periodosPendientes > 0
+                    ? "text-red-700 dark:text-red-300"
+                    : "text-emerald-700 dark:text-emerald-300"
+                }`}
+              >
+                {periodosPendientes}
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                Períodos
+              </p>
+
+              <p className="mt-1 text-[16px] font-semibold text-blue-700 dark:text-blue-300">
+                {cantidadPeriodos}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-2 md:grid-cols-3 xl:grid-cols-6">
+      <div className="hidden gap-2 md:grid md:grid-cols-3 xl:grid-cols-6">
         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Total debe
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-red-700 dark:text-red-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-red-700 dark:text-red-300">
             {formatMoney(totalDebe)}
           </p>
         </div>
@@ -1480,7 +1516,7 @@ function ResumenFinanciero({
             Total haber
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-emerald-700 dark:text-emerald-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
             {formatMoney(totalHaber)}
           </p>
         </div>
@@ -1490,7 +1526,7 @@ function ResumenFinanciero({
             Períodos
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-blue-700 dark:text-blue-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-blue-700 dark:text-blue-300">
             {cantidadPeriodos}
           </p>
         </div>
@@ -1501,7 +1537,7 @@ function ResumenFinanciero({
           </p>
 
           <p
-            className={`mt-1 truncate text-[12px] font-semibold ${
+            className={`mt-1 truncate text-[18px] font-semibold ${
               periodosPendientes > 0
                 ? "text-red-700 dark:text-red-300"
                 : "text-emerald-700 dark:text-emerald-300"
@@ -1516,7 +1552,7 @@ function ResumenFinanciero({
             Cancelados
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-emerald-700 dark:text-emerald-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
             {periodosCancelados}
           </p>
         </div>
@@ -1526,7 +1562,7 @@ function ResumenFinanciero({
             A favor
           </p>
 
-          <p className="mt-1 truncate text-[12px] font-semibold text-amber-700 dark:text-amber-300">
+          <p className="mt-1 truncate text-[18px] font-semibold text-amber-700 dark:text-amber-300">
             {periodosAFavor}
           </p>
         </div>

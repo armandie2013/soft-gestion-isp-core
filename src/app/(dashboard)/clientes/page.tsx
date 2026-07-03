@@ -385,8 +385,14 @@ const inputClass =
 const buttonPrimaryClass =
   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white shadow-sm shadow-blue-950/10 transition hover:bg-blue-700 active:scale-[0.99] dark:bg-blue-500 dark:text-white dark:hover:bg-blue-600";
 
-const buttonSecondaryClass =
-  "inline-flex h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900";
+const filterButtonBaseClass =
+  "inline-flex h-8 items-center justify-center rounded-lg border px-3 !text-[12px] !font-medium !leading-none shadow-sm transition active:scale-[0.99]";
+
+const filterButtonPrimaryClass =
+  `${filterButtonBaseClass} border-blue-600 bg-blue-600 text-white shadow-blue-950/10 hover:border-blue-700 hover:bg-blue-700 dark:border-blue-500 dark:bg-blue-500 dark:text-white dark:hover:border-blue-600 dark:hover:bg-blue-600`;
+
+const filterButtonSecondaryClass =
+  `${filterButtonBaseClass} border-slate-300 bg-white text-slate-700 shadow-slate-300/35 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900`;
 
 const sectionTitleClass =
   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
@@ -647,13 +653,13 @@ export default async function ClientesPage({ searchParams }: ClientesPageProps) 
                   </select>
                 </div>
 
-                <div className="flex gap-2">
-                  <button type="submit" className={buttonPrimaryClass}>
-                    Filtrar
+                <div className="flex items-center gap-2">
+                  <button type="submit" className={filterButtonPrimaryClass}>
+                    <span className="text-[12px] leading-none">Filtrar</span>
                   </button>
 
-                  <Link href="/clientes" className={buttonSecondaryClass}>
-                    Limpiar
+                  <Link href="/clientes" className={filterButtonSecondaryClass}>
+                    <span className="text-[12px] leading-none">Limpiar</span>
                   </Link>
                 </div>
               </form>
