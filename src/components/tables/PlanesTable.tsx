@@ -355,6 +355,277 @@
 //   );
 // }
 
+// // src/components/tables/PlanesTable.tsx
+
+// import Link from "next/link";
+// import {
+//   CheckCircle2,
+//   Pencil,
+//   RadioTower,
+//   Wifi,
+//   WifiOff,
+// } from "lucide-react";
+// import { EmptyState } from "@/components/ui/EmptyState";
+// import type { PlanSafe } from "@/types/plan.types";
+
+// type PlanesTableProps = {
+//   planes: PlanSafe[];
+// };
+
+// function formatMoney(value: number) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function getEstadoLabel(estado: string) {
+//   if (estado === "activo") return "Activo";
+//   return "Inactivo";
+// }
+
+// function getEstadoClass(estado: string) {
+//   if (estado === "activo") {
+//     return "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300";
+//   }
+
+//   return "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300";
+// }
+
+// function getTipoLabel(tipo: string) {
+//   const labels: Record<string, string> = {
+//     residencial: "Residencial",
+//     comercial: "Comercial",
+//     corporativo: "Corporativo",
+//     dedicado: "Dedicado",
+//     otro: "Otro",
+//   };
+
+//   return labels[tipo] || tipo || "-";
+// }
+
+// function EstadoPill({ estado }: { estado: string }) {
+//   const Icon = estado === "activo" ? CheckCircle2 : WifiOff;
+
+//   return (
+//     <span
+//       className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium ${getEstadoClass(
+//         estado,
+//       )}`}
+//     >
+//       <Icon className="h-3 w-3" />
+//       {getEstadoLabel(estado)}
+//     </span>
+//   );
+// }
+
+// function MobilePlanCard({ plan }: { plan: PlanSafe }) {
+//   return (
+//     <article className="rounded-[1.35rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
+//       <div className="flex items-start justify-between gap-3">
+//         <div className="flex min-w-0 gap-3">
+//           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+//             <Wifi className="h-4 w-4" />
+//           </div>
+
+//           <div className="min-w-0">
+//             <h2 className="truncate text-sm font-semibold text-slate-950 dark:text-white">
+//               {plan.nombre}
+//             </h2>
+
+//             <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
+//               {getTipoLabel(plan.tipo)}
+//             </p>
+//           </div>
+//         </div>
+
+//         <EstadoPill estado={plan.estado} />
+//       </div>
+
+//       {plan.detalle ? (
+//         <p className="mt-3 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
+//           {plan.detalle}
+//         </p>
+//       ) : (
+//         <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-500">
+//           Sin detalle cargado.
+//         </p>
+//       )}
+
+//       <div className="mt-3 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2.5 dark:border-slate-800 dark:bg-slate-900/70">
+//         <div className="flex items-center justify-between gap-3">
+//           <span className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             <RadioTower className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+//             Importe
+//           </span>
+
+//           <span className="text-right text-sm font-semibold text-slate-950 dark:text-white">
+//             {formatMoney(plan.importe)}
+//           </span>
+//         </div>
+//       </div>
+
+//       <Link
+//         href={`/planes/${plan.id}/editar`}
+//         className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
+//       >
+//         <Pencil className="h-3.5 w-3.5" />
+//         Editar plan
+//       </Link>
+//     </article>
+//   );
+// }
+
+// function DesktopCellLink({
+//   href,
+//   children,
+//   className = "",
+// }: {
+//   href: string;
+//   children: React.ReactNode;
+//   className?: string;
+// }) {
+//   return (
+//     <Link href={href} className={`block h-full w-full px-3 py-3 ${className}`}>
+//       {children}
+//     </Link>
+//   );
+// }
+
+// export function PlanesTable({ planes }: PlanesTableProps) {
+//   if (planes.length === 0) {
+//     return (
+//       <div className="rounded-[1.45rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
+//         <EmptyState
+//           title="Todavía no hay planes cargados."
+//           description="Creá el primer plan para poder asignarlo a los clientes."
+//         />
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <>
+//       <div className="hidden overflow-hidden rounded-[1.45rem] border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none lg:block">
+//         <div className="overflow-x-auto">
+//           <table className="w-full min-w-[860px] table-fixed text-left text-xs xl:min-w-0">
+//             <colgroup>
+//               <col className="w-[26%]" />
+//               <col className="w-[14%]" />
+//               <col className="w-[28%]" />
+//               <col className="w-[14%]" />
+//               <col className="w-[10%]" />
+//               <col className="w-[8%]" />
+//             </colgroup>
+
+//             <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.13em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
+//               <tr>
+//                 <th className="px-3 py-2.5 font-medium">Plan</th>
+//                 <th className="px-3 py-2.5 font-medium">Tipo</th>
+//                 <th className="px-3 py-2.5 font-medium">Detalle</th>
+//                 <th className="px-3 py-2.5 text-right font-medium">
+//                   Importe
+//                 </th>
+//                 <th className="px-3 py-2.5 font-medium">Estado</th>
+//                 <th className="px-3 py-2.5 text-right font-medium">Editar</th>
+//               </tr>
+//             </thead>
+
+//             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+//               {planes.map((plan) => {
+//                 const href = `/planes/${plan.id}/editar`;
+
+//                 return (
+//                   <tr
+//                     key={plan.id}
+//                     className="group cursor-pointer transition hover:bg-cyan-50/70 dark:hover:bg-cyan-950/20"
+//                   >
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <div className="flex min-w-0 items-center gap-3">
+//                           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+//                             <Wifi className="h-4 w-4" />
+//                           </div>
+
+//                           <div className="min-w-0">
+//                             <p className="truncate text-xs font-medium text-slate-950 transition group-hover:text-cyan-800 dark:text-white dark:group-hover:text-cyan-300">
+//                               {plan.nombre}
+//                             </p>
+
+//                             <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
+//                               Plan comercial
+//                             </p>
+//                           </div>
+//                         </div>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+//                           {getTipoLabel(plan.tipo)}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <p className="truncate text-xs text-slate-600 dark:text-slate-300">
+//                           {plan.detalle || "Sin detalle"}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href} className="text-right">
+//                         <p className="truncate text-xs font-semibold text-slate-950 dark:text-white">
+//                           {formatMoney(plan.importe)}
+//                         </p>
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href}>
+//                         <EstadoPill estado={plan.estado} />
+//                       </DesktopCellLink>
+//                     </td>
+
+//                     <td>
+//                       <DesktopCellLink href={href} className="text-right">
+//                         <span
+//                           className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-600 shadow-sm transition group-hover:border-cyan-300 group-hover:bg-cyan-50 group-hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300 dark:group-hover:border-cyan-800 dark:group-hover:bg-cyan-950/30 dark:group-hover:text-cyan-200"
+//                           title="Editar plan"
+//                         >
+//                           <Pencil className="h-3.5 w-3.5" />
+//                         </span>
+//                       </DesktopCellLink>
+//                     </td>
+//                   </tr>
+//                 );
+//               })}
+//             </tbody>
+//           </table>
+//         </div>
+
+//         <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
+//           <span>
+//             Mostrando {planes.length} {planes.length === 1 ? "plan" : "planes"}
+//           </span>
+
+//           <span>Click en una fila para editar</span>
+//         </div>
+//       </div>
+
+//       <div className="grid gap-2 lg:hidden">
+//         {planes.map((plan) => (
+//           <MobilePlanCard key={plan.id} plan={plan} />
+//         ))}
+//       </div>
+//     </>
+//   );
+// }
+
 // src/components/tables/PlanesTable.tsx
 
 import Link from "next/link";
@@ -371,6 +642,12 @@ import type { PlanSafe } from "@/types/plan.types";
 type PlanesTableProps = {
   planes: PlanSafe[];
 };
+
+const panelClass =
+  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+const actionLinkClass =
+  "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-[11px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300";
 
 function formatMoney(value: number) {
   const amount = Number(value || 0);
@@ -410,7 +687,7 @@ function EstadoPill({ estado }: { estado: string }) {
 
   return (
     <span
-      className={`inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium ${getEstadoClass(
+      className={`inline-flex h-6 w-fit shrink-0 items-center gap-1 rounded-full border px-2 text-[10px] font-semibold leading-none ${getEstadoClass(
         estado,
       )}`}
     >
@@ -420,208 +697,195 @@ function EstadoPill({ estado }: { estado: string }) {
   );
 }
 
-function MobilePlanCard({ plan }: { plan: PlanSafe }) {
+function EmptyPlanesPanel() {
   return (
-    <article className="rounded-[1.35rem] border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/50 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
-            <Wifi className="h-4 w-4" />
-          </div>
+    <section className={`${panelClass} mt-3 p-6 text-center`}>
+      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+        <Wifi className="h-5 w-5" />
+      </div>
 
-          <div className="min-w-0">
-            <h2 className="truncate text-sm font-semibold text-slate-950 dark:text-white">
+      <h2 className="mt-3 text-sm font-semibold text-slate-950 dark:text-white">
+        Todavía no hay planes cargados
+      </h2>
+
+      <p className="mx-auto mt-1 max-w-md text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+        Creá el primer plan para poder asignarlo a los clientes.
+      </p>
+
+      <div className="sr-only">
+        <EmptyState
+          title="Todavía no hay planes cargados."
+          description="Creá el primer plan para poder asignarlo a los clientes."
+        />
+      </div>
+    </section>
+  );
+}
+
+function MobilePlanRow({ plan }: { plan: PlanSafe }) {
+  return (
+    <article className="rounded-xl border border-slate-300 bg-white/95 px-3 py-2.5 shadow-sm shadow-slate-300/35 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/15 dark:ring-slate-800/80">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-1.5 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+              <Wifi className="h-3.5 w-3.5" />
+            </span>
+
+            <h2 className="truncate text-[13px] font-semibold text-slate-950 dark:text-white">
               {plan.nombre}
             </h2>
+          </div>
 
-            <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
-              {getTipoLabel(plan.tipo)}
-            </p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
+            <span>{getTipoLabel(plan.tipo)}</span>
+
+            <span className="text-slate-400 dark:text-slate-600">·</span>
+
+            <span className="inline-flex items-center gap-1">
+              <RadioTower className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+              {formatMoney(plan.importe)}
+            </span>
           </div>
         </div>
 
         <EstadoPill estado={plan.estado} />
       </div>
 
-      {plan.detalle ? (
-        <p className="mt-3 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
-          {plan.detalle}
-        </p>
-      ) : (
-        <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-500">
-          Sin detalle cargado.
-        </p>
-      )}
+      <p className="mt-2 line-clamp-2 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+        {plan.detalle || "Sin detalle cargado."}
+      </p>
 
-      <div className="mt-3 rounded-2xl border border-slate-300 bg-slate-50 px-3 py-2.5 dark:border-slate-800 dark:bg-slate-900/70">
-        <div className="flex items-center justify-between gap-3">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            <RadioTower className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-            Importe
-          </span>
-
-          <span className="text-right text-sm font-semibold text-slate-950 dark:text-white">
-            {formatMoney(plan.importe)}
-          </span>
-        </div>
+      <div className="mt-2 flex items-center gap-1.5">
+        <Link href={`/planes/${plan.id}/editar`} className={actionLinkClass}>
+          <Pencil className="h-3 w-3" />
+          Editar
+        </Link>
       </div>
-
-      <Link
-        href={`/planes/${plan.id}/editar`}
-        className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-800 dark:hover:bg-cyan-950/30 dark:hover:text-cyan-200"
-      >
-        <Pencil className="h-3.5 w-3.5" />
-        Editar plan
-      </Link>
     </article>
   );
 }
 
-function DesktopCellLink({
-  href,
-  children,
-  className = "",
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
+function DesktopTable({ planes }: { planes: PlanSafe[] }) {
   return (
-    <Link href={href} className={`block h-full w-full px-3 py-3 ${className}`}>
-      {children}
-    </Link>
+    <section className={`${panelClass} hidden overflow-hidden lg:block`}>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[920px] table-fixed text-left text-[12px] xl:min-w-0">
+          <colgroup>
+            <col className="w-[24%]" />
+            <col className="w-[14%]" />
+            <col className="w-[30%]" />
+            <col className="w-[13%]" />
+            <col className="w-[11%]" />
+            <col className="w-[8%]" />
+          </colgroup>
+
+          <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.08em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
+            <tr>
+              <th className="px-3 py-2.5 font-medium">Plan</th>
+              <th className="px-3 py-2.5 font-medium">Tipo</th>
+              <th className="px-3 py-2.5 font-medium">Detalle</th>
+              <th className="px-3 py-2.5 text-right font-medium">Importe</th>
+              <th className="px-3 py-2.5 font-medium">Estado</th>
+              <th className="px-3 py-2.5 text-center font-medium">Acción</th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+            {planes.map((plan) => (
+              <tr
+                key={plan.id}
+                className="transition hover:bg-blue-50/55 dark:hover:bg-blue-950/12"
+              >
+                <td className="px-3 py-2.5">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+                      <Wifi className="h-3.5 w-3.5" />
+                    </span>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+                        {plan.nombre}
+                      </p>
+
+                      <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
+                        Plan comercial
+                      </p>
+                    </div>
+                  </div>
+                </td>
+
+                <td className="px-3 py-2.5">
+                  <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+                    {getTipoLabel(plan.tipo)}
+                  </p>
+                </td>
+
+                <td className="px-3 py-2.5">
+                  <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+                    {plan.detalle || "Sin detalle"}
+                  </p>
+                </td>
+
+                <td className="px-3 py-2.5 text-right">
+                  <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+                    {formatMoney(plan.importe)}
+                  </p>
+                </td>
+
+                <td className="px-3 py-2.5">
+                  <EstadoPill estado={plan.estado} />
+                </td>
+
+                <td className="px-3 py-2.5">
+                  <div className="flex items-center justify-center">
+                    <Link
+                      href={`/planes/${plan.id}/editar`}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+                      aria-label="Editar plan"
+                      title="Editar plan"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <span>
+          Mostrando {planes.length} {planes.length === 1 ? "plan" : "planes"}
+        </span>
+
+        <span>Vista administrativa</span>
+      </div>
+    </section>
   );
 }
 
 export function PlanesTable({ planes }: PlanesTableProps) {
   if (planes.length === 0) {
-    return (
-      <div className="rounded-[1.45rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
-        <EmptyState
-          title="Todavía no hay planes cargados."
-          description="Creá el primer plan para poder asignarlo a los clientes."
-        />
-      </div>
-    );
+    return <EmptyPlanesPanel />;
   }
 
   return (
     <>
-      <div className="hidden overflow-hidden rounded-[1.45rem] border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none lg:block">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[860px] table-fixed text-left text-xs xl:min-w-0">
-            <colgroup>
-              <col className="w-[26%]" />
-              <col className="w-[14%]" />
-              <col className="w-[28%]" />
-              <col className="w-[14%]" />
-              <col className="w-[10%]" />
-              <col className="w-[8%]" />
-            </colgroup>
+      <DesktopTable planes={planes} />
 
-            <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.13em] text-slate-500 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-400">
-              <tr>
-                <th className="px-3 py-2.5 font-medium">Plan</th>
-                <th className="px-3 py-2.5 font-medium">Tipo</th>
-                <th className="px-3 py-2.5 font-medium">Detalle</th>
-                <th className="px-3 py-2.5 text-right font-medium">
-                  Importe
-                </th>
-                <th className="px-3 py-2.5 font-medium">Estado</th>
-                <th className="px-3 py-2.5 text-right font-medium">Editar</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-              {planes.map((plan) => {
-                const href = `/planes/${plan.id}/editar`;
-
-                return (
-                  <tr
-                    key={plan.id}
-                    className="group cursor-pointer transition hover:bg-cyan-50/70 dark:hover:bg-cyan-950/20"
-                  >
-                    <td>
-                      <DesktopCellLink href={href}>
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
-                            <Wifi className="h-4 w-4" />
-                          </div>
-
-                          <div className="min-w-0">
-                            <p className="truncate text-xs font-medium text-slate-950 transition group-hover:text-cyan-800 dark:text-white dark:group-hover:text-cyan-300">
-                              {plan.nombre}
-                            </p>
-
-                            <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
-                              Plan comercial
-                            </p>
-                          </div>
-                        </div>
-                      </DesktopCellLink>
-                    </td>
-
-                    <td>
-                      <DesktopCellLink href={href}>
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
-                          {getTipoLabel(plan.tipo)}
-                        </p>
-                      </DesktopCellLink>
-                    </td>
-
-                    <td>
-                      <DesktopCellLink href={href}>
-                        <p className="truncate text-xs text-slate-600 dark:text-slate-300">
-                          {plan.detalle || "Sin detalle"}
-                        </p>
-                      </DesktopCellLink>
-                    </td>
-
-                    <td>
-                      <DesktopCellLink href={href} className="text-right">
-                        <p className="truncate text-xs font-semibold text-slate-950 dark:text-white">
-                          {formatMoney(plan.importe)}
-                        </p>
-                      </DesktopCellLink>
-                    </td>
-
-                    <td>
-                      <DesktopCellLink href={href}>
-                        <EstadoPill estado={plan.estado} />
-                      </DesktopCellLink>
-                    </td>
-
-                    <td>
-                      <DesktopCellLink href={href} className="text-right">
-                        <span
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-600 shadow-sm transition group-hover:border-cyan-300 group-hover:bg-cyan-50 group-hover:text-cyan-800 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300 dark:group-hover:border-cyan-800 dark:group-hover:bg-cyan-950/30 dark:group-hover:text-cyan-200"
-                          title="Editar plan"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </span>
-                      </DesktopCellLink>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400">
-          <span>
-            Mostrando {planes.length} {planes.length === 1 ? "plan" : "planes"}
-          </span>
-
-          <span>Click en una fila para editar</span>
-        </div>
-      </div>
-
-      <div className="grid gap-2 lg:hidden">
+      <section className="grid gap-2.5 lg:hidden">
         {planes.map((plan) => (
-          <MobilePlanCard key={plan.id} plan={plan} />
+          <MobilePlanRow key={plan.id} plan={plan} />
         ))}
-      </div>
+
+        <div
+          className={`${panelClass} px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400`}
+        >
+          Mostrando {planes.length} {planes.length === 1 ? "plan" : "planes"}
+        </div>
+      </section>
     </>
   );
 }

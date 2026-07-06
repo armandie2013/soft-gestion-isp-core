@@ -1258,10 +1258,10 @@ const inputClass =
   "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-normal text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-500";
 
 const buttonPrimaryClass =
-  "inline-flex h-8 items-center justify-center rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white transition hover:bg-blue-700 active:scale-[0.99] dark:bg-blue-500 dark:hover:bg-blue-400";
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 !text-[12px] !font-medium !leading-none text-white shadow-sm shadow-blue-950/10 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-500 dark:bg-blue-500 dark:text-white dark:hover:border-blue-600 dark:hover:bg-blue-600";
 
 const buttonSecondaryClass =
-  "inline-flex h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800";
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 !text-[12px] !font-medium !leading-none text-slate-700 shadow-sm shadow-slate-300/30 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-800";
 
 const sectionTitleClass =
   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
@@ -1532,7 +1532,7 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
                   </select>
                 </div>
 
-                <div className="grid grid-cols-[1fr_auto] gap-2 lg:contents">
+                <div className="grid gap-2 min-[420px]:grid-cols-[1fr_auto] lg:contents">
                   <select
                     name="seguridad"
                     defaultValue={seguridad}
@@ -1543,13 +1543,15 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
                     <option value="cambio">Cambiar clave</option>
                   </select>
 
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-2 gap-2 min-[420px]:flex min-[420px]:w-auto">
                     <button type="submit" className={buttonPrimaryClass}>
-                      Filtrar
+                      <span className="text-[12px] leading-none text-white">
+                        Filtrar
+                      </span>
                     </button>
 
                     <Link href="/usuarios" className={buttonSecondaryClass}>
-                      Limpiar
+                      <span className="text-[12px] leading-none">Limpiar</span>
                     </Link>
                   </div>
                 </div>

@@ -327,6 +327,278 @@
 //   );
 // }
 
+// "use client";
+
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import {
+//   AlertTriangle,
+//   Check,
+//   CheckCircle2,
+//   Copy,
+//   KeyRound,
+//   Loader2,
+//   X,
+// } from "lucide-react";
+// import {
+//   generarCodigoCierreCajaModalAction,
+//   type CodigoCierreActionState,
+// } from "@/actions/cobro.actions";
+
+// type GenerarCodigoCierreCajaFormProps = {
+//   cobradorId: string;
+//   disabled?: boolean;
+//   fullWidth?: boolean;
+// };
+
+// const initialState: CodigoCierreActionState = {
+//   ok: false,
+//   message: "",
+// };
+
+// function formatMoney(value?: number) {
+//   return new Intl.NumberFormat("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//     maximumFractionDigits: 2,
+//   }).format(value || 0);
+// }
+
+// function CopyCodigoButton({ codigo }: { codigo: string }) {
+//   const [copied, setCopied] = useState(false);
+
+//   async function handleCopy() {
+//     try {
+//       await navigator.clipboard.writeText(codigo);
+//       setCopied(true);
+
+//       window.setTimeout(() => {
+//         setCopied(false);
+//       }, 1400);
+//     } catch {
+//       setCopied(false);
+//     }
+//   }
+
+//   return (
+//     <button
+//       type="button"
+//       onClick={handleCopy}
+//       className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-cyan-300 bg-cyan-50 px-4 text-xs font-medium text-cyan-800 transition hover:bg-cyan-100 active:scale-[0.99] dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-300 dark:hover:bg-cyan-950/70"
+//     >
+//       {copied ? (
+//         <>
+//           <Check className="h-4 w-4" />
+//           Copiado
+//         </>
+//       ) : (
+//         <>
+//           <Copy className="h-4 w-4" />
+//           Copiar código
+//         </>
+//       )}
+//     </button>
+//   );
+// }
+
+// function CodigoGeneradoModal({
+//   open,
+//   state,
+//   onClose,
+// }: {
+//   open: boolean;
+//   state: CodigoCierreActionState;
+//   onClose: () => void;
+// }) {
+//   if (!open) return null;
+
+//   return (
+//     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/75 px-4 py-6 backdrop-blur-sm">
+//       <div className="w-full max-w-md overflow-hidden rounded-[1.6rem] border border-slate-300 bg-white shadow-2xl shadow-slate-950/30 dark:border-slate-800 dark:bg-slate-900">
+//         <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+//           <div className="flex min-w-0 items-start gap-3">
+//             <div
+//               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${
+//                 state.ok
+//                   ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900"
+//                   : "bg-red-50 text-red-700 ring-1 ring-red-100 dark:bg-red-950/50 dark:text-red-300 dark:ring-red-900"
+//               }`}
+//             >
+//               {state.ok ? (
+//                 <CheckCircle2 className="h-4 w-4" />
+//               ) : (
+//                 <AlertTriangle className="h-4 w-4" />
+//               )}
+//             </div>
+
+//             <div className="min-w-0">
+//               <p
+//                 className={`text-[10px] font-medium uppercase tracking-[0.18em] ${
+//                   state.ok
+//                     ? "text-emerald-700 dark:text-emerald-300"
+//                     : "text-red-700 dark:text-red-300"
+//                 }`}
+//               >
+//                 {state.ok ? "Código generado" : "No se pudo generar"}
+//               </p>
+
+//               <h2 className="mt-0.5 text-base font-semibold tracking-tight text-slate-950 dark:text-white">
+//                 Cierre de caja
+//               </h2>
+//             </div>
+//           </div>
+
+//           <button
+//             type="button"
+//             onClick={onClose}
+//             className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+//             aria-label="Cerrar"
+//           >
+//             <X className="h-4 w-4" />
+//           </button>
+//         </div>
+
+//         <div className="px-4 py-4">
+//           <p
+//             className={`rounded-2xl border px-3 py-2.5 text-xs leading-5 ${
+//               state.ok
+//                 ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-200"
+//                 : "border-red-200 bg-red-50 text-red-800 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-200"
+//             }`}
+//           >
+//             {state.message || "No se recibió respuesta del servidor."}
+//           </p>
+
+//           {state.ok && state.codigo ? (
+//             <div className="mt-4 rounded-[1.35rem] border border-slate-300 bg-slate-50 p-4 text-center shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
+//               <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+//                 Código para el cobrador
+//               </p>
+
+//               <p className="mt-3 select-all font-mono text-4xl font-semibold tracking-[0.28em] text-slate-950 dark:text-white sm:text-5xl">
+//                 {state.codigo}
+//               </p>
+
+//               <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+//                 Importe exacto:{" "}
+//                 <span className="font-medium text-slate-800 dark:text-slate-200">
+//                   {formatMoney(state.importe)}
+//                 </span>
+//               </p>
+
+//               <div className="mt-4">
+//                 <CopyCodigoButton codigo={state.codigo} />
+//               </div>
+//             </div>
+//           ) : null}
+
+//           <button
+//             type="button"
+//             onClick={onClose}
+//             className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-cyan-600 px-4 text-xs font-medium text-white transition hover:bg-cyan-700 active:scale-[0.99] dark:bg-cyan-500 dark:text-cyan-950 dark:hover:bg-cyan-400"
+//           >
+//             Entendido
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export function GenerarCodigoCierreCajaForm({
+//   cobradorId,
+//   disabled,
+//   fullWidth,
+// }: GenerarCodigoCierreCajaFormProps) {
+//   const router = useRouter();
+
+//   const [pending, setPending] = useState(false);
+//   const [modalOpen, setModalOpen] = useState(false);
+//   const [state, setState] = useState<CodigoCierreActionState>(initialState);
+//   const [refreshOnClose, setRefreshOnClose] = useState(false);
+
+//   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+//     event.preventDefault();
+
+//     if (disabled || pending) {
+//       return;
+//     }
+
+//     setPending(true);
+
+//     try {
+//       const formData = new FormData(event.currentTarget);
+//       const result = await generarCodigoCierreCajaModalAction(
+//         initialState,
+//         formData,
+//       );
+
+//       setState(result ?? initialState);
+//       setRefreshOnClose(Boolean(result?.ok));
+//       setModalOpen(true);
+//     } catch {
+//       setState({
+//         ok: false,
+//         message: "No se pudo generar el código. Intentá nuevamente.",
+//       });
+//       setRefreshOnClose(false);
+//       setModalOpen(true);
+//     } finally {
+//       setPending(false);
+//     }
+//   }
+
+//   function handleCloseModal() {
+//     setModalOpen(false);
+
+//     if (refreshOnClose) {
+//       window.setTimeout(() => {
+//         router.refresh();
+//       }, 150);
+//     }
+//   }
+
+//   return (
+//     <>
+//       <form onSubmit={handleSubmit} className={fullWidth ? "w-full" : ""}>
+//         <input type="hidden" name="cobradorId" value={cobradorId} />
+
+//         <button
+//           type="submit"
+//           disabled={pending || disabled}
+//           className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-xl px-2.5 text-[11px] font-medium transition active:scale-[0.99] ${
+//             fullWidth ? "w-full" : ""
+//           } ${
+//             disabled
+//               ? "cursor-not-allowed border border-slate-300 bg-slate-50 text-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-600"
+//               : "border border-cyan-300 bg-cyan-50 text-cyan-700 shadow-sm shadow-slate-300/30 hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-300 dark:shadow-none dark:hover:bg-cyan-950/70"
+//           }`}
+//         >
+//           {pending ? (
+//             <>
+//               <Loader2 className="h-3.5 w-3.5 animate-spin" />
+//               Generando
+//             </>
+//           ) : (
+//             <>
+//               <KeyRound className="h-3.5 w-3.5" />
+//               Generar código
+//             </>
+//           )}
+//         </button>
+//       </form>
+
+//       <CodigoGeneradoModal
+//         open={modalOpen}
+//         state={state}
+//         onClose={handleCloseModal}
+//       />
+//     </>
+//   );
+// }
+
+// src/components/forms/GenerarCodigoCierreCajaForm.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -356,6 +628,18 @@ const initialState: CodigoCierreActionState = {
   message: "",
 };
 
+const buttonBaseClass =
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border px-2.5 !text-[11px] !font-medium !leading-none shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70";
+
+const buttonEnabledClass =
+  `${buttonBaseClass} border-blue-300 bg-blue-50 text-blue-700 shadow-slate-300/30 hover:border-blue-400 hover:bg-blue-100 dark:border-blue-900/70 dark:bg-blue-950/40 dark:text-blue-300 dark:shadow-black/10 dark:hover:bg-blue-950/70`;
+
+const buttonDisabledClass =
+  `${buttonBaseClass} border-slate-300 bg-slate-50 text-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-600`;
+
+const buttonPrimaryClass =
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 !text-[12px] !font-medium !leading-none text-white shadow-sm shadow-blue-950/10 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-500 dark:bg-blue-500 dark:text-white dark:hover:border-blue-600 dark:hover:bg-blue-600";
+
 function formatMoney(value?: number) {
   return new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -381,20 +665,18 @@ function CopyCodigoButton({ codigo }: { codigo: string }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-cyan-300 bg-cyan-50 px-4 text-xs font-medium text-cyan-800 transition hover:bg-cyan-100 active:scale-[0.99] dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-300 dark:hover:bg-cyan-950/70"
-    >
+    <button type="button" onClick={handleCopy} className={`${buttonPrimaryClass} w-full`}>
       {copied ? (
         <>
-          <Check className="h-4 w-4" />
-          Copiado
+          <Check className="h-3.5 w-3.5 text-white" />
+          <span className="text-[12px] leading-none text-white">Copiado</span>
         </>
       ) : (
         <>
-          <Copy className="h-4 w-4" />
-          Copiar código
+          <Copy className="h-3.5 w-3.5 text-white" />
+          <span className="text-[12px] leading-none text-white">
+            Copiar código
+          </span>
         </>
       )}
     </button>
@@ -414,14 +696,14 @@ function CodigoGeneradoModal({
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/75 px-4 py-6 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-[1.6rem] border border-slate-300 bg-white shadow-2xl shadow-slate-950/30 dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-800">
+      <div className="w-full max-w-md overflow-hidden rounded-xl border border-slate-300 bg-white shadow-2xl shadow-slate-950/30 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900 dark:ring-slate-800/80">
+        <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-4 py-3 dark:border-slate-700">
           <div className="flex min-w-0 items-start gap-3">
             <div
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
                 state.ok
-                  ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900"
-                  : "bg-red-50 text-red-700 ring-1 ring-red-100 dark:bg-red-950/50 dark:text-red-300 dark:ring-red-900"
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+                  : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
               }`}
             >
               {state.ok ? (
@@ -433,7 +715,7 @@ function CodigoGeneradoModal({
 
             <div className="min-w-0">
               <p
-                className={`text-[10px] font-medium uppercase tracking-[0.18em] ${
+                className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${
                   state.ok
                     ? "text-emerald-700 dark:text-emerald-300"
                     : "text-red-700 dark:text-red-300"
@@ -442,7 +724,7 @@ function CodigoGeneradoModal({
                 {state.ok ? "Código generado" : "No se pudo generar"}
               </p>
 
-              <h2 className="mt-0.5 text-base font-semibold tracking-tight text-slate-950 dark:text-white">
+              <h2 className="mt-0.5 text-sm font-semibold tracking-tight text-slate-950 dark:text-white">
                 Cierre de caja
               </h2>
             </div>
@@ -451,27 +733,27 @@ function CodigoGeneradoModal({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
             aria-label="Cerrar"
           >
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5" />
           </button>
         </div>
 
         <div className="px-4 py-4">
           <p
-            className={`rounded-2xl border px-3 py-2.5 text-xs leading-5 ${
+            className={`rounded-lg border px-3 py-2.5 text-[12px] leading-5 ${
               state.ok
-                ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-200"
-                : "border-red-200 bg-red-50 text-red-800 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-200"
+                ? "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-200"
+                : "border-red-300 bg-red-50 text-red-800 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-200"
             }`}
           >
             {state.message || "No se recibió respuesta del servidor."}
           </p>
 
           {state.ok && state.codigo ? (
-            <div className="mt-4 rounded-[1.35rem] border border-slate-300 bg-slate-50 p-4 text-center shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-none">
-              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+            <div className="mt-4 rounded-lg border border-slate-300 bg-slate-50 p-4 text-center shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/55 dark:shadow-black/10">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                 Código para el cobrador
               </p>
 
@@ -479,9 +761,9 @@ function CodigoGeneradoModal({
                 {state.codigo}
               </p>
 
-              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-3 text-[12px] text-slate-500 dark:text-slate-400">
                 Importe exacto:{" "}
-                <span className="font-medium text-slate-800 dark:text-slate-200">
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
                   {formatMoney(state.importe)}
                 </span>
               </p>
@@ -492,12 +774,10 @@ function CodigoGeneradoModal({
             </div>
           ) : null}
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-cyan-600 px-4 text-xs font-medium text-white transition hover:bg-cyan-700 active:scale-[0.99] dark:bg-cyan-500 dark:text-cyan-950 dark:hover:bg-cyan-400"
-          >
-            Entendido
+          <button type="button" onClick={onClose} className={`${buttonPrimaryClass} mt-4 w-full`}>
+            <span className="text-[12px] leading-none text-white">
+              Entendido
+            </span>
           </button>
         </div>
       </div>
@@ -566,23 +846,19 @@ export function GenerarCodigoCierreCajaForm({
         <button
           type="submit"
           disabled={pending || disabled}
-          className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-xl px-2.5 text-[11px] font-medium transition active:scale-[0.99] ${
+          className={`${disabled ? buttonDisabledClass : buttonEnabledClass} ${
             fullWidth ? "w-full" : ""
-          } ${
-            disabled
-              ? "cursor-not-allowed border border-slate-300 bg-slate-50 text-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-600"
-              : "border border-cyan-300 bg-cyan-50 text-cyan-700 shadow-sm shadow-slate-300/30 hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-300 dark:shadow-none dark:hover:bg-cyan-950/70"
           }`}
         >
           {pending ? (
             <>
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Generando
+              <span className="text-[11px] leading-none">Generando</span>
             </>
           ) : (
             <>
               <KeyRound className="h-3.5 w-3.5" />
-              Generar código
+              <span className="text-[11px] leading-none">Generar código</span>
             </>
           )}
         </button>
