@@ -1216,6 +1216,681 @@
 
 // src/components/forms/CobroForm.tsx
 
+// "use client";
+
+// import {
+//   useEffect,
+//   useMemo,
+//   useState,
+//   type ChangeEvent,
+//   type ClipboardEvent,
+//   type KeyboardEvent,
+// } from "react";
+// import { useFormState, useFormStatus } from "react-dom";
+// import { useRouter } from "next/navigation";
+// import Link from "next/link";
+// import {
+//   AlertTriangle,
+//   CalendarDays,
+//   CheckCircle2,
+//   Eye,
+//   Loader2,
+//   ReceiptText,
+//   RotateCcw,
+//   Save,
+//   WalletCards,
+// } from "lucide-react";
+// import {
+//   registrarPagoCobradorAction,
+//   type CobroActionState,
+// } from "@/actions/cobro.actions";
+// import { AlertBox } from "@/components/ui/AlertBox";
+// import type { PeriodoCuentaClienteSafe } from "@/types/movimiento-financiero.types";
+
+// type CobroFormProps = {
+//   clienteId: string;
+//   periodosPendientes: PeriodoCuentaClienteSafe[];
+//   saldoCajaActual: number;
+//   limiteCajaCobrador: number;
+//   returnHref?: string;
+// };
+
+// const initialState: CobroActionState = {
+//   ok: false,
+//   message: "",
+// };
+
+// const fieldCardClass =
+//   "rounded-xl border border-slate-300 bg-white p-3 shadow-sm shadow-slate-300/35 dark:border-slate-700 dark:bg-slate-950/45 dark:shadow-none";
+
+// const softPanelClass =
+//   "rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 shadow-sm shadow-slate-300/25 dark:border-slate-700 dark:bg-slate-950/55 dark:shadow-none";
+
+// const labelClass =
+//   "text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400";
+
+// const inputClass =
+//   "mt-1.5 h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 disabled:opacity-80 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-blue-400 dark:focus:ring-blue-400/10 dark:disabled:bg-slate-950 dark:disabled:text-slate-600 lg:h-10";
+
+// const secondaryButtonClass =
+//   "inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 transition hover:bg-slate-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:shadow-black/10 dark:hover:bg-slate-900 sm:w-auto";
+
+// const receiptButtonClass =
+//   "inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-blue-600 bg-blue-600 px-4 text-[13px] font-medium leading-none text-white shadow-sm shadow-blue-950/10 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-500 dark:bg-blue-500 dark:hover:border-blue-600 dark:hover:bg-blue-600 sm:w-auto";
+
+// function formatMoney(value: number) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function extraerSoloDigitos(value: string) {
+//   return String(value || "").replace(/\D/g, "");
+// }
+
+// function limpiarCerosIzquierda(value: string) {
+//   return value.replace(/^0+/, "");
+// }
+
+// function formatCurrencyFromDigits(digits: string) {
+//   const cleanDigits = limpiarCerosIzquierda(extraerSoloDigitos(digits));
+
+//   if (!cleanDigits) {
+//     return "";
+//   }
+
+//   const formattedInteger = cleanDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},00`;
+// }
+
+// function moneyInputToNumber(digits: string) {
+//   const cleanDigits = limpiarCerosIzquierda(extraerSoloDigitos(digits));
+
+//   if (!cleanDigits) {
+//     return 0;
+//   }
+
+//   return Number(cleanDigits);
+// }
+
+// function ordenarPeriodosPendientes(periodos: PeriodoCuentaClienteSafe[]) {
+//   return [...periodos].sort((a, b) => {
+//     const anioA = a.referenciaAnio || 0;
+//     const anioB = b.referenciaAnio || 0;
+
+//     if (anioA !== anioB) {
+//       return anioA - anioB;
+//     }
+
+//     const mesA = a.referenciaMes || 0;
+//     const mesB = b.referenciaMes || 0;
+
+//     if (mesA !== mesB) {
+//       return mesA - mesB;
+//     }
+
+//     return Number(a.numeroComprobante || 0) - Number(b.numeroComprobante || 0);
+//   });
+// }
+
+// function SubmitButton({ disabled }: { disabled: boolean }) {
+//   const { pending } = useFormStatus();
+
+//   return (
+//     <button
+//       type="submit"
+//       disabled={pending || disabled}
+//       className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-blue-600 bg-blue-600 px-4 text-[13px] font-medium leading-none text-white shadow-sm shadow-blue-950/10 transition hover:border-blue-700 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.99] dark:border-blue-500 dark:bg-blue-500 dark:hover:border-blue-600 dark:hover:bg-blue-600 sm:w-auto lg:h-10"
+//       style={{ color: "#ffffff" }}
+//     >
+//       {pending ? (
+//         <>
+//           <Loader2
+//             className="h-4 w-4 animate-spin"
+//             style={{ color: "#ffffff" }}
+//           />
+
+//           <span
+//             className="text-[13px] font-medium leading-none"
+//             style={{ color: "#ffffff" }}
+//           >
+//             Registrando...
+//           </span>
+//         </>
+//       ) : (
+//         <>
+//           <Save className="h-4 w-4" style={{ color: "#ffffff" }} />
+
+//           <span
+//             className="text-[13px] font-medium leading-none"
+//             style={{ color: "#ffffff" }}
+//           >
+//             Registrar pago
+//           </span>
+//         </>
+//       )}
+//     </button>
+//   );
+// }
+
+// function EstadoOperacion({
+//   type,
+//   children,
+// }: {
+//   type: "success" | "danger" | "warning" | "info";
+//   children: React.ReactNode;
+// }) {
+//   const className = {
+//     success:
+//       "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-200",
+//     danger:
+//       "border-red-200 bg-red-50 text-red-800 dark:border-red-900/70 dark:bg-red-950/30 dark:text-red-200",
+//     warning:
+//       "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300",
+//     info:
+//       "border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-200",
+//   }[type];
+
+//   return (
+//     <div className={`rounded-xl border p-3 shadow-sm lg:p-2.5 ${className}`}>
+//       <div className="flex items-start gap-2.5">
+//         {type === "success" ? (
+//           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+//         ) : (
+//           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+//         )}
+
+//         <div className="min-w-0 text-[12px] leading-5">{children}</div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// function StepHeader({
+//   step,
+//   title,
+//   description,
+//   icon,
+//   enabled = true,
+// }: {
+//   step: string;
+//   title: string;
+//   description: string;
+//   icon: React.ReactNode;
+//   enabled?: boolean;
+// }) {
+//   return (
+//     <div className="mb-3 flex items-start gap-3 lg:mb-2">
+//       <div
+//         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${
+//           enabled
+//             ? "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300"
+//             : "border-slate-300 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-600"
+//         }`}
+//       >
+//         {icon}
+//       </div>
+
+//       <div className="min-w-0">
+//         <p
+//           className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${
+//             enabled
+//               ? "text-blue-700 dark:text-blue-300"
+//               : "text-slate-500 dark:text-slate-500"
+//           }`}
+//         >
+//           {step}
+//         </p>
+
+//         <h3 className="mt-0.5 text-sm font-semibold text-slate-950 dark:text-white">
+//           {title}
+//         </h3>
+
+//         <p className="mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400 lg:line-clamp-1">
+//           {description}
+//         </p>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export function CobroForm({
+//   clienteId,
+//   periodosPendientes,
+//   saldoCajaActual,
+//   limiteCajaCobrador,
+//   returnHref,
+// }: CobroFormProps) {
+//   const router = useRouter();
+
+//   const [state, formAction] = useFormState(
+//     registrarPagoCobradorAction,
+//     initialState,
+//   );
+
+//   const [facturaSeleccionadaId, setFacturaSeleccionadaId] = useState("");
+//   const [importeDigits, setImporteDigits] = useState("");
+//   const [observacion, setObservacion] = useState("");
+
+//   const periodosOrdenados = useMemo(() => {
+//     return ordenarPeriodosPendientes(periodosPendientes);
+//   }, [periodosPendientes]);
+
+//   const periodoSeleccionado = useMemo(() => {
+//     return (
+//       periodosOrdenados.find(
+//         (periodo) => periodo.facturaId === facturaSeleccionadaId,
+//       ) || null
+//     );
+//   }, [facturaSeleccionadaId, periodosOrdenados]);
+
+//   const limiteCaja = Math.max(Number(limiteCajaCobrador || 100000), 100000);
+//   const importeNumerico = moneyInputToNumber(importeDigits);
+//   const importeVisual = formatCurrencyFromDigits(importeDigits);
+//   const saldoCajaProyectado = saldoCajaActual + importeNumerico;
+
+//   const excedeLimiteCaja =
+//     importeNumerico > 0 && saldoCajaProyectado > limiteCaja;
+
+//   const superaSaldoPeriodo =
+//     Boolean(periodoSeleccionado) &&
+//     importeNumerico > Number(periodoSeleccionado?.saldoPeriodo || 0);
+
+//   const hayPeriodoSeleccionado = Boolean(periodoSeleccionado);
+//   const importeValido = importeNumerico > 0;
+
+//   const puedeRegistrarPago =
+//     hayPeriodoSeleccionado &&
+//     importeValido &&
+//     !excedeLimiteCaja &&
+//     !superaSaldoPeriodo;
+
+//   const volverHref = returnHref || `/cobrador/clientes/${clienteId}`;
+
+//   useEffect(() => {
+//     if (state.ok) {
+//       setFacturaSeleccionadaId("");
+//       setImporteDigits("");
+//       setObservacion("");
+//       router.refresh();
+//     }
+//   }, [router, state.ok]);
+
+//   function limpiarFormulario() {
+//     setFacturaSeleccionadaId("");
+//     setImporteDigits("");
+//     setObservacion("");
+//   }
+
+//   function appendDigit(digit: string) {
+//     setImporteDigits((current) =>
+//       limpiarCerosIzquierda(`${current}${digit}`),
+//     );
+//   }
+
+//   function handleImporteKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+//     const allowedControlKeys = [
+//       "Tab",
+//       "ArrowLeft",
+//       "ArrowRight",
+//       "ArrowUp",
+//       "ArrowDown",
+//       "Home",
+//       "End",
+//       "Escape",
+//       "Enter",
+//     ];
+
+//     if (allowedControlKeys.includes(event.key)) {
+//       return;
+//     }
+
+//     if (event.ctrlKey || event.metaKey) {
+//       return;
+//     }
+
+//     if (event.key === "Backspace") {
+//       event.preventDefault();
+//       setImporteDigits((current) => current.slice(0, -1));
+//       return;
+//     }
+
+//     if (event.key === "Delete") {
+//       event.preventDefault();
+//       setImporteDigits("");
+//       return;
+//     }
+
+//     if (/^\d$/.test(event.key)) {
+//       event.preventDefault();
+//       appendDigit(event.key);
+//       return;
+//     }
+
+//     event.preventDefault();
+//   }
+
+//   function handleImporteChange(event: ChangeEvent<HTMLInputElement>) {
+//     const nativeEvent = event.nativeEvent as InputEvent;
+//     const inputType = nativeEvent.inputType;
+//     const data = nativeEvent.data;
+
+//     if (inputType === "deleteContentBackward") {
+//       setImporteDigits((current) => current.slice(0, -1));
+//       return;
+//     }
+
+//     if (inputType === "deleteContentForward") {
+//       setImporteDigits("");
+//       return;
+//     }
+
+//     if (data && /^\d$/.test(data)) {
+//       appendDigit(data);
+//       return;
+//     }
+
+//     const digits = limpiarCerosIzquierda(
+//       extraerSoloDigitos(event.target.value),
+//     );
+
+//     setImporteDigits(digits);
+//   }
+
+//   function handleImportePaste(event: ClipboardEvent<HTMLInputElement>) {
+//     event.preventDefault();
+
+//     const pasted = event.clipboardData.getData("text");
+//     const digits = limpiarCerosIzquierda(extraerSoloDigitos(pasted));
+
+//     setImporteDigits(digits);
+//   }
+
+//   function handlePeriodoChange(event: ChangeEvent<HTMLSelectElement>) {
+//     setFacturaSeleccionadaId(event.target.value);
+//     setImporteDigits("");
+//   }
+
+//   if (state.ok) {
+//     return (
+//       <div className="space-y-3">
+//         <div className="overflow-hidden rounded-xl border border-emerald-300 bg-white shadow-md shadow-emerald-950/10 dark:border-emerald-700/70 dark:bg-slate-900/90 dark:shadow-none">
+//           <div className="border-b border-emerald-200 bg-emerald-50 px-4 py-5 text-center dark:border-emerald-900/70 dark:bg-emerald-950/25">
+//             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl border border-emerald-200 bg-white text-emerald-700 shadow-sm dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-300">
+//               <CheckCircle2 className="h-7 w-7" />
+//             </div>
+
+//             <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">
+//               Pago registrado
+//             </p>
+
+//             <h3 className="mt-1 text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
+//               Pago realizado correctamente
+//             </h3>
+
+//             <p className="mx-auto mt-2 max-w-md text-[13px] leading-6 text-slate-600 dark:text-slate-400">
+//               El cobro fue registrado y el comprobante ya está disponible.
+//             </p>
+//           </div>
+
+//           <div className="p-4">
+//             <div className={softPanelClass}>
+//               <div className="flex items-center justify-between gap-3">
+//                 <span className="inline-flex items-center gap-2 text-[12px] text-slate-600 dark:text-slate-400">
+//                   <ReceiptText className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+//                   Comprobante
+//                 </span>
+
+//                 <span className="text-right text-sm font-semibold text-slate-950 dark:text-white">
+//                   N° {state.numeroComprobante || "-"}
+//                 </span>
+//               </div>
+//             </div>
+
+//             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+//               <Link href={volverHref} className={secondaryButtonClass}>
+//                 Volver a la cuenta
+//               </Link>
+
+//               {state.movimientoId ? (
+//                 <Link
+//                   href={`/comprobantes/pagos/${state.movimientoId}`}
+//                   className={receiptButtonClass}
+//                   style={{ color: "#ffffff" }}
+//                 >
+//                   <Eye className="h-4 w-4" style={{ color: "#ffffff" }} />
+
+//                   <span
+//                     className="text-[13px] font-medium leading-none"
+//                     style={{ color: "#ffffff" }}
+//                   >
+//                     Visualizar recibo
+//                   </span>
+//                 </Link>
+//               ) : null}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (periodosOrdenados.length === 0) {
+//     return (
+//       <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 dark:border-emerald-900/70 dark:bg-emerald-950/30 dark:text-emerald-200">
+//         <p className="text-sm font-semibold">Sin deuda pendiente</p>
+
+//         <p className="mt-1 text-[12px] leading-5 opacity-90">
+//           Este cliente no tiene períodos con saldo pendiente para cobrar.
+//         </p>
+
+//         <div className="mt-3">
+//           <Link href={volverHref} className={secondaryButtonClass}>
+//             Volver a la cuenta
+//           </Link>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <form action={formAction} className="space-y-3 lg:space-y-2">
+//       <input type="hidden" name="clienteId" value={clienteId} />
+//       <input type="hidden" name="importe" value={importeNumerico} />
+
+//       <div className="grid gap-3 lg:grid-cols-[minmax(280px,0.95fr)_minmax(320px,1.05fr)] lg:gap-2">
+//         <section className={fieldCardClass}>
+//           <StepHeader
+//             step="Paso 1"
+//             title="Seleccionar período"
+//             description="Elegí el período que el cliente va a pagar."
+//             icon={<CalendarDays className="h-4 w-4" />}
+//           />
+
+//           <label htmlFor="facturaAsociadaId" className={labelClass}>
+//             Período
+//           </label>
+
+//           <select
+//             id="facturaAsociadaId"
+//             name="facturaAsociadaId"
+//             value={facturaSeleccionadaId}
+//             onChange={handlePeriodoChange}
+//             className={inputClass}
+//           >
+//             <option value="">Seleccionar período</option>
+
+//             {periodosOrdenados.map((periodo, index) => {
+//               const esPrimerPeriodoPendiente = index === 0;
+
+//               return (
+//                 <option
+//                   key={periodo.facturaId}
+//                   value={periodo.facturaId}
+//                   disabled={!esPrimerPeriodoPendiente}
+//                 >
+//                   {periodo.periodoLabel} · Factura N°{" "}
+//                   {periodo.numeroComprobante}
+//                   {!esPrimerPeriodoPendiente
+//                     ? " · bloqueado por deuda anterior"
+//                     : ""}
+//                 </option>
+//               );
+//             })}
+//           </select>
+
+//           {periodoSeleccionado ? (
+//             <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-[12px] leading-5 text-blue-800 dark:border-blue-900/70 dark:bg-blue-950/30 dark:text-blue-200 lg:mt-2 lg:py-1.5">
+//               Saldo disponible del período:{" "}
+//               <span className="font-semibold">
+//                 {formatMoney(periodoSeleccionado.saldoPeriodo)}
+//               </span>
+//             </div>
+//           ) : null}
+//         </section>
+
+//         <section
+//           className={`rounded-xl border-2 p-3 shadow-sm transition lg:p-2.5 ${
+//             periodoSeleccionado
+//               ? "border-blue-300 bg-white shadow-blue-950/5 dark:border-blue-800 dark:bg-slate-950/45 dark:shadow-none"
+//               : "border-slate-300 bg-slate-50 opacity-80 dark:border-slate-700 dark:bg-slate-950/35"
+//           }`}
+//         >
+//           <StepHeader
+//             step="Paso 2"
+//             title="Ingresar importe"
+//             description="Cargá el monto recibido. Debe ser mayor a cero."
+//             icon={<WalletCards className="h-4 w-4" />}
+//             enabled={Boolean(periodoSeleccionado)}
+//           />
+
+//           <label htmlFor="importeVisual" className={labelClass}>
+//             Importe recibido
+//           </label>
+
+//           <input
+//             id="importeVisual"
+//             type="text"
+//             inputMode="numeric"
+//             value={importeVisual}
+//             onKeyDown={handleImporteKeyDown}
+//             onChange={handleImporteChange}
+//             onPaste={handleImportePaste}
+//             disabled={!periodoSeleccionado}
+//             placeholder="$ 0,00"
+//             style={{
+//               fontSize: "clamp(2rem, 8vw, 3.3rem)",
+//               lineHeight: "1",
+//               fontWeight: 700,
+//             }}
+//             className="mt-1.5 h-20 w-full rounded-xl border-2 border-blue-300 bg-blue-50/70 px-3 text-center tracking-tight text-slate-950 outline-none transition placeholder:text-center placeholder:font-semibold placeholder:tracking-tight placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-400 disabled:opacity-80 dark:border-blue-800 dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-400 dark:focus:bg-slate-950 dark:focus:ring-blue-400/10 dark:disabled:border-slate-700 dark:disabled:bg-slate-950 dark:disabled:text-slate-600 lg:h-16"
+//           />
+//         </section>
+//       </div>
+
+//       {superaSaldoPeriodo ? (
+//         <EstadoOperacion type="danger">
+//           El importe ingresado no puede superar el saldo pendiente del período
+//           seleccionado.
+//         </EstadoOperacion>
+//       ) : null}
+
+//       {excedeLimiteCaja ? (
+//         <EstadoOperacion type="danger">
+//           Tu caja alcanzó el límite operativo permitido. Para continuar
+//           registrando cobros, primero tenés que realizar el cierre de caja.
+//         </EstadoOperacion>
+//       ) : null}
+
+//       {periodoSeleccionado &&
+//       importeNumerico > 0 &&
+//       !excedeLimiteCaja &&
+//       !superaSaldoPeriodo ? (
+//         <EstadoOperacion type="success">
+//           Importe válido. Ya podés registrar el pago.
+//         </EstadoOperacion>
+//       ) : null}
+
+//       <section className={`${fieldCardClass} lg:p-2.5`}>
+//         <div className="grid gap-3 lg:grid-cols-[minmax(250px,0.75fr)_minmax(320px,1fr)_auto] lg:items-end lg:gap-2">
+//           <div>
+//             <StepHeader
+//               step="Paso 3"
+//               title="Observación opcional"
+//               description="Agregá una nota solo si hace falta."
+//               icon={<ReceiptText className="h-4 w-4" />}
+//             />
+//           </div>
+
+//           <div>
+//             <label htmlFor="observacion" className={labelClass}>
+//               Observación
+//             </label>
+
+//             <textarea
+//               id="observacion"
+//               name="observacion"
+//               rows={3}
+//               value={observacion}
+//               onChange={(event) => setObservacion(event.target.value)}
+//               placeholder="Opcional"
+//               className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100 dark:placeholder:text-slate-600 dark:focus:border-blue-400 dark:focus:ring-blue-400/10 lg:h-[62px] lg:resize-none"
+//             />
+//           </div>
+
+//           <div className="hidden lg:flex lg:items-end lg:gap-2">
+//             <button
+//               type="button"
+//               onClick={limpiarFormulario}
+//               disabled={
+//                 !facturaSeleccionadaId && !importeDigits && !observacion.trim()
+//               }
+//               className={secondaryButtonClass}
+//             >
+//               <RotateCcw className="h-3.5 w-3.5" />
+//               Cancelar
+//             </button>
+
+//             <SubmitButton disabled={!puedeRegistrarPago} />
+//           </div>
+//         </div>
+//       </section>
+
+//       <div className="lg:hidden">
+//         <EstadoOperacion type="warning">
+//           Antes de registrar, verificá que el período y el importe coincidan con
+//           el pago recibido.
+//         </EstadoOperacion>
+//       </div>
+
+//       {state.message && !state.ok ? (
+//         <AlertBox variant="danger">{state.message}</AlertBox>
+//       ) : null}
+
+//       <section className={`${fieldCardClass} lg:hidden`}>
+//         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+//           <button
+//             type="button"
+//             onClick={limpiarFormulario}
+//             disabled={
+//               !facturaSeleccionadaId && !importeDigits && !observacion.trim()
+//             }
+//             className={secondaryButtonClass}
+//           >
+//             <RotateCcw className="h-3.5 w-3.5" />
+//             Cancelar
+//           </button>
+
+//           <SubmitButton disabled={!puedeRegistrarPago} />
+//         </div>
+//       </section>
+//     </form>
+//   );
+// }
+
 "use client";
 
 import {
@@ -1286,34 +1961,77 @@ function formatMoney(value: number) {
   return `$ ${formattedInteger},${decimalPart}`;
 }
 
-function extraerSoloDigitos(value: string) {
-  return String(value || "").replace(/\D/g, "");
+function normalizarParteEntera(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const withoutLeadingZeros = digits.replace(/^0+(?=\d)/, "");
+
+  return withoutLeadingZeros || "0";
 }
 
-function limpiarCerosIzquierda(value: string) {
-  return value.replace(/^0+/, "");
-}
+function normalizarImportePegado(value: string) {
+  const clean = String(value || "")
+    .replace(/\$/g, "")
+    .replace(/\s/g, "")
+    .replace(/[^\d.,]/g, "");
 
-function formatCurrencyFromDigits(digits: string) {
-  const cleanDigits = limpiarCerosIzquierda(extraerSoloDigitos(digits));
+  if (!clean) return "";
 
-  if (!cleanDigits) {
-    return "";
+  const lastComma = clean.lastIndexOf(",");
+  const lastDot = clean.lastIndexOf(".");
+  const lastSeparator = Math.max(lastComma, lastDot);
+
+  if (lastSeparator >= 0) {
+    const decimalsCandidate = clean.slice(lastSeparator + 1).replace(/\D/g, "");
+    const separatorIsDecimal =
+      decimalsCandidate.length > 0 && decimalsCandidate.length <= 2;
+
+    if (separatorIsDecimal) {
+      const integerPart = normalizarParteEntera(clean.slice(0, lastSeparator));
+      return `${integerPart},${decimalsCandidate.slice(0, 2)}`;
+    }
   }
 
-  const formattedInteger = cleanDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  return `$ ${formattedInteger},00`;
+  return normalizarParteEntera(clean);
 }
 
-function moneyInputToNumber(digits: string) {
-  const cleanDigits = limpiarCerosIzquierda(extraerSoloDigitos(digits));
+function formatCurrencyFromInput(value: string) {
+  if (!value) return "";
 
-  if (!cleanDigits) {
-    return 0;
-  }
+  const [integerPartRaw, decimalPartRaw] = value.split(",");
+  const integerPart = normalizarParteEntera(integerPartRaw || "0");
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const decimalPart = (decimalPartRaw || "").padEnd(2, "0").slice(0, 2);
 
-  return Number(cleanDigits);
+  return `$ ${formattedInteger},${decimalPart}`;
+}
+
+function moneyInputToCents(value: string) {
+  if (!value) return 0;
+
+  const [integerPartRaw, decimalPartRaw = ""] = value.split(",");
+  const integerPart = Number(normalizarParteEntera(integerPartRaw || "0"));
+  const decimalPart = Number(decimalPartRaw.padEnd(2, "0").slice(0, 2) || "0");
+
+  return integerPart * 100 + decimalPart;
+}
+
+function centsToMoney(cents: number) {
+  return cents / 100;
+}
+
+function moneyNumberToCents(value: number) {
+  const normalized = Number(value || 0).toFixed(2);
+  const [integerPart, decimalPart = "00"] = normalized.split(".");
+
+  return Number(integerPart) * 100 + Number(decimalPart);
+}
+
+function moneyInputToBackendValue(value: string) {
+  const cents = moneyInputToCents(value);
+  const integerPart = Math.trunc(cents / 100);
+  const decimalPart = String(cents % 100).padStart(2, "0");
+
+  return `${integerPart}.${decimalPart}`;
 }
 
 function ordenarPeriodosPendientes(periodos: PeriodoCuentaClienteSafe[]) {
@@ -1472,7 +2190,7 @@ export function CobroForm({
   );
 
   const [facturaSeleccionadaId, setFacturaSeleccionadaId] = useState("");
-  const [importeDigits, setImporteDigits] = useState("");
+  const [importeIngresado, setImporteIngresado] = useState("");
   const [observacion, setObservacion] = useState("");
 
   const periodosOrdenados = useMemo(() => {
@@ -1488,19 +2206,27 @@ export function CobroForm({
   }, [facturaSeleccionadaId, periodosOrdenados]);
 
   const limiteCaja = Math.max(Number(limiteCajaCobrador || 100000), 100000);
-  const importeNumerico = moneyInputToNumber(importeDigits);
-  const importeVisual = formatCurrencyFromDigits(importeDigits);
-  const saldoCajaProyectado = saldoCajaActual + importeNumerico;
+  const importeCentavos = moneyInputToCents(importeIngresado);
+  const importeNumerico = centsToMoney(importeCentavos);
+  const importeVisual = formatCurrencyFromInput(importeIngresado);
+  const importeBackend = moneyInputToBackendValue(importeIngresado);
+
+  const saldoCajaProyectadoCentavos =
+    moneyNumberToCents(saldoCajaActual) + importeCentavos;
+
+  const saldoCajaProyectado = centsToMoney(saldoCajaProyectadoCentavos);
 
   const excedeLimiteCaja =
-    importeNumerico > 0 && saldoCajaProyectado > limiteCaja;
+    importeCentavos > 0 &&
+    saldoCajaProyectadoCentavos > moneyNumberToCents(limiteCaja);
 
   const superaSaldoPeriodo =
     Boolean(periodoSeleccionado) &&
-    importeNumerico > Number(periodoSeleccionado?.saldoPeriodo || 0);
+    importeCentavos >
+      moneyNumberToCents(Number(periodoSeleccionado?.saldoPeriodo || 0));
 
   const hayPeriodoSeleccionado = Boolean(periodoSeleccionado);
-  const importeValido = importeNumerico > 0;
+  const importeValido = importeCentavos > 0;
 
   const puedeRegistrarPago =
     hayPeriodoSeleccionado &&
@@ -1513,7 +2239,7 @@ export function CobroForm({
   useEffect(() => {
     if (state.ok) {
       setFacturaSeleccionadaId("");
-      setImporteDigits("");
+      setImporteIngresado("");
       setObservacion("");
       router.refresh();
     }
@@ -1521,14 +2247,30 @@ export function CobroForm({
 
   function limpiarFormulario() {
     setFacturaSeleccionadaId("");
-    setImporteDigits("");
+    setImporteIngresado("");
     setObservacion("");
   }
 
-  function appendDigit(digit: string) {
-    setImporteDigits((current) =>
-      limpiarCerosIzquierda(`${current}${digit}`),
-    );
+  function appendImporteCharacter(character: string) {
+    setImporteIngresado((current) => {
+      if (/^\d$/.test(character)) {
+        const [integerPart = "", decimalPart] = current.split(",");
+
+        if (decimalPart !== undefined) {
+          if (decimalPart.length >= 2) return current;
+
+          return `${integerPart || "0"},${decimalPart}${character}`;
+        }
+
+        return normalizarParteEntera(`${integerPart}${character}`);
+      }
+
+      if ((character === "," || character === ".") && !current.includes(",")) {
+        return `${current || "0"},`;
+      }
+
+      return current;
+    });
   }
 
   function handleImporteKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -1544,29 +2286,24 @@ export function CobroForm({
       "Enter",
     ];
 
-    if (allowedControlKeys.includes(event.key)) {
-      return;
-    }
-
-    if (event.ctrlKey || event.metaKey) {
-      return;
-    }
+    if (allowedControlKeys.includes(event.key)) return;
+    if (event.ctrlKey || event.metaKey) return;
 
     if (event.key === "Backspace") {
       event.preventDefault();
-      setImporteDigits((current) => current.slice(0, -1));
+      setImporteIngresado((current) => current.slice(0, -1));
       return;
     }
 
     if (event.key === "Delete") {
       event.preventDefault();
-      setImporteDigits("");
+      setImporteIngresado("");
       return;
     }
 
-    if (/^\d$/.test(event.key)) {
+    if (/^\d$/.test(event.key) || event.key === "," || event.key === ".") {
       event.preventDefault();
-      appendDigit(event.key);
+      appendImporteCharacter(event.key);
       return;
     }
 
@@ -1575,43 +2312,36 @@ export function CobroForm({
 
   function handleImporteChange(event: ChangeEvent<HTMLInputElement>) {
     const nativeEvent = event.nativeEvent as InputEvent;
-    const inputType = nativeEvent.inputType;
-    const data = nativeEvent.data;
 
-    if (inputType === "deleteContentBackward") {
-      setImporteDigits((current) => current.slice(0, -1));
+    if (nativeEvent.inputType === "deleteContentBackward") {
+      setImporteIngresado((current) => current.slice(0, -1));
       return;
     }
 
-    if (inputType === "deleteContentForward") {
-      setImporteDigits("");
+    if (nativeEvent.inputType === "deleteContentForward") {
+      setImporteIngresado("");
       return;
     }
 
-    if (data && /^\d$/.test(data)) {
-      appendDigit(data);
+    if (nativeEvent.data && /^[\d,.]$/.test(nativeEvent.data)) {
+      appendImporteCharacter(nativeEvent.data);
       return;
     }
 
-    const digits = limpiarCerosIzquierda(
-      extraerSoloDigitos(event.target.value),
-    );
-
-    setImporteDigits(digits);
+    setImporteIngresado(normalizarImportePegado(event.target.value));
   }
 
   function handleImportePaste(event: ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
 
-    const pasted = event.clipboardData.getData("text");
-    const digits = limpiarCerosIzquierda(extraerSoloDigitos(pasted));
-
-    setImporteDigits(digits);
+    setImporteIngresado(
+      normalizarImportePegado(event.clipboardData.getData("text")),
+    );
   }
 
   function handlePeriodoChange(event: ChangeEvent<HTMLSelectElement>) {
     setFacturaSeleccionadaId(event.target.value);
-    setImporteDigits("");
+    setImporteIngresado("");
   }
 
   if (state.ok) {
@@ -1699,7 +2429,7 @@ export function CobroForm({
   return (
     <form action={formAction} className="space-y-3 lg:space-y-2">
       <input type="hidden" name="clienteId" value={clienteId} />
-      <input type="hidden" name="importe" value={importeNumerico} />
+      <input type="hidden" name="importe" value={importeBackend} />
 
       <div className="grid gap-3 lg:grid-cols-[minmax(280px,0.95fr)_minmax(320px,1.05fr)] lg:gap-2">
         <section className={fieldCardClass}>
@@ -1846,7 +2576,9 @@ export function CobroForm({
               type="button"
               onClick={limpiarFormulario}
               disabled={
-                !facturaSeleccionadaId && !importeDigits && !observacion.trim()
+                !facturaSeleccionadaId &&
+                !importeIngresado &&
+                !observacion.trim()
               }
               className={secondaryButtonClass}
             >
@@ -1876,7 +2608,9 @@ export function CobroForm({
             type="button"
             onClick={limpiarFormulario}
             disabled={
-              !facturaSeleccionadaId && !importeDigits && !observacion.trim()
+              !facturaSeleccionadaId &&
+              !importeIngresado &&
+              !observacion.trim()
             }
             className={secondaryButtonClass}
           >
