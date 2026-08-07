@@ -1171,7 +1171,676 @@
 //   );
 // }
 
-// src/app/(dashboard)/clientes/[id]/estado-cuenta/page.tsx
+// // src/app/(dashboard)/clientes/[id]/estado-cuenta/page.tsx
+
+// import Link from "next/link";
+// import { notFound } from "next/navigation";
+// import type { ReactNode } from "react";
+// import {
+//   ArrowRight,
+//   CheckCircle2,
+//   FileText,
+//   MinusCircle,
+//   PlusCircle,
+//   ReceiptText,
+//   WalletCards,
+//   Wifi,
+// } from "lucide-react";
+// import { EstadoCuentaTable } from "@/components/tables/EstadoCuentaTable";
+// import { obtenerClientePorId } from "@/services/cliente.service";
+// import { obtenerEstadoCuentaCliente } from "@/services/movimiento-financiero.service";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+
+// type EstadoCuentaPageProps = {
+//   params: {
+//     id: string;
+//   };
+// };
+
+// export const metadata = {
+//   title: "Estado de cuenta",
+// };
+
+// const panelClass =
+//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// const innerPanelClass =
+//   "overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none";
+
+// const sectionTitleClass =
+//   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+// const sectionSubtitleClass =
+//   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+// const sectionDescriptionClass =
+//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// const buttonSecondaryClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900";
+
+// const debitButtonClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 text-[12px] font-medium text-amber-700 shadow-sm transition hover:bg-amber-100 active:scale-[0.99] dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-950/70";
+
+// const creditButtonClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 text-[12px] font-medium text-emerald-700 shadow-sm transition hover:bg-emerald-100 active:scale-[0.99] dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/70";
+
+// function formatMoney(value: number) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function estadoClienteLabel(estado: string) {
+//   if (estado === "activo") return "Activo";
+//   if (estado === "suspendido") return "Suspendido";
+//   return "Baja";
+// }
+
+// function estadoClienteTone(estado: string): "success" | "warning" | "danger" {
+//   if (estado === "activo") return "success";
+//   if (estado === "suspendido") return "warning";
+//   return "danger";
+// }
+
+// function estadoCuentaLabel(saldo: number) {
+//   if (saldo > 0) return "Pendiente";
+//   if (saldo < 0) return "A favor";
+//   return "Al día";
+// }
+
+// function estadoCuentaTone(saldo: number): "success" | "warning" | "danger" {
+//   if (saldo > 0) return "danger";
+//   if (saldo < 0) return "warning";
+//   return "success";
+// }
+
+// function saldoTexto(saldo: number) {
+//   if (saldo > 0) {
+//     return "El cliente registra saldo pendiente de pago.";
+//   }
+
+//   if (saldo < 0) {
+//     return "El cliente tiene saldo a favor.";
+//   }
+
+//   return "El cliente no registra saldo pendiente.";
+// }
+
+// function getNombreCompleto(cliente: {
+//   apellido?: string | null;
+//   nombre?: string | null;
+// }) {
+//   const apellido = String(cliente.apellido || "").trim();
+//   const nombre = String(cliente.nombre || "").trim();
+
+//   const completo = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return completo || "Cliente sin nombre";
+// }
+
+// function BackButton() {
+//   return (
+//     <Link
+//       href="/clientes"
+//       className="hidden h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+//     >
+//       Volver
+//     </Link>
+//   );
+// }
+
+// function Badge({
+//   children,
+//   tone = "neutral",
+// }: {
+//   children: ReactNode;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral:
+//       "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+//     primary:
+//       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+//     success:
+//       "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+//     warning:
+//       "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+//     danger:
+//       "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <span
+//       className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+//     >
+//       {children}
+//     </span>
+//   );
+// }
+
+// function HeaderCuenta({
+//   cliente,
+//   nombreCompleto,
+//   saldo,
+// }: {
+//   cliente: {
+//     numeroCliente: number;
+//     dni?: string | null;
+//     estado: string;
+//     plan?: {
+//       nombre: string;
+//     } | null;
+//   };
+//   nombreCompleto: string;
+//   saldo: number;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Estado de cuenta</p>
+
+//           <h1 className={sectionSubtitleClass}>Cuenta del cliente</h1>
+
+//           <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
+//             {nombreCompleto} · N° {cliente.numeroCliente} · DNI{" "}
+//             {cliente.dni || "-"}
+//           </p>
+//         </div>
+
+//         <div className="flex flex-col items-start gap-2 lg:items-end">
+//           <BackButton />
+
+//           <div className="flex flex-wrap gap-2 lg:justify-end">
+//             <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+
+//             <Badge tone={estadoClienteTone(cliente.estado)}>
+//               {estadoClienteLabel(cliente.estado)}
+//             </Badge>
+
+//             <Badge tone={estadoCuentaTone(saldo)}>
+//               {estadoCuentaLabel(saldo)}
+//             </Badge>
+
+//             <Badge tone={cliente.plan ? "success" : "warning"}>
+//               {cliente.plan?.nombre || "Sin plan"}
+//             </Badge>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ResumenItem({
+//   icon,
+//   label,
+//   value,
+//   tone = "neutral",
+// }: {
+//   icon?: ReactNode;
+//   label: string;
+//   value: string | number;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral: "text-slate-950 dark:text-white",
+//     primary: "text-blue-700 dark:text-blue-300",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     danger: "text-red-700 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+//       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+//         {icon ? (
+//           <span className="shrink-0 text-blue-700 dark:text-blue-300">
+//             {icon}
+//           </span>
+//         ) : null}
+
+//         <span className="truncate">{label}</span>
+//       </span>
+
+//       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+//         {value}
+//       </span>
+//     </div>
+//   );
+// }
+
+// function ResumenFinanciero({
+//   saldo,
+//   totalDebe,
+//   totalHaber,
+//   cantidadPeriodos,
+//   periodosPendientes,
+//   periodosCancelados,
+//   periodosAFavor,
+// }: {
+//   saldo: number;
+//   totalDebe: number;
+//   totalHaber: number;
+//   cantidadPeriodos: number;
+//   periodosPendientes: number;
+//   periodosCancelados: number;
+//   periodosAFavor: number;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3 flex items-start gap-3">
+//         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+//           <WalletCards className="h-4 w-4" />
+//         </div>
+
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Resumen financiero</p>
+
+//           <p className={sectionDescriptionClass}>{saldoTexto(saldo)}</p>
+//         </div>
+//       </div>
+
+//       <div className="md:hidden">
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Saldo final
+//           </p>
+
+//           <p
+//             className={`mt-1 truncate text-[22px] font-semibold ${
+//               saldo > 0
+//                 ? "text-red-700 dark:text-red-300"
+//                 : saldo < 0
+//                   ? "text-amber-700 dark:text-amber-300"
+//                   : "text-emerald-700 dark:text-emerald-300"
+//             }`}
+//           >
+//             {formatMoney(saldo)}
+//           </p>
+
+//           <div className="mt-3 grid grid-cols-2 gap-2">
+//             <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+//               <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//                 Pendientes
+//               </p>
+
+//               <p
+//                 className={`mt-1 text-[16px] font-semibold ${
+//                   periodosPendientes > 0
+//                     ? "text-red-700 dark:text-red-300"
+//                     : "text-emerald-700 dark:text-emerald-300"
+//                 }`}
+//               >
+//                 {periodosPendientes}
+//               </p>
+//             </div>
+
+//             <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+//               <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//                 Períodos
+//               </p>
+
+//               <p className="mt-1 text-[16px] font-semibold text-blue-700 dark:text-blue-300">
+//                 {cantidadPeriodos}
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="hidden gap-2 md:grid md:grid-cols-3 xl:grid-cols-6">
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Total debe
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-red-700 dark:text-red-300">
+//             {formatMoney(totalDebe)}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Total haber
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
+//             {formatMoney(totalHaber)}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Períodos
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-blue-700 dark:text-blue-300">
+//             {cantidadPeriodos}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Pendientes
+//           </p>
+
+//           <p
+//             className={`mt-1 truncate text-[18px] font-semibold ${
+//               periodosPendientes > 0
+//                 ? "text-red-700 dark:text-red-300"
+//                 : "text-emerald-700 dark:text-emerald-300"
+//             }`}
+//           >
+//             {periodosPendientes}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Cancelados
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
+//             {periodosCancelados}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             A favor
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-amber-700 dark:text-amber-300">
+//             {periodosAFavor}
+//           </p>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function FacturacionHeader({ clienteId }: { clienteId: string }) {
+//   return (
+//     <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+//       <div className="min-w-0">
+//         <p className={sectionTitleClass}>Facturación</p>
+
+//         <h2 className={sectionSubtitleClass}>Resumen por período</h2>
+
+//         <p className={`${sectionDescriptionClass} max-w-3xl`}>
+//           Cada fila representa un período facturado. Entrá al detalle para ver
+//           pagos, notas y composición del saldo.
+//         </p>
+//       </div>
+
+//       <div className="flex shrink-0 flex-col gap-2 sm:flex-row lg:justify-end">
+//         <Link href={`/clientes/${clienteId}/nota-debito`} className={debitButtonClass}>
+//           <PlusCircle className="h-3.5 w-3.5" />
+//           Nota débito
+//         </Link>
+
+//         <Link
+//           href={`/clientes/${clienteId}/nota-credito`}
+//           className={creditButtonClass}
+//         >
+//           <MinusCircle className="h-3.5 w-3.5" />
+//           Nota crédito
+//         </Link>
+//       </div>
+//     </div>
+//   );
+// }
+
+// function FacturacionPanel({
+//   clienteId,
+//   periodos,
+// }: {
+//   clienteId: string;
+//   periodos: Parameters<typeof EstadoCuentaTable>[0]["periodos"];
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <FacturacionHeader clienteId={clienteId} />
+
+//       <EstadoCuentaTable clienteId={clienteId} periodos={periodos} />
+//     </section>
+//   );
+// }
+
+// function ResumenAside({
+//   cliente,
+//   saldo,
+//   cantidadPeriodos,
+//   periodosPendientes,
+//   periodosCancelados,
+//   periodosAFavor,
+// }: {
+//   cliente: {
+//     numeroCliente: number;
+//     estado: string;
+//     plan?: {
+//       nombre: string;
+//     } | null;
+//   };
+//   saldo: number;
+//   cantidadPeriodos: number;
+//   periodosPendientes: number;
+//   periodosCancelados: number;
+//   periodosAFavor: number;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Resumen</p>
+
+//         <h2 className={sectionSubtitleClass}>Información de cuenta</h2>
+//       </div>
+
+//       <div className={innerPanelClass}>
+//         <ResumenItem
+//           icon={<ReceiptText className="h-3.5 w-3.5" />}
+//           label="Cliente"
+//           value={`N° ${cliente.numeroCliente}`}
+//           tone="primary"
+//         />
+
+//         <ResumenItem
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Estado cliente"
+//           value={estadoClienteLabel(cliente.estado)}
+//           tone={estadoClienteTone(cliente.estado)}
+//         />
+
+//         <ResumenItem
+//           icon={<Wifi className="h-3.5 w-3.5" />}
+//           label="Plan"
+//           value={cliente.plan?.nombre || "Sin plan"}
+//           tone={cliente.plan ? "success" : "warning"}
+//         />
+
+//         <ResumenItem
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Períodos"
+//           value={cantidadPeriodos}
+//           tone="primary"
+//         />
+
+//         <ResumenItem
+//           icon={<PlusCircle className="h-3.5 w-3.5" />}
+//           label="Pendientes"
+//           value={periodosPendientes}
+//           tone={periodosPendientes > 0 ? "danger" : "success"}
+//         />
+
+//         <ResumenItem
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Cancelados"
+//           value={periodosCancelados}
+//           tone="success"
+//         />
+
+//         <ResumenItem
+//           icon={<MinusCircle className="h-3.5 w-3.5" />}
+//           label="A favor"
+//           value={periodosAFavor}
+//           tone={periodosAFavor > 0 ? "warning" : "neutral"}
+//         />
+
+//         <ResumenItem
+//           icon={<WalletCards className="h-3.5 w-3.5" />}
+//           label="Saldo final"
+//           value={formatMoney(saldo)}
+//           tone={estadoCuentaTone(saldo)}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function AccionesAside({ clienteId }: { clienteId: string }) {
+//   return (
+//     <section className={`${panelClass} hidden p-3.5 xl:block`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Acciones</p>
+
+//         <h2 className={sectionSubtitleClass}>Movimientos manuales</h2>
+//       </div>
+
+//       <div className="grid gap-2">
+//         <Link
+//           href={`/clientes/${clienteId}/nota-debito`}
+//           className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-amber-900/70 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
+//         >
+//           <span className="flex min-w-0 items-center gap-2.5">
+//             <PlusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-amber-700 dark:text-slate-400 dark:group-hover:text-amber-300" />
+//             <span className="truncate">Nota débito</span>
+//           </span>
+
+//           <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//         </Link>
+
+//         <Link
+//           href={`/clientes/${clienteId}/nota-credito`}
+//           className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-emerald-900/70 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
+//         >
+//           <span className="flex min-w-0 items-center gap-2.5">
+//             <MinusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-emerald-700 dark:text-slate-400 dark:group-hover:text-emerald-300" />
+//             <span className="truncate">Nota crédito</span>
+//           </span>
+
+//           <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//         </Link>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function NotaLectura() {
+//   return (
+//     <section className={`${panelClass} hidden p-3.5 xl:block`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Lectura rápida</p>
+
+//         <h2 className={sectionSubtitleClass}>Detalle del saldo</h2>
+//       </div>
+
+//       <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[12px] leading-5 text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400">
+//         Esta vista muestra los períodos facturados. Para conocer cómo se formó
+//         el saldo de un período, abrí su detalle.
+//       </div>
+//     </section>
+//   );
+// }
+
+// export default async function EstadoCuentaPage({
+//   params,
+// }: EstadoCuentaPageProps) {
+//   const [cliente, estadoCuenta] = await Promise.all([
+//     obtenerClientePorId(params.id),
+//     obtenerEstadoCuentaCliente(params.id),
+//   ]);
+
+//   if (!cliente || !estadoCuenta) {
+//     notFound();
+//   }
+
+//   const nombreCompleto = getNombreCompleto(cliente);
+
+//   const cantidadPeriodos = estadoCuenta.periodos.length;
+//   const periodosPendientes = estadoCuenta.periodos.filter(
+//     (periodo) => periodo.estadoPeriodo === "pendiente",
+//   ).length;
+//   const periodosCancelados = estadoCuenta.periodos.filter(
+//     (periodo) => periodo.estadoPeriodo === "cancelado",
+//   ).length;
+//   const periodosAFavor = estadoCuenta.periodos.filter(
+//     (periodo) => periodo.estadoPeriodo === "a_favor",
+//   ).length;
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <HeaderCuenta
+//             cliente={cliente}
+//             nombreCompleto={nombreCompleto}
+//             saldo={estadoCuenta.saldo}
+//           />
+
+//           <div className="mt-3">
+//             <ResumenFinanciero
+//               saldo={estadoCuenta.saldo}
+//               totalDebe={estadoCuenta.totalDebe}
+//               totalHaber={estadoCuenta.totalHaber}
+//               cantidadPeriodos={cantidadPeriodos}
+//               periodosPendientes={periodosPendientes}
+//               periodosCancelados={periodosCancelados}
+//               periodosAFavor={periodosAFavor}
+//             />
+//           </div>
+
+//           <div className="mt-3">
+//             <FacturacionPanel
+//               clienteId={cliente.id}
+//               periodos={estadoCuenta.periodos}
+//             />
+//           </div>
+//         </DashboardMain>
+
+//         <DashboardAside>
+//           <ResumenAside
+//             cliente={cliente}
+//             saldo={estadoCuenta.saldo}
+//             cantidadPeriodos={cantidadPeriodos}
+//             periodosPendientes={periodosPendientes}
+//             periodosCancelados={periodosCancelados}
+//             periodosAFavor={periodosAFavor}
+//           />
+
+//           <div className="mt-3">
+//             <AccionesAside clienteId={cliente.id} />
+//           </div>
+
+//           <div className="mt-3">
+//             <NotaLectura />
+//           </div>
+//         </DashboardAside>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -1207,28 +1876,43 @@ export const metadata = {
 };
 
 const panelClass =
-  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+  "dark:border-[#263451] dark:bg-[#111b31] " +
+  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
 
 const innerPanelClass =
-  "overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none";
+  "overflow-hidden rounded-lg border border-slate-200 bg-slate-50 " +
+  "dark:border-[#2b3957] dark:bg-[#0d172a]";
 
 const sectionTitleClass =
-  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+  "text-sm font-medium text-slate-950 dark:text-white";
 
 const sectionSubtitleClass =
-  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+  "text-sm font-medium text-slate-950 dark:text-white";
 
 const sectionDescriptionClass =
   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
 
 const buttonSecondaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900";
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
+  "border-slate-300 bg-white px-3 text-[12px] font-medium leading-none " +
+  "text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 " +
+  "active:scale-[0.99] dark:border-[#354462] dark:bg-[#111b31] " +
+  "dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
 
 const debitButtonClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 text-[12px] font-medium text-amber-700 shadow-sm transition hover:bg-amber-100 active:scale-[0.99] dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-950/70";
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
+  "border-amber-300 bg-amber-50 px-3 text-[12px] font-medium leading-none " +
+  "text-amber-700 shadow-sm transition hover:bg-amber-100 active:scale-[0.99] " +
+  "dark:border-amber-800/70 dark:bg-amber-950/30 dark:text-amber-300 " +
+  "dark:hover:bg-amber-950/50";
 
 const creditButtonClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 text-[12px] font-medium text-emerald-700 shadow-sm transition hover:bg-emerald-100 active:scale-[0.99] dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/70";
+  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
+  "border-emerald-300 bg-emerald-50 px-3 text-[12px] font-medium leading-none " +
+  "text-emerald-700 shadow-sm transition hover:bg-emerald-100 active:scale-[0.99] " +
+  "dark:border-emerald-800/70 dark:bg-emerald-950/30 dark:text-emerald-300 " +
+  "dark:hover:bg-emerald-950/50";
 
 function formatMoney(value: number) {
   const amount = Number(value || 0);
@@ -1293,7 +1977,7 @@ function BackButton() {
   return (
     <Link
       href="/clientes"
-      className="hidden h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+      className={`${buttonSecondaryClass} hidden sm:inline-flex`}
     >
       Volver
     </Link>
@@ -1309,7 +1993,7 @@ function Badge({
 }) {
   const toneClass = {
     neutral:
-      "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+      "border-slate-300 bg-slate-50 text-slate-700 dark:border-[#263451] dark:bg-[#0d172a] dark:text-slate-300",
     primary:
       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
     success:
@@ -1322,7 +2006,7 @@ function Badge({
 
   return (
     <span
-      className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+      className={`inline-flex h-7 items-center rounded-md border px-2.5 text-[10px] font-medium leading-none ${toneClass}`}
     >
       {children}
     </span>
@@ -1346,36 +2030,50 @@ function HeaderCuenta({
   saldo: number;
 }) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <p className={sectionTitleClass}>Estado de cuenta</p>
+    <section className={panelClass}>
+      <div
+        className="
+          border-b border-slate-200
+          bg-slate-50/80 px-3 py-3
+          dark:border-[#263451]
+          dark:bg-[#0e172a]
+          sm:px-4
+        "
+      >
+        <div className="flex min-h-12 items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <WalletCards className="h-5 w-5 shrink-0 text-blue-700 dark:text-blue-300" />
 
-          <h1 className={sectionSubtitleClass}>Cuenta del cliente</h1>
+              <h1 className="truncate text-base font-medium text-slate-950 dark:text-white">
+                Estado de cuenta
+              </h1>
+            </div>
 
-          <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
-            {nombreCompleto} · N° {cliente.numeroCliente} · DNI{" "}
-            {cliente.dni || "-"}
-          </p>
-        </div>
+            <p className="mt-1 hidden max-w-3xl truncate text-[12px] leading-5 text-slate-600 dark:text-slate-400 sm:block">
+              {nombreCompleto} · N° {cliente.numeroCliente} · DNI {cliente.dni || "-"}
+            </p>
 
-        <div className="flex flex-col items-start gap-2 lg:items-end">
-          <BackButton />
+            <p className="mt-1 truncate text-[11px] text-slate-500 dark:text-slate-400 sm:hidden">
+              N° {cliente.numeroCliente} · {nombreCompleto}
+            </p>
+          </div>
 
-          <div className="flex flex-wrap gap-2 lg:justify-end">
-            <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+          <div className="flex h-8 shrink-0 items-center gap-2">
+            <div className="hidden items-center gap-2 xl:flex">
+              <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+              <Badge tone={estadoClienteTone(cliente.estado)}>
+                {estadoClienteLabel(cliente.estado)}
+              </Badge>
+              <Badge tone={estadoCuentaTone(saldo)}>
+                {estadoCuentaLabel(saldo)}
+              </Badge>
+              <Badge tone={cliente.plan ? "success" : "warning"}>
+                {cliente.plan?.nombre || "Sin plan"}
+              </Badge>
+            </div>
 
-            <Badge tone={estadoClienteTone(cliente.estado)}>
-              {estadoClienteLabel(cliente.estado)}
-            </Badge>
-
-            <Badge tone={estadoCuentaTone(saldo)}>
-              {estadoCuentaLabel(saldo)}
-            </Badge>
-
-            <Badge tone={cliente.plan ? "success" : "warning"}>
-              {cliente.plan?.nombre || "Sin plan"}
-            </Badge>
+            <BackButton />
           </div>
         </div>
       </div>
@@ -1403,7 +2101,7 @@ function ResumenItem({
   }[tone];
 
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-[#263451]">
       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
         {icon ? (
           <span className="shrink-0 text-blue-700 dark:text-blue-300">
@@ -1453,7 +2151,7 @@ function ResumenFinanciero({
       </div>
 
       <div className="md:hidden">
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Saldo final
           </p>
@@ -1471,7 +2169,7 @@ function ResumenFinanciero({
           </p>
 
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-[#263451] dark:bg-slate-950/60">
               <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
                 Pendientes
               </p>
@@ -1487,7 +2185,7 @@ function ResumenFinanciero({
               </p>
             </div>
 
-            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-950/60">
+            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-[#263451] dark:bg-slate-950/60">
               <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
                 Períodos
               </p>
@@ -1501,7 +2199,7 @@ function ResumenFinanciero({
       </div>
 
       <div className="hidden gap-2 md:grid md:grid-cols-3 xl:grid-cols-6">
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Total debe
           </p>
@@ -1511,7 +2209,7 @@ function ResumenFinanciero({
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Total haber
           </p>
@@ -1521,7 +2219,7 @@ function ResumenFinanciero({
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Períodos
           </p>
@@ -1531,7 +2229,7 @@ function ResumenFinanciero({
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Pendientes
           </p>
@@ -1547,7 +2245,7 @@ function ResumenFinanciero({
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Cancelados
           </p>
@@ -1557,7 +2255,7 @@ function ResumenFinanciero({
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/50 dark:shadow-black/10">
+        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             A favor
           </p>
@@ -1721,7 +2419,7 @@ function AccionesAside({ clienteId }: { clienteId: string }) {
       <div className="grid gap-2">
         <Link
           href={`/clientes/${clienteId}/nota-debito`}
-          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-amber-900/70 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
+          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 dark:border-[#263451] dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-amber-900/70 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
         >
           <span className="flex min-w-0 items-center gap-2.5">
             <PlusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-amber-700 dark:text-slate-400 dark:group-hover:text-amber-300" />
@@ -1733,7 +2431,7 @@ function AccionesAside({ clienteId }: { clienteId: string }) {
 
         <Link
           href={`/clientes/${clienteId}/nota-credito`}
-          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-emerald-900/70 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
+          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-[#263451] dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-emerald-900/70 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
         >
           <span className="flex min-w-0 items-center gap-2.5">
             <MinusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-emerald-700 dark:text-slate-400 dark:group-hover:text-emerald-300" />
@@ -1756,7 +2454,7 @@ function NotaLectura() {
         <h2 className={sectionSubtitleClass}>Detalle del saldo</h2>
       </div>
 
-      <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[12px] leading-5 text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400">
+      <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[12px] leading-5 text-slate-600 dark:border-[#263451] dark:bg-[#0d172a] dark:text-slate-400">
         Esta vista muestra los períodos facturados. Para conocer cómo se formó
         el saldo de un período, abrí su detalle.
       </div>
@@ -1790,7 +2488,7 @@ export default async function EstadoCuentaPage({
   ).length;
 
   return (
-    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+    <PageShell maxWidth="wide" className="pb-20 lg:pb-6">
       <DashboardGrid>
         <DashboardMain>
           <HeaderCuenta
@@ -1819,8 +2517,9 @@ export default async function EstadoCuentaPage({
           </div>
         </DashboardMain>
 
-        <DashboardAside>
-          <ResumenAside
+        <div className="hidden lg:block">
+          <DashboardAside>
+            <ResumenAside
             cliente={cliente}
             saldo={estadoCuenta.saldo}
             cantidadPeriodos={cantidadPeriodos}
@@ -1833,10 +2532,11 @@ export default async function EstadoCuentaPage({
             <AccionesAside clienteId={cliente.id} />
           </div>
 
-          <div className="mt-3">
-            <NotaLectura />
-          </div>
-        </DashboardAside>
+            <div className="mt-3">
+              <NotaLectura />
+            </div>
+          </DashboardAside>
+        </div>
       </DashboardGrid>
     </PageShell>
   );

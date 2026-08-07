@@ -1214,28 +1214,467 @@
 //   );
 // }
 
-// src/app/(dashboard)/usuarios/page.tsx
+// // src/app/(dashboard)/usuarios/page.tsx
+
+// import Link from "next/link";
+// import { redirect } from "next/navigation";
+// import {
+//   ArrowRight,
+//   Clock3,
+//   Search,
+//   ShieldCheck,
+//   UserRound,
+//   UsersRound,
+//   WalletCards,
+// } from "lucide-react";
+// import { getCurrentUser } from "@/lib/current-user";
+// import { obtenerUsuarios } from "@/services/usuario.service";
+// import { UsuariosTable } from "@/components/tables/UsuariosTable";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+// import type { UsuarioSafe } from "@/types/usuario.types";
+
+// export const metadata = {
+//   title: "Usuarios",
+// };
+
+// type UsuariosPageProps = {
+//   searchParams?: {
+//     q?: string;
+//     rol?: string;
+//     estado?: string;
+//     seguridad?: string;
+//   };
+// };
+
+// const panelClass =
+//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// const inputClass =
+//   "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-normal text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-500";
+
+// const buttonPrimaryClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 !text-[12px] !font-medium !leading-none text-white shadow-sm shadow-blue-950/10 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-500 dark:bg-blue-500 dark:text-white dark:hover:border-blue-600 dark:hover:bg-blue-600";
+
+// const buttonSecondaryClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 !text-[12px] !font-medium !leading-none text-slate-700 shadow-sm shadow-slate-300/30 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-800";
+
+// const sectionTitleClass =
+//   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+// const sectionSubtitleClass =
+//   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+// const sectionDescriptionClass =
+//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// function normalizarTexto(value: string) {
+//   return value
+//     .toLowerCase()
+//     .normalize("NFD")
+//     .replace(/\p{Diacritic}/gu, "")
+//     .trim();
+// }
+
+// function rolLabel(value: string) {
+//   if (value === "admin") return "Administradores";
+//   if (value === "cobrador") return "Cobradores";
+//   if (value === "cliente") return "Clientes";
+//   return "Todos los roles";
+// }
+
+// function estadoLabel(value: string) {
+//   if (value === "activo") return "Activos";
+//   if (value === "suspendido") return "Suspendidos";
+//   return "Todos los estados";
+// }
+
+// function seguridadLabel(value: string) {
+//   if (value === "ok") return "Clave OK";
+//   if (value === "cambio") return "Cambio requerido";
+//   return "Todos";
+// }
+
+// function ordenarUsuarios(usuarios: UsuarioSafe[]) {
+//   const prioridadRol: Record<string, number> = {
+//     admin: 1,
+//     cobrador: 2,
+//     cliente: 3,
+//   };
+
+//   return [...usuarios].sort((a, b) => {
+//     const prioridadA = prioridadRol[a.rol] || 99;
+//     const prioridadB = prioridadRol[b.rol] || 99;
+
+//     if (prioridadA !== prioridadB) return prioridadA - prioridadB;
+
+//     const apellidoA = normalizarTexto(a.apellido || "");
+//     const apellidoB = normalizarTexto(b.apellido || "");
+
+//     if (apellidoA !== apellidoB) return apellidoA.localeCompare(apellidoB);
+
+//     return normalizarTexto(a.nombre || "").localeCompare(
+//       normalizarTexto(b.nombre || ""),
+//     );
+//   });
+// }
+
+// function filtrarUsuarios({
+//   usuarios,
+//   q,
+//   rol,
+//   estado,
+//   seguridad,
+// }: {
+//   usuarios: UsuarioSafe[];
+//   q: string;
+//   rol: string;
+//   estado: string;
+//   seguridad: string;
+// }) {
+//   const busqueda = normalizarTexto(q);
+
+//   return usuarios.filter((usuario) => {
+//     const textoUsuario = normalizarTexto(
+//       `${usuario.nombre} ${usuario.apellido} ${usuario.email} ${usuario.dni}`,
+//     );
+
+//     const coincideBusqueda = !busqueda || textoUsuario.includes(busqueda);
+//     const coincideRol = rol === "todos" || usuario.rol === rol;
+//     const coincideEstado = estado === "todos" || usuario.estado === estado;
+
+//     const coincideSeguridad =
+//       seguridad === "todos" ||
+//       (seguridad === "cambio" && usuario.debeCambiarPassword) ||
+//       (seguridad === "ok" && !usuario.debeCambiarPassword);
+
+//     return (
+//       coincideBusqueda && coincideRol && coincideEstado && coincideSeguridad
+//     );
+//   });
+// }
+
+// const quickActions = [
+//   {
+//     label: "Administradores",
+//     description: "Usuarios con acceso total",
+//     href: "/usuarios?rol=admin",
+//     icon: ShieldCheck,
+//   },
+//   {
+//     label: "Cobradores",
+//     description: "Usuarios que registran cobros",
+//     href: "/usuarios?rol=cobrador",
+//     icon: WalletCards,
+//   },
+//   {
+//     label: "Clientes",
+//     description: "Usuarios vinculados a clientes",
+//     href: "/usuarios?rol=cliente",
+//     icon: UserRound,
+//   },
+//   {
+//     label: "Cambio requerido",
+//     description: "Usuarios que deben actualizar clave",
+//     href: "/usuarios?seguridad=cambio",
+//     icon: Clock3,
+//   },
+// ];
+
+// function ResumenItem({
+//   label,
+//   value,
+//   tone = "neutral",
+// }: {
+//   label: string;
+//   value: string | number;
+//   tone?: "neutral" | "success" | "danger" | "warning" | "primary";
+// }) {
+//   const toneClass = {
+//     neutral: "text-slate-950 dark:text-white",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     danger: "text-red-700 dark:text-red-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     primary: "text-blue-700 dark:text-blue-300",
+//   }[tone];
+
+//   return (
+//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+//       <span className="text-[12px] text-slate-700 dark:text-slate-300">
+//         {label}
+//       </span>
+
+//       <span className={`text-[12px] font-semibold ${toneClass}`}>{value}</span>
+//     </div>
+//   );
+// }
+
+// export default async function UsuariosPage({ searchParams }: UsuariosPageProps) {
+//   const user = await getCurrentUser();
+
+//   if (!user) {
+//     redirect("/login");
+//   }
+
+//   if (user.rol !== "admin") {
+//     redirect(`/${user.rol}`);
+//   }
+
+//   const usuarios = await obtenerUsuarios();
+
+//   const q = String(searchParams?.q || "");
+//   const rol = String(searchParams?.rol || "todos");
+//   const estado = String(searchParams?.estado || "todos");
+//   const seguridad = String(searchParams?.seguridad || "todos");
+
+//   const usuariosFiltrados = ordenarUsuarios(
+//     filtrarUsuarios({
+//       usuarios,
+//       q,
+//       rol,
+//       estado,
+//       seguridad,
+//     }),
+//   );
+
+//   const totalUsuarios = usuarios.length;
+//   const totalActivos = usuarios.filter((usuario) => usuario.estado === "activo")
+//     .length;
+//   const totalSuspendidos = usuarios.filter(
+//     (usuario) => usuario.estado === "suspendido",
+//   ).length;
+//   const totalCambioRequerido = usuarios.filter(
+//     (usuario) => usuario.debeCambiarPassword,
+//   ).length;
+
+//   const filtroActivo =
+//     q.trim() !== "" ||
+//     rol !== "todos" ||
+//     estado !== "todos" ||
+//     seguridad !== "todos";
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <section className={`${panelClass} overflow-hidden`}>
+//             <div className="border-b border-slate-200 px-3.5 py-3.5 dark:border-slate-700 sm:border-b-0 sm:pb-3">
+//               <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+//                 <div className="min-w-0">
+//                   <p className={sectionTitleClass}>Usuarios</p>
+
+//                   <h1 className={sectionSubtitleClass}>
+//                     Gestión de usuarios
+//                   </h1>
+
+//                   <p className={`${sectionDescriptionClass} max-w-3xl`}>
+//                     Administración de accesos, roles, estados y seguridad de los
+//                     usuarios registrados en el sistema.
+//                   </p>
+//                 </div>
+
+//                 <div className="hidden shrink-0 items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 sm:flex">
+//                   <UsersRound className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+//                   Mostrando{" "}
+//                   <span className="font-semibold text-slate-950 dark:text-white">
+//                     {usuariosFiltrados.length}
+//                   </span>{" "}
+//                   de {totalUsuarios}
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="px-3.5 py-3 sm:pt-0">
+//               <div className="mb-3 flex items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 sm:hidden">
+//                 <UsersRound className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+//                 Mostrando{" "}
+//                 <span className="font-semibold text-slate-950 dark:text-white">
+//                   {usuariosFiltrados.length}
+//                 </span>{" "}
+//                 de {totalUsuarios}
+//               </div>
+
+//               <form
+//                 action="/usuarios"
+//                 className="grid gap-2 rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50 lg:grid-cols-[minmax(260px,1fr)_140px_140px_145px_auto]"
+//               >
+//                 <div className="relative">
+//                   <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+
+//                   <input
+//                     name="q"
+//                     defaultValue={q}
+//                     placeholder="Buscar usuario"
+//                     className={`${inputClass} pl-8`}
+//                   />
+//                 </div>
+
+//                 <div className="grid grid-cols-2 gap-2 lg:contents">
+//                   <select name="rol" defaultValue={rol} className={inputClass}>
+//                     <option value="todos">Roles</option>
+//                     <option value="admin">Admin</option>
+//                     <option value="cobrador">Cobrador</option>
+//                     <option value="cliente">Cliente</option>
+//                   </select>
+
+//                   <select
+//                     name="estado"
+//                     defaultValue={estado}
+//                     className={inputClass}
+//                   >
+//                     <option value="todos">Estados</option>
+//                     <option value="activo">Activos</option>
+//                     <option value="suspendido">Suspendidos</option>
+//                   </select>
+//                 </div>
+
+//                 <div className="grid gap-2 min-[420px]:grid-cols-[1fr_auto] lg:contents">
+//                   <select
+//                     name="seguridad"
+//                     defaultValue={seguridad}
+//                     className={inputClass}
+//                   >
+//                     <option value="todos">Seguridad</option>
+//                     <option value="ok">Clave OK</option>
+//                     <option value="cambio">Cambiar clave</option>
+//                   </select>
+
+//                   <div className="grid grid-cols-2 gap-2 min-[420px]:flex min-[420px]:w-auto">
+//                     <button type="submit" className={buttonPrimaryClass}>
+//                       <span className="text-[12px] leading-none text-white">
+//                         Filtrar
+//                       </span>
+//                     </button>
+
+//                     <Link href="/usuarios" className={buttonSecondaryClass}>
+//                       <span className="text-[12px] leading-none">Limpiar</span>
+//                     </Link>
+//                   </div>
+//                 </div>
+//               </form>
+//             </div>
+//           </section>
+
+//           <UsuariosTable
+//             usuarios={usuariosFiltrados}
+//             totalUsuarios={totalUsuarios}
+//           />
+//         </DashboardMain>
+
+//         <DashboardAside>
+//           <section className={`${panelClass} p-3.5`}>
+//             <div className="mb-3">
+//               <p className={sectionTitleClass}>Filtro actual</p>
+
+//               <h2 className={sectionSubtitleClass}>Vista aplicada</h2>
+//             </div>
+
+//             <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+//               <ResumenItem label="Búsqueda" value={q.trim() || "Sin texto"} />
+//               <ResumenItem label="Rol" value={rolLabel(rol)} />
+//               <ResumenItem label="Estado" value={estadoLabel(estado)} />
+//               <ResumenItem label="Seguridad" value={seguridadLabel(seguridad)} />
+//               <ResumenItem
+//                 label="Filtro aplicado"
+//                 value={filtroActivo ? "Sí" : "No"}
+//                 tone={filtroActivo ? "primary" : "neutral"}
+//               />
+//             </div>
+//           </section>
+
+//           <section className={`${panelClass} p-3.5`}>
+//             <div className="mb-3">
+//               <p className={sectionTitleClass}>Estado de accesos</p>
+
+//               <h2 className={sectionSubtitleClass}>Información general</h2>
+//             </div>
+
+//             <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+//               <ResumenItem label="Total usuarios" value={totalUsuarios} />
+//               <ResumenItem
+//                 label="Activos"
+//                 value={totalActivos}
+//                 tone="success"
+//               />
+//               <ResumenItem
+//                 label="Suspendidos"
+//                 value={totalSuspendidos}
+//                 tone={totalSuspendidos > 0 ? "danger" : "neutral"}
+//               />
+//               <ResumenItem
+//                 label="Cambio requerido"
+//                 value={totalCambioRequerido}
+//                 tone={totalCambioRequerido > 0 ? "warning" : "success"}
+//               />
+//             </div>
+//           </section>
+
+//           <section className={`${panelClass} hidden p-3.5 xl:block`}>
+//             <div className="mb-3">
+//               <p className={sectionTitleClass}>Accesos rápidos</p>
+
+//               <h2 className={sectionSubtitleClass}>Filtros frecuentes</h2>
+//             </div>
+
+//             <div className="grid gap-2">
+//               {quickActions.map((item) => {
+//                 const Icon = item.icon;
+
+//                 return (
+//                   <Link
+//                     key={item.href}
+//                     href={item.href}
+//                     className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+//                   >
+//                     <span className="flex min-w-0 items-center gap-2.5">
+//                       <Icon className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
+
+//                       <span className="min-w-0">
+//                         <span className="block truncate">{item.label}</span>
+//                         <span className="block truncate text-[11px] font-normal text-slate-500 dark:text-slate-400">
+//                           {item.description}
+//                         </span>
+//                       </span>
+//                     </span>
+
+//                     <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//                   </Link>
+//                 );
+//               })}
+//             </div>
+//           </section>
+//         </DashboardAside>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowRight,
   Clock3,
+  KeyRound,
   Search,
   ShieldCheck,
   UserRound,
   UsersRound,
   WalletCards,
 } from "lucide-react";
-import { getCurrentUser } from "@/lib/current-user";
-import { obtenerUsuarios } from "@/services/usuario.service";
+
 import { UsuariosTable } from "@/components/tables/UsuariosTable";
-import { PageShell } from "@/components/ui/PageShell";
 import {
   DashboardAside,
   DashboardGrid,
   DashboardMain,
 } from "@/components/ui/DashboardGrid";
+import { PageShell } from "@/components/ui/PageShell";
+import { getCurrentUser } from "@/lib/current-user";
+import { obtenerUsuarios } from "@/services/usuario.service";
 import type { UsuarioSafe } from "@/types/usuario.types";
 
 export const metadata = {
@@ -1251,26 +1690,47 @@ type UsuariosPageProps = {
   };
 };
 
+type ResumenItemProps = {
+  label: string;
+  value: string | number;
+  tone?:
+    | "neutral"
+    | "primary"
+    | "success"
+    | "warning"
+    | "danger";
+  dotClass?: string;
+};
+
 const panelClass =
-  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+  "dark:border-[#263451] dark:bg-[#111b31] " +
+  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
 
 const inputClass =
-  "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-normal text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-500";
+  "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 " +
+  "text-[12px] font-normal text-slate-950 outline-none transition " +
+  "placeholder:text-slate-400 focus:border-blue-500 " +
+  "focus:ring-2 focus:ring-blue-500/10 " +
+  "dark:border-[#354462] dark:bg-[#0b1326] dark:text-white " +
+  "dark:placeholder:text-slate-500 dark:focus:border-indigo-500 " +
+  "dark:focus:ring-indigo-500/15";
 
-const buttonPrimaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 !text-[12px] !font-medium !leading-none text-white shadow-sm shadow-blue-950/10 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-500 dark:bg-blue-500 dark:text-white dark:hover:border-blue-600 dark:hover:bg-blue-600";
+const primaryButtonClass =
+  "inline-flex h-8 items-center justify-center rounded-lg " +
+  "border border-blue-600 bg-blue-600 px-3 " +
+  "text-[12px] font-medium leading-none text-white shadow-sm transition " +
+  "hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] " +
+  "dark:border-indigo-500 dark:bg-indigo-500 " +
+  "dark:hover:border-indigo-400 dark:hover:bg-indigo-400";
 
-const buttonSecondaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 !text-[12px] !font-medium !leading-none text-slate-700 shadow-sm shadow-slate-300/30 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-800";
-
-const sectionTitleClass =
-  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
-
-const sectionSubtitleClass =
-  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
-
-const sectionDescriptionClass =
-  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+const secondaryButtonClass =
+  "inline-flex h-8 items-center justify-center rounded-lg " +
+  "border border-slate-300 bg-white px-3 " +
+  "text-[12px] font-medium leading-none text-slate-700 shadow-sm transition " +
+  "hover:border-slate-400 hover:bg-slate-50 active:scale-[0.99] " +
+  "dark:border-[#354462] dark:bg-[#111b31] dark:text-slate-200 " +
+  "dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
 
 function normalizarTexto(value: string) {
   return value
@@ -1278,25 +1738,6 @@ function normalizarTexto(value: string) {
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
     .trim();
-}
-
-function rolLabel(value: string) {
-  if (value === "admin") return "Administradores";
-  if (value === "cobrador") return "Cobradores";
-  if (value === "cliente") return "Clientes";
-  return "Todos los roles";
-}
-
-function estadoLabel(value: string) {
-  if (value === "activo") return "Activos";
-  if (value === "suspendido") return "Suspendidos";
-  return "Todos los estados";
-}
-
-function seguridadLabel(value: string) {
-  if (value === "ok") return "Clave OK";
-  if (value === "cambio") return "Cambio requerido";
-  return "Todos";
 }
 
 function ordenarUsuarios(usuarios: UsuarioSafe[]) {
@@ -1307,15 +1748,19 @@ function ordenarUsuarios(usuarios: UsuarioSafe[]) {
   };
 
   return [...usuarios].sort((a, b) => {
-    const prioridadA = prioridadRol[a.rol] || 99;
-    const prioridadB = prioridadRol[b.rol] || 99;
+    const prioridadA = prioridadRol[a.rol] ?? 99;
+    const prioridadB = prioridadRol[b.rol] ?? 99;
 
-    if (prioridadA !== prioridadB) return prioridadA - prioridadB;
+    if (prioridadA !== prioridadB) {
+      return prioridadA - prioridadB;
+    }
 
     const apellidoA = normalizarTexto(a.apellido || "");
     const apellidoB = normalizarTexto(b.apellido || "");
 
-    if (apellidoA !== apellidoB) return apellidoA.localeCompare(apellidoB);
+    if (apellidoA !== apellidoB) {
+      return apellidoA.localeCompare(apellidoB);
+    }
 
     return normalizarTexto(a.nombre || "").localeCompare(
       normalizarTexto(b.nombre || ""),
@@ -1340,22 +1785,140 @@ function filtrarUsuarios({
 
   return usuarios.filter((usuario) => {
     const textoUsuario = normalizarTexto(
-      `${usuario.nombre} ${usuario.apellido} ${usuario.email} ${usuario.dni}`,
+      [
+        usuario.nombre,
+        usuario.apellido,
+        usuario.email,
+        usuario.dni,
+      ].join(" "),
     );
 
-    const coincideBusqueda = !busqueda || textoUsuario.includes(busqueda);
-    const coincideRol = rol === "todos" || usuario.rol === rol;
-    const coincideEstado = estado === "todos" || usuario.estado === estado;
+    const coincideBusqueda =
+      !busqueda || textoUsuario.includes(busqueda);
+
+    const coincideRol =
+      rol === "todos" || usuario.rol === rol;
+
+    const coincideEstado =
+      estado === "todos" ||
+      usuario.estado === estado;
 
     const coincideSeguridad =
       seguridad === "todos" ||
-      (seguridad === "cambio" && usuario.debeCambiarPassword) ||
-      (seguridad === "ok" && !usuario.debeCambiarPassword);
+      (seguridad === "cambio" &&
+        usuario.debeCambiarPassword) ||
+      (seguridad === "ok" &&
+        !usuario.debeCambiarPassword);
 
     return (
-      coincideBusqueda && coincideRol && coincideEstado && coincideSeguridad
+      coincideBusqueda &&
+      coincideRol &&
+      coincideEstado &&
+      coincideSeguridad
     );
   });
+}
+
+function rolLabel(value: string) {
+  if (value === "admin") {
+    return "Administradores";
+  }
+
+  if (value === "cobrador") {
+    return "Cobradores";
+  }
+
+  if (value === "cliente") {
+    return "Clientes";
+  }
+
+  return "Todos los roles";
+}
+
+function estadoLabel(value: string) {
+  if (value === "activo") {
+    return "Activos";
+  }
+
+  if (value === "suspendido") {
+    return "Suspendidos";
+  }
+
+  return "Todos los estados";
+}
+
+function seguridadLabel(value: string) {
+  if (value === "ok") {
+    return "Clave correcta";
+  }
+
+  if (value === "cambio") {
+    return "Cambio requerido";
+  }
+
+  return "Todos";
+}
+
+function ResumenItem({
+  label,
+  value,
+  tone = "neutral",
+  dotClass,
+}: ResumenItemProps) {
+  const toneClass = {
+    neutral:
+      "text-slate-900 dark:text-slate-100",
+    primary:
+      "text-blue-700 dark:text-indigo-300",
+    success:
+      "text-emerald-700 dark:text-emerald-300",
+    warning:
+      "text-amber-700 dark:text-amber-300",
+    danger:
+      "text-red-700 dark:text-red-300",
+  }[tone];
+
+  return (
+    <div
+      className="
+        flex items-center justify-between gap-3
+        border-b border-slate-200 px-3 py-2.5
+        last:border-b-0
+        dark:border-[#263451]
+      "
+    >
+      <span
+        className="
+          flex min-w-0 items-center gap-2
+          text-[12px] text-slate-600
+          dark:text-slate-300
+        "
+      >
+        {dotClass ? (
+          <span
+            className={`
+              h-1.5 w-1.5 shrink-0 rounded-full
+              ${dotClass}
+            `}
+          />
+        ) : null}
+
+        <span className="truncate">
+          {label}
+        </span>
+      </span>
+
+      <span
+        className={`
+          shrink-0 text-[12px] font-medium
+          tabular-nums
+          ${toneClass}
+        `}
+      >
+        {value}
+      </span>
+    </div>
+  );
 }
 
 const quickActions = [
@@ -1364,56 +1927,40 @@ const quickActions = [
     description: "Usuarios con acceso total",
     href: "/usuarios?rol=admin",
     icon: ShieldCheck,
+    iconClass:
+      "text-blue-700 dark:text-indigo-300",
   },
   {
     label: "Cobradores",
     description: "Usuarios que registran cobros",
     href: "/usuarios?rol=cobrador",
     icon: WalletCards,
+    iconClass:
+      "text-amber-700 dark:text-amber-300",
   },
   {
     label: "Clientes",
-    description: "Usuarios vinculados a clientes",
+    description:
+      "Accesos vinculados a clientes",
     href: "/usuarios?rol=cliente",
     icon: UserRound,
+    iconClass:
+      "text-violet-700 dark:text-violet-300",
   },
   {
-    label: "Cambio requerido",
-    description: "Usuarios que deben actualizar clave",
+    label: "Cambio de clave",
+    description:
+      "Usuarios con cambio requerido",
     href: "/usuarios?seguridad=cambio",
-    icon: Clock3,
+    icon: KeyRound,
+    iconClass:
+      "text-red-700 dark:text-red-300",
   },
 ];
 
-function ResumenItem({
-  label,
-  value,
-  tone = "neutral",
-}: {
-  label: string;
-  value: string | number;
-  tone?: "neutral" | "success" | "danger" | "warning" | "primary";
-}) {
-  const toneClass = {
-    neutral: "text-slate-950 dark:text-white",
-    success: "text-emerald-700 dark:text-emerald-300",
-    danger: "text-red-700 dark:text-red-300",
-    warning: "text-amber-700 dark:text-amber-300",
-    primary: "text-blue-700 dark:text-blue-300",
-  }[tone];
-
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
-      <span className="text-[12px] text-slate-700 dark:text-slate-300">
-        {label}
-      </span>
-
-      <span className={`text-[12px] font-semibold ${toneClass}`}>{value}</span>
-    </div>
-  );
-}
-
-export default async function UsuariosPage({ searchParams }: UsuariosPageProps) {
+export default async function UsuariosPage({
+  searchParams,
+}: UsuariosPageProps) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -1427,9 +1974,15 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
   const usuarios = await obtenerUsuarios();
 
   const q = String(searchParams?.q || "");
-  const rol = String(searchParams?.rol || "todos");
-  const estado = String(searchParams?.estado || "todos");
-  const seguridad = String(searchParams?.seguridad || "todos");
+  const rol = String(
+    searchParams?.rol || "todos",
+  );
+  const estado = String(
+    searchParams?.estado || "todos",
+  );
+  const seguridad = String(
+    searchParams?.seguridad || "todos",
+  );
 
   const usuariosFiltrados = ordenarUsuarios(
     filtrarUsuarios({
@@ -1442,13 +1995,36 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
   );
 
   const totalUsuarios = usuarios.length;
-  const totalActivos = usuarios.filter((usuario) => usuario.estado === "activo")
-    .length;
-  const totalSuspendidos = usuarios.filter(
-    (usuario) => usuario.estado === "suspendido",
+
+  const totalActivos = usuarios.filter(
+    (usuario) =>
+      usuario.estado === "activo",
   ).length;
-  const totalCambioRequerido = usuarios.filter(
-    (usuario) => usuario.debeCambiarPassword,
+
+  const totalSuspendidos = usuarios.filter(
+    (usuario) =>
+      usuario.estado === "suspendido",
+  ).length;
+
+  const totalCambioRequerido =
+    usuarios.filter(
+      (usuario) =>
+        usuario.debeCambiarPassword,
+    ).length;
+
+  const totalAdmins = usuarios.filter(
+    (usuario) =>
+      usuario.rol === "admin",
+  ).length;
+
+  const totalCobradores = usuarios.filter(
+    (usuario) =>
+      usuario.rol === "cobrador",
+  ).length;
+
+  const totalClientes = usuarios.filter(
+    (usuario) =>
+      usuario.rol === "cliente",
   ).length;
 
   const filtroActivo =
@@ -1458,104 +2034,319 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
     seguridad !== "todos";
 
   return (
-    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+    <PageShell
+      maxWidth="wide"
+      className="pb-20 lg:pb-6"
+    >
       <DashboardGrid>
         <DashboardMain>
-          <section className={`${panelClass} overflow-hidden`}>
-            <div className="border-b border-slate-200 px-3.5 py-3.5 dark:border-slate-700 sm:border-b-0 sm:pb-3">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <section className={panelClass}>
+            <div
+              className="
+                border-b border-slate-200
+                bg-slate-50/80 px-3 py-3
+                dark:border-[#263451]
+                dark:bg-[#0e172a]
+                sm:px-4
+              "
+            >
+              <div
+                className="
+                  flex items-center
+                  justify-between gap-3
+                "
+              >
                 <div className="min-w-0">
-                  <p className={sectionTitleClass}>Usuarios</p>
+                  <div
+                    className="
+                      flex items-center gap-2.5
+                    "
+                  >
+                    <UsersRound
+                      className="
+                        h-5 w-5 shrink-0
+                        text-blue-700
+                        dark:text-indigo-300
+                      "
+                    />
 
-                  <h1 className={sectionSubtitleClass}>
-                    Gestión de usuarios
-                  </h1>
+                    <h1
+                      className="
+                        truncate text-base
+                        font-medium
+                        text-slate-950
+                        dark:text-white
+                      "
+                    >
+                      Gestión de usuarios
+                    </h1>
+                  </div>
 
-                  <p className={`${sectionDescriptionClass} max-w-3xl`}>
-                    Administración de accesos, roles, estados y seguridad de los
-                    usuarios registrados en el sistema.
+                  <p
+                    className="
+                      mt-1 hidden max-w-3xl
+                      text-[12px] leading-5
+                      text-slate-600
+                      dark:text-slate-400
+                      sm:block
+                    "
+                  >
+                    Administración de accesos,
+                    roles, estados y seguridad
+                    de los usuarios registrados.
+                  </p>
+
+                  <p
+                    className="
+                      mt-1 text-[11px]
+                      text-slate-500
+                      dark:text-slate-400
+                      sm:hidden
+                    "
+                  >
+                    Accesos, roles y seguridad
                   </p>
                 </div>
 
-                <div className="hidden shrink-0 items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 sm:flex">
-                  <UsersRound className="h-4 w-4 text-blue-700 dark:text-blue-300" />
-                  Mostrando{" "}
-                  <span className="font-semibold text-slate-950 dark:text-white">
-                    {usuariosFiltrados.length}
-                  </span>{" "}
-                  de {totalUsuarios}
+                <div
+                  className="
+                    inline-flex shrink-0
+                    items-center gap-1.5
+                    rounded-lg border
+                    border-slate-300
+                    bg-white px-2 py-1.5
+                    text-[11px] text-slate-600
+                    dark:border-[#354462]
+                    dark:bg-[#111b31]
+                    dark:text-slate-300
+                    sm:gap-2 sm:px-3 sm:py-2
+                    sm:text-[12px]
+                  "
+                >
+                  <UsersRound
+                    className="
+                      hidden h-4 w-4
+                      text-blue-700
+                      dark:text-indigo-300
+                      sm:block
+                    "
+                  />
+
+                  <span className="sm:hidden">
+                    <strong
+                      className="
+                        font-medium tabular-nums
+                        text-slate-950
+                        dark:text-white
+                      "
+                    >
+                      {usuariosFiltrados.length}
+                    </strong>
+                    /{totalUsuarios}
+                  </span>
+
+                  <span className="hidden sm:inline">
+                    Mostrando{" "}
+                    <strong
+                      className="
+                        font-medium tabular-nums
+                        text-slate-950
+                        dark:text-white
+                      "
+                    >
+                      {usuariosFiltrados.length}
+                    </strong>{" "}
+                    de{" "}
+                    <strong
+                      className="
+                        font-medium tabular-nums
+                        text-slate-950
+                        dark:text-white
+                      "
+                    >
+                      {totalUsuarios}
+                    </strong>
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="px-3.5 py-3 sm:pt-0">
-              <div className="mb-3 flex items-center gap-2 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-[12px] text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400 sm:hidden">
-                <UsersRound className="h-4 w-4 text-blue-700 dark:text-blue-300" />
-                Mostrando{" "}
-                <span className="font-semibold text-slate-950 dark:text-white">
-                  {usuariosFiltrados.length}
-                </span>{" "}
-                de {totalUsuarios}
-              </div>
-
+            <div className="p-2.5 sm:p-3">
               <form
                 action="/usuarios"
-                className="grid gap-2 rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50 lg:grid-cols-[minmax(260px,1fr)_140px_140px_145px_auto]"
+                className="
+                  grid gap-2 rounded-lg
+                  border border-slate-300
+                  bg-slate-50 p-2.5
+                  dark:border-[#354462]
+                  dark:bg-[#0b1326]
+                  lg:grid-cols-[minmax(260px,1fr)_140px_140px_150px_auto]
+                "
               >
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+                  <Search
+                    className="
+                      pointer-events-none
+                      absolute left-2.5 top-1/2
+                      h-3.5 w-3.5
+                      -translate-y-1/2
+                      text-slate-400
+                      dark:text-slate-500
+                    "
+                  />
 
                   <input
+                    type="search"
                     name="q"
                     defaultValue={q}
-                    placeholder="Buscar usuario"
+                    placeholder="Buscar por nombre, DNI o email"
                     className={`${inputClass} pl-8`}
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 lg:contents">
-                  <select name="rol" defaultValue={rol} className={inputClass}>
-                    <option value="todos">Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="cobrador">Cobrador</option>
-                    <option value="cliente">Cliente</option>
+                <div
+                  className="
+                    grid grid-cols-2 gap-2
+                    lg:contents
+                  "
+                >
+                  <select
+                    name="rol"
+                    defaultValue={rol}
+                    className={inputClass}
+                    aria-label="Filtrar por rol"
+                  >
+                    <option value="todos">
+                      Todos los roles
+                    </option>
+
+                    <option value="admin">
+                      Administradores
+                    </option>
+
+                    <option value="cobrador">
+                      Cobradores
+                    </option>
+
+                    <option value="cliente">
+                      Clientes
+                    </option>
                   </select>
 
                   <select
                     name="estado"
                     defaultValue={estado}
                     className={inputClass}
+                    aria-label="Filtrar por estado"
                   >
-                    <option value="todos">Estados</option>
-                    <option value="activo">Activos</option>
-                    <option value="suspendido">Suspendidos</option>
+                    <option value="todos">
+                      Todos los estados
+                    </option>
+
+                    <option value="activo">
+                      Activos
+                    </option>
+
+                    <option value="suspendido">
+                      Suspendidos
+                    </option>
                   </select>
                 </div>
 
-                <div className="grid gap-2 min-[420px]:grid-cols-[1fr_auto] lg:contents">
+                <div
+                  className="
+                    grid gap-2
+                    min-[430px]:grid-cols-[1fr_auto]
+                    lg:contents
+                  "
+                >
                   <select
                     name="seguridad"
                     defaultValue={seguridad}
                     className={inputClass}
+                    aria-label="Filtrar por seguridad"
                   >
-                    <option value="todos">Seguridad</option>
-                    <option value="ok">Clave OK</option>
-                    <option value="cambio">Cambiar clave</option>
+                    <option value="todos">
+                      Toda la seguridad
+                    </option>
+
+                    <option value="ok">
+                      Clave correcta
+                    </option>
+
+                    <option value="cambio">
+                      Cambio requerido
+                    </option>
                   </select>
 
-                  <div className="grid grid-cols-2 gap-2 min-[420px]:flex min-[420px]:w-auto">
-                    <button type="submit" className={buttonPrimaryClass}>
-                      <span className="text-[12px] leading-none text-white">
+                  <div
+                    className="
+                      grid grid-cols-2 gap-2
+                      min-[430px]:flex
+                    "
+                  >
+                    <button
+                      type="submit"
+                      className={
+                        primaryButtonClass
+                      }
+                    >
+                      <span
+                        className="
+                          text-[12px] leading-none
+                        "
+                      >
                         Filtrar
                       </span>
                     </button>
 
-                    <Link href="/usuarios" className={buttonSecondaryClass}>
-                      <span className="text-[12px] leading-none">Limpiar</span>
+                    <Link
+                      href="/usuarios"
+                      className={
+                        secondaryButtonClass
+                      }
+                    >
+                      <span
+                        className="
+                          text-[12px] leading-none
+                        "
+                      >
+                        Limpiar
+                      </span>
                     </Link>
                   </div>
                 </div>
               </form>
+
+              {filtroActivo ? (
+                <div
+                  className="
+                    mt-2 flex items-center
+                    justify-between gap-3
+                    rounded-lg border
+                    border-blue-200
+                    bg-blue-50 px-3 py-2
+                    text-[11px] text-blue-700
+                    dark:border-indigo-800/70
+                    dark:bg-indigo-950/25
+                    dark:text-indigo-300
+                    lg:hidden
+                  "
+                >
+                  <span className="truncate">
+                    Filtros aplicados
+                  </span>
+
+                  <span
+                    className="
+                      shrink-0 font-medium
+                      tabular-nums
+                    "
+                  >
+                    {usuariosFiltrados.length} resultados
+                  </span>
+                </div>
+              ) : null}
             </div>
           </section>
 
@@ -1565,89 +2356,310 @@ export default async function UsuariosPage({ searchParams }: UsuariosPageProps) 
           />
         </DashboardMain>
 
-        <DashboardAside>
-          <section className={`${panelClass} p-3.5`}>
-            <div className="mb-3">
-              <p className={sectionTitleClass}>Filtro actual</p>
+        <div className="hidden lg:block">
+          <DashboardAside>
+            <section className={`${panelClass} p-4`}>
+              <div className="flex items-center gap-2">
+                <ShieldCheck
+                  className="
+                    h-4 w-4
+                    text-blue-700
+                    dark:text-indigo-300
+                  "
+                />
 
-              <h2 className={sectionSubtitleClass}>Vista aplicada</h2>
-            </div>
+                <h2
+                  className="
+                    text-sm font-medium
+                    text-slate-950
+                    dark:text-white
+                  "
+                >
+                  Resumen de accesos
+                </h2>
+              </div>
 
-            <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
-              <ResumenItem label="Búsqueda" value={q.trim() || "Sin texto"} />
-              <ResumenItem label="Rol" value={rolLabel(rol)} />
-              <ResumenItem label="Estado" value={estadoLabel(estado)} />
-              <ResumenItem label="Seguridad" value={seguridadLabel(seguridad)} />
-              <ResumenItem
-                label="Filtro aplicado"
-                value={filtroActivo ? "Sí" : "No"}
-                tone={filtroActivo ? "primary" : "neutral"}
-              />
-            </div>
-          </section>
+              <div
+                className="
+                  mt-3 overflow-hidden
+                  rounded-lg border
+                  border-slate-200 bg-slate-50
+                  dark:border-[#2b3957]
+                  dark:bg-[#0d172a]
+                "
+              >
+                <ResumenItem
+                  label="Total de usuarios"
+                  value={totalUsuarios}
+                  tone="primary"
+                  dotClass="bg-blue-500"
+                />
 
-          <section className={`${panelClass} p-3.5`}>
-            <div className="mb-3">
-              <p className={sectionTitleClass}>Estado de accesos</p>
+                <ResumenItem
+                  label="Usuarios activos"
+                  value={totalActivos}
+                  tone="success"
+                  dotClass="bg-emerald-500"
+                />
 
-              <h2 className={sectionSubtitleClass}>Información general</h2>
-            </div>
+                <ResumenItem
+                  label="Suspendidos"
+                  value={totalSuspendidos}
+                  tone={
+                    totalSuspendidos > 0
+                      ? "danger"
+                      : "neutral"
+                  }
+                  dotClass={
+                    totalSuspendidos > 0
+                      ? "bg-red-500"
+                      : "bg-slate-400"
+                  }
+                />
 
-            <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
-              <ResumenItem label="Total usuarios" value={totalUsuarios} />
-              <ResumenItem
-                label="Activos"
-                value={totalActivos}
-                tone="success"
-              />
-              <ResumenItem
-                label="Suspendidos"
-                value={totalSuspendidos}
-                tone={totalSuspendidos > 0 ? "danger" : "neutral"}
-              />
-              <ResumenItem
-                label="Cambio requerido"
-                value={totalCambioRequerido}
-                tone={totalCambioRequerido > 0 ? "warning" : "success"}
-              />
-            </div>
-          </section>
+                <ResumenItem
+                  label="Cambio de clave"
+                  value={totalCambioRequerido}
+                  tone={
+                    totalCambioRequerido > 0
+                      ? "warning"
+                      : "success"
+                  }
+                  dotClass={
+                    totalCambioRequerido > 0
+                      ? "bg-amber-500"
+                      : "bg-emerald-500"
+                  }
+                />
+              </div>
+            </section>
 
-          <section className={`${panelClass} hidden p-3.5 xl:block`}>
-            <div className="mb-3">
-              <p className={sectionTitleClass}>Accesos rápidos</p>
+            <section className={`${panelClass} p-4`}>
+              <div className="flex items-center gap-2">
+                <UsersRound
+                  className="
+                    h-4 w-4
+                    text-slate-600
+                    dark:text-slate-300
+                  "
+                />
 
-              <h2 className={sectionSubtitleClass}>Filtros frecuentes</h2>
-            </div>
+                <h2
+                  className="
+                    text-sm font-medium
+                    text-slate-950
+                    dark:text-white
+                  "
+                >
+                  Distribución por rol
+                </h2>
+              </div>
 
-            <div className="grid gap-2">
-              {quickActions.map((item) => {
-                const Icon = item.icon;
+              <div
+                className="
+                  mt-3 overflow-hidden
+                  rounded-lg border
+                  border-slate-200 bg-slate-50
+                  dark:border-[#2b3957]
+                  dark:bg-[#0d172a]
+                "
+              >
+                <ResumenItem
+                  label="Administradores"
+                  value={totalAdmins}
+                  tone="primary"
+                  dotClass="bg-blue-500"
+                />
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
-                  >
-                    <span className="flex min-w-0 items-center gap-2.5">
-                      <Icon className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
+                <ResumenItem
+                  label="Cobradores"
+                  value={totalCobradores}
+                  tone="warning"
+                  dotClass="bg-amber-500"
+                />
 
-                      <span className="min-w-0">
-                        <span className="block truncate">{item.label}</span>
-                        <span className="block truncate text-[11px] font-normal text-slate-500 dark:text-slate-400">
-                          {item.description}
-                        </span>
-                      </span>
-                    </span>
+                <ResumenItem
+                  label="Clientes"
+                  value={totalClientes}
+                  tone="neutral"
+                  dotClass="bg-violet-500"
+                />
+              </div>
+            </section>
 
-                    <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        </DashboardAside>
+            <section className={`${panelClass} p-4`}>
+              <div className="flex items-center gap-2">
+                <Clock3
+                  className="
+                    h-4 w-4
+                    text-slate-600
+                    dark:text-slate-300
+                  "
+                />
+
+                <h2
+                  className="
+                    text-sm font-medium
+                    text-slate-950
+                    dark:text-white
+                  "
+                >
+                  Filtro aplicado
+                </h2>
+              </div>
+
+              <div
+                className="
+                  mt-3 overflow-hidden
+                  rounded-lg border
+                  border-slate-200 bg-slate-50
+                  dark:border-[#2b3957]
+                  dark:bg-[#0d172a]
+                "
+              >
+                <ResumenItem
+                  label="Búsqueda"
+                  value={
+                    q.trim() || "Sin texto"
+                  }
+                />
+
+                <ResumenItem
+                  label="Rol"
+                  value={rolLabel(rol)}
+                />
+
+                <ResumenItem
+                  label="Estado"
+                  value={estadoLabel(estado)}
+                />
+
+                <ResumenItem
+                  label="Seguridad"
+                  value={seguridadLabel(
+                    seguridad,
+                  )}
+                />
+
+                <ResumenItem
+                  label="Filtro activo"
+                  value={
+                    filtroActivo ? "Sí" : "No"
+                  }
+                  tone={
+                    filtroActivo
+                      ? "primary"
+                      : "neutral"
+                  }
+                  dotClass={
+                    filtroActivo
+                      ? "bg-blue-500"
+                      : "bg-slate-400"
+                  }
+                />
+              </div>
+            </section>
+
+            <section
+              className={`${panelClass} hidden p-4 xl:block`}
+            >
+              <div className="flex items-center gap-2">
+                <KeyRound
+                  className="
+                    h-4 w-4
+                    text-blue-700
+                    dark:text-indigo-300
+                  "
+                />
+
+                <h2
+                  className="
+                    text-sm font-medium
+                    text-slate-950
+                    dark:text-white
+                  "
+                >
+                  Accesos rápidos
+                </h2>
+              </div>
+
+              <div className="mt-3 grid gap-2">
+                {quickActions.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="
+                        group flex items-center
+                        justify-between gap-3
+                        rounded-lg border
+                        border-slate-200
+                        bg-slate-50 px-3 py-2.5
+                        transition
+                        hover:border-blue-300
+                        hover:bg-blue-50
+                        dark:border-[#2b3957]
+                        dark:bg-[#0d172a]
+                        dark:hover:border-indigo-500/60
+                        dark:hover:bg-[#16223c]
+                      "
+                    >
+                      <div
+                        className="
+                          flex min-w-0
+                          items-center gap-2.5
+                        "
+                      >
+                        <Icon
+                          className={`
+                            h-4 w-4 shrink-0
+                            ${item.iconClass}
+                          `}
+                        />
+
+                        <div className="min-w-0">
+                          <p
+                            className="
+                              truncate text-[12px]
+                              font-medium
+                              text-slate-900
+                              dark:text-slate-100
+                            "
+                          >
+                            {item.label}
+                          </p>
+
+                          <p
+                            className="
+                              truncate text-[10px]
+                              text-slate-500
+                              dark:text-slate-400
+                            "
+                          >
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <ArrowRight
+                        className="
+                          h-3.5 w-3.5 shrink-0
+                          text-slate-400
+                          transition
+                          group-hover:translate-x-0.5
+                          group-hover:text-blue-700
+                          dark:group-hover:text-indigo-300
+                        "
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          </DashboardAside>
+        </div>
       </DashboardGrid>
     </PageShell>
   );

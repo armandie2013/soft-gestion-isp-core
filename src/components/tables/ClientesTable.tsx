@@ -1249,12 +1249,438 @@
 //   );
 // }
 
-// src/components/tables/ClientesTable.tsx
+// // src/components/tables/ClientesTable.tsx
+
+// "use client";
+
+// import type { FormEvent } from "react";
+// import Link from "next/link";
+// import {
+//   Eye,
+//   IdCard,
+//   MapPin,
+//   Pencil,
+//   Phone,
+//   ReceiptText,
+//   Trash2,
+//   UserRound,
+//   Wifi,
+// } from "lucide-react";
+// import { eliminarClienteAction } from "@/actions/cliente.actions";
+// import type { ClienteSafe } from "@/types/cliente.types";
+
+// type ClientesTableProps = {
+//   clientes: ClienteSafe[];
+//   totalClientes: number;
+// };
+
+// const panelClass =
+//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// const actionLinkClass =
+//   "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-[11px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300";
+
+// const primaryActionClass =
+//   "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-blue-600 bg-blue-600 px-2.5 text-[11px] font-medium text-white shadow-sm shadow-blue-950/15 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-400 dark:bg-blue-500 dark:text-white dark:shadow-black/20 dark:hover:border-blue-300 dark:hover:bg-blue-600";
+
+// const deleteActionClass =
+//   "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-red-300 bg-red-50 px-2.5 text-[11px] font-medium text-red-700 shadow-sm shadow-red-950/5 transition hover:border-red-400 hover:bg-red-100 active:scale-[0.99] dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300 dark:shadow-black/10 dark:hover:border-red-800 dark:hover:bg-red-950/55";
+
+// function formatMoney(value?: number | null) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function formatDate(value?: string | null) {
+//   if (!value) return "-";
+
+//   const [year, month, day] = value.split("-");
+
+//   if (!year || !month || !day) return value;
+
+//   return `${day}/${month}/${year}`;
+// }
+
+// function estadoLabel(estado: string) {
+//   if (estado === "activo") return "Activo";
+//   if (estado === "suspendido") return "Suspendido";
+//   return "Baja";
+// }
+
+// function estadoTone(estado: string) {
+//   if (estado === "activo") {
+//     return "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300";
+//   }
+
+//   if (estado === "suspendido") {
+//     return "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300";
+//   }
+
+//   return "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300";
+// }
+
+// function getNombreCompleto(cliente: ClienteSafe) {
+//   const apellido = String(cliente.apellido || "").trim();
+//   const nombre = String(cliente.nombre || "").trim();
+
+//   const completo = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return completo || "Cliente sin nombre";
+// }
+
+// function getUbicacion(cliente: ClienteSafe) {
+//   const localidad = String(cliente.localidad || "").trim();
+//   const provincia = String(cliente.provincia || "").trim();
+
+//   const ubicacion = [localidad, provincia].filter(Boolean).join(", ");
+
+//   return ubicacion || "Sin ubicación";
+// }
+
+// function EstadoBadge({ estado }: { estado: string }) {
+//   return (
+//     <span
+//       className={`inline-flex h-6 shrink-0 items-center rounded-full border px-2 text-[10px] font-semibold leading-none ${estadoTone(
+//         estado,
+//       )}`}
+//     >
+//       {estadoLabel(estado)}
+//     </span>
+//   );
+// }
+
+// function DeleteClienteButton({
+//   clienteId,
+//   clienteNombre,
+//   compact = false,
+// }: {
+//   clienteId: string;
+//   clienteNombre: string;
+//   compact?: boolean;
+// }) {
+//   function handleSubmit(event: FormEvent<HTMLFormElement>) {
+//     const confirmar = window.confirm(
+//       `Estás a punto de borrar el cliente:\n\n${clienteNombre}\n\nEsta acción no se puede deshacer.\n\n¿Querés continuar?`,
+//     );
+
+//     if (!confirmar) {
+//       event.preventDefault();
+//     }
+//   }
+
+//   if (compact) {
+//     return (
+//       <form action={eliminarClienteAction} onSubmit={handleSubmit}>
+//         <input type="hidden" name="id" value={clienteId} />
+
+//         <button
+//           type="submit"
+//           className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-red-300 bg-red-50 text-red-700 shadow-sm shadow-red-950/5 transition hover:border-red-400 hover:bg-red-100 active:scale-[0.99] dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300 dark:shadow-black/10 dark:hover:border-red-800 dark:hover:bg-red-950/55"
+//           aria-label="Borrar cliente"
+//           title="Borrar cliente"
+//         >
+//           <Trash2 className="h-3.5 w-3.5" />
+//         </button>
+//       </form>
+//     );
+//   }
+
+//   return (
+//     <form action={eliminarClienteAction} onSubmit={handleSubmit}>
+//       <input type="hidden" name="id" value={clienteId} />
+
+//       <button type="submit" className={deleteActionClass}>
+//         <Trash2 className="h-3 w-3" />
+//         Borrar
+//       </button>
+//     </form>
+//   );
+// }
+
+// function EmptyClientesPanel() {
+//   return (
+//     <section className={`${panelClass} mt-3 p-6 text-center`}>
+//       <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+//         <UserRound className="h-5 w-5" />
+//       </div>
+
+//       <h2 className="mt-3 text-sm font-semibold text-slate-950 dark:text-white">
+//         No se encontraron clientes
+//       </h2>
+
+//       <p className="mx-auto mt-1 max-w-md text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+//         Probá cambiando los filtros o cargá un nuevo cliente desde el botón
+//         superior.
+//       </p>
+//     </section>
+//   );
+// }
+
+// function ClienteMobileRow({ cliente }: { cliente: ClienteSafe }) {
+//   const nombreCompleto = getNombreCompleto(cliente);
+
+//   return (
+//     <article className="rounded-xl border border-slate-300 bg-white/95 px-3 py-2.5 shadow-sm shadow-slate-300/35 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/15 dark:ring-slate-800/80">
+//       <div className="flex items-start justify-between gap-3">
+//         <div className="min-w-0">
+//           <div className="flex min-w-0 items-center gap-2">
+//             <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-1.5 text-[11px] font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+//               {cliente.numeroCliente}
+//             </span>
+
+//             <h2 className="truncate text-[13px] font-semibold text-slate-950 dark:text-white">
+//               {nombreCompleto}
+//             </h2>
+//           </div>
+
+//           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
+//             <span className="inline-flex items-center gap-1">
+//               <IdCard className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+//               DNI {cliente.dni || "-"}
+//             </span>
+
+//             <span className="inline-flex items-center gap-1">
+//               <Wifi className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+//               {cliente.plan?.nombre || "Sin plan"}
+//             </span>
+//           </div>
+//         </div>
+
+//         <EstadoBadge estado={cliente.estado} />
+//       </div>
+
+//       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+//         <span className="inline-flex min-w-0 items-center gap-1">
+//           <MapPin className="h-3 w-3 shrink-0 text-slate-400 dark:text-slate-500" />
+//           <span className="truncate">{getUbicacion(cliente)}</span>
+//         </span>
+
+//         {cliente.telefono ? (
+//           <span className="inline-flex items-center gap-1">
+//             <Phone className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+//             {cliente.telefono}
+//           </span>
+//         ) : null}
+//       </div>
+
+//       <div className="mt-2 flex flex-wrap items-center gap-1.5">
+//         <Link href={`/clientes/${cliente.id}`} className={primaryActionClass}>
+//           <Eye className="h-3 w-3 text-white" />
+//           <span className="text-white">Ver</span>
+//         </Link>
+
+//         <Link
+//           href={`/clientes/${cliente.id}/estado-cuenta`}
+//           className={actionLinkClass}
+//         >
+//           <ReceiptText className="h-3 w-3" />
+//           Cuenta
+//         </Link>
+
+//         <Link href={`/clientes/${cliente.id}/editar`} className={actionLinkClass}>
+//           <Pencil className="h-3 w-3" />
+//           Editar
+//         </Link>
+//       </div>
+//     </article>
+//   );
+// }
+
+// function DesktopTable({
+//   clientes,
+//   totalClientes,
+// }: {
+//   clientes: ClienteSafe[];
+//   totalClientes: number;
+// }) {
+//   return (
+//     <section className={`${panelClass} mt-3 hidden overflow-hidden lg:block`}>
+//       <div className="overflow-x-auto">
+//         <table className="w-full min-w-[1020px] table-fixed text-left text-[12px] xl:min-w-0">
+//           <colgroup>
+//             <col className="w-[7%]" />
+//             <col className="w-[18%]" />
+//             <col className="w-[10%]" />
+//             <col className="w-[17%]" />
+//             <col className="w-[13%]" />
+//             <col className="w-[9%]" />
+//             <col className="w-[13%]" />
+//             <col className="w-[13%]" />
+//           </colgroup>
+
+//           <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.08em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
+//             <tr>
+//               <th className="px-3 py-2.5 font-medium">N°</th>
+//               <th className="px-3 py-2.5 font-medium">Cliente</th>
+//               <th className="px-3 py-2.5 font-medium">DNI</th>
+//               <th className="px-3 py-2.5 font-medium">Dirección</th>
+//               <th className="px-3 py-2.5 font-medium">Localidad</th>
+//               <th className="px-3 py-2.5 font-medium">Alta</th>
+//               <th className="px-3 py-2.5 font-medium">Plan</th>
+//               <th className="px-3 py-2.5 text-center font-medium">
+//                 Acciones
+//               </th>
+//             </tr>
+//           </thead>
+
+//           <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+//             {clientes.map((cliente) => {
+//               const nombreCompleto = getNombreCompleto(cliente);
+
+//               return (
+//                 <tr
+//                   key={cliente.id}
+//                   className="transition hover:bg-blue-50/55 dark:hover:bg-blue-950/12"
+//                 >
+//                   <td className="px-3 py-2.5">
+//                     <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-2 text-[11px] font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+//                       {cliente.numeroCliente}
+//                     </span>
+//                   </td>
+
+//                   <td className="px-3 py-2.5">
+//                     <div className="min-w-0">
+//                       <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+//                         {nombreCompleto}
+//                       </p>
+
+//                       <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
+//                         {cliente.telefono || cliente.email || "Sin contacto"}
+//                       </p>
+//                     </div>
+//                   </td>
+
+//                   <td className="px-3 py-2.5">
+//                     <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+//                       {cliente.dni || "-"}
+//                     </p>
+//                   </td>
+
+//                   <td className="px-3 py-2.5">
+//                     <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+//                       {cliente.direccion || "-"}
+//                     </p>
+//                   </td>
+
+//                   <td className="px-3 py-2.5">
+//                     <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+//                       {cliente.localidad || "-"}
+//                     </p>
+
+//                     <p className="truncate text-[10px] text-slate-500 dark:text-slate-400">
+//                       {cliente.provincia || "-"}
+//                     </p>
+//                   </td>
+
+//                   <td className="px-3 py-2.5">
+//                     <p className="truncate text-[12px] text-slate-600 dark:text-slate-300">
+//                       {formatDate(cliente.fechaAlta)}
+//                     </p>
+//                   </td>
+
+//                   <td className="px-3 py-2.5">
+//                     <div className="min-w-0">
+//                       <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+//                         {cliente.plan?.nombre || "Sin plan"}
+//                       </p>
+
+//                       <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">
+//                         {cliente.plan
+//                           ? formatMoney(cliente.plan.importe)
+//                           : "-"}
+//                       </p>
+//                     </div>
+//                   </td>
+
+//                   <td className="px-3 py-2.5">
+//                     <div className="flex items-center justify-center gap-1.5">
+//                       <Link
+//                         href={`/clientes/${cliente.id}`}
+//                         className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-blue-600 bg-blue-600 text-white shadow-sm shadow-blue-950/15 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-400 dark:bg-blue-500 dark:text-white dark:shadow-black/20 dark:hover:border-blue-300 dark:hover:bg-blue-600"
+//                         aria-label="Ver cliente"
+//                         title="Ver cliente"
+//                       >
+//                         <Eye className="h-3.5 w-3.5 text-white" />
+//                       </Link>
+
+//                       <Link
+//                         href={`/clientes/${cliente.id}/estado-cuenta`}
+//                         className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+//                         aria-label="Estado de cuenta"
+//                         title="Estado de cuenta"
+//                       >
+//                         <ReceiptText className="h-3.5 w-3.5" />
+//                       </Link>
+
+//                       <Link
+//                         href={`/clientes/${cliente.id}/editar`}
+//                         className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+//                         aria-label="Editar cliente"
+//                         title="Editar cliente"
+//                       >
+//                         <Pencil className="h-3.5 w-3.5" />
+//                       </Link>
+
+//                       <DeleteClienteButton
+//                         clienteId={cliente.id}
+//                         clienteNombre={nombreCompleto}
+//                         compact
+//                       />
+//                     </div>
+//                   </td>
+//                 </tr>
+//               );
+//             })}
+//           </tbody>
+//         </table>
+//       </div>
+
+//       <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
+//         <span>
+//           Mostrando {clientes.length} de {totalClientes} clientes
+//         </span>
+
+//         <span>Vista administrativa</span>
+//       </div>
+//     </section>
+//   );
+// }
+
+// export function ClientesTable({ clientes, totalClientes }: ClientesTableProps) {
+//   if (clientes.length === 0) {
+//     return <EmptyClientesPanel />;
+//   }
+
+//   return (
+//     <>
+//       <DesktopTable clientes={clientes} totalClientes={totalClientes} />
+
+//       <section className="mt-3 grid gap-2.5 lg:hidden">
+//         {clientes.map((cliente) => (
+//           <ClienteMobileRow key={cliente.id} cliente={cliente} />
+//         ))}
+
+//         <div
+//           className={`${panelClass} px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400`}
+//         >
+//           Mostrando {clientes.length} de {totalClientes} clientes
+//         </div>
+//       </section>
+//     </>
+//   );
+// }
 
 "use client";
 
-import type { FormEvent } from "react";
+import type { FormEvent, MouseEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Eye,
   IdCard,
@@ -1275,10 +1701,10 @@ type ClientesTableProps = {
 };
 
 const panelClass =
-  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-[#263451] dark:bg-[#111b31] dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
 
 const actionLinkClass =
-  "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-[11px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300";
+  "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-[11px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 active:scale-[0.99] dark:border-[#263451] dark:bg-[#0b1326] dark:text-slate-200 dark:shadow-black/10 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300";
 
 const primaryActionClass =
   "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-blue-600 bg-blue-600 px-2.5 text-[11px] font-medium text-white shadow-sm shadow-blue-950/15 transition hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] dark:border-blue-400 dark:bg-blue-500 dark:text-white dark:shadow-black/20 dark:hover:border-blue-300 dark:hover:bg-blue-600";
@@ -1344,13 +1770,21 @@ function getUbicacion(cliente: ClienteSafe) {
 }
 
 function EstadoBadge({ estado }: { estado: string }) {
+  const dotClass =
+    estado === "activo"
+      ? "bg-emerald-500"
+      : estado === "suspendido"
+        ? "bg-amber-500"
+        : "bg-red-500";
+
   return (
     <span
-      className={`inline-flex h-6 shrink-0 items-center rounded-full border px-2 text-[10px] font-semibold leading-none ${estadoTone(
+      className={`inline-flex min-w-[86px] shrink-0 items-center justify-center gap-1.5 rounded-md border px-2.5 py-1 text-[10px] font-medium ${estadoTone(
         estado,
       )}`}
     >
-      {estadoLabel(estado)}
+      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`} />
+      <span className="whitespace-nowrap leading-none">{estadoLabel(estado)}</span>
     </span>
   );
 }
@@ -1426,15 +1860,15 @@ function ClienteMobileRow({ cliente }: { cliente: ClienteSafe }) {
   const nombreCompleto = getNombreCompleto(cliente);
 
   return (
-    <article className="rounded-xl border border-slate-300 bg-white/95 px-3 py-2.5 shadow-sm shadow-slate-300/35 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/15 dark:ring-slate-800/80">
+    <article className="rounded-xl border border-slate-300 bg-white/95 px-3 py-2.5 shadow-sm shadow-slate-300/35 ring-1 ring-white/70 dark:border-[#263451] dark:bg-slate-900/86 dark:shadow-black/15 dark:ring-slate-800/80">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-1.5 text-[11px] font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+            <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-1.5 text-[11px] font-medium text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
               {cliente.numeroCliente}
             </span>
 
-            <h2 className="truncate text-[13px] font-semibold text-slate-950 dark:text-white">
+            <h2 className="truncate text-[13px] font-medium text-slate-950 dark:text-white">
               {nombreCompleto}
             </h2>
           </div>
@@ -1499,6 +1933,19 @@ function DesktopTable({
   clientes: ClienteSafe[];
   totalClientes: number;
 }) {
+  const router = useRouter();
+
+  function handleRowClick(
+    event: MouseEvent<HTMLTableRowElement>,
+    clienteId: string,
+  ) {
+    const target = event.target as HTMLElement;
+
+    if (target.closest("a, button, form, input")) return;
+
+    router.push(`/clientes/${clienteId}`);
+  }
+
   return (
     <section className={`${panelClass} mt-3 hidden overflow-hidden lg:block`}>
       <div className="overflow-x-auto">
@@ -1514,7 +1961,7 @@ function DesktopTable({
             <col className="w-[13%]" />
           </colgroup>
 
-          <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.08em] text-slate-500 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-400">
+          <thead className="border-b border-slate-300 bg-slate-100 text-[10px] uppercase tracking-[0.08em] text-slate-500 dark:border-[#263451] dark:bg-[#0b1326] dark:text-slate-400">
             <tr>
               <th className="px-3 py-2.5 font-medium">N°</th>
               <th className="px-3 py-2.5 font-medium">Cliente</th>
@@ -1529,24 +1976,25 @@ function DesktopTable({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          <tbody className="divide-y divide-slate-200 dark:divide-[#263451]">
             {clientes.map((cliente) => {
               const nombreCompleto = getNombreCompleto(cliente);
 
               return (
                 <tr
                   key={cliente.id}
-                  className="transition hover:bg-blue-50/55 dark:hover:bg-blue-950/12"
+                  onClick={(event) => handleRowClick(event, cliente.id)}
+                  className="cursor-pointer transition hover:bg-blue-50/70 dark:hover:bg-[#16223c]"
                 >
                   <td className="px-3 py-2.5">
-                    <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-2 text-[11px] font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+                    <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-2 text-[11px] font-medium text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
                       {cliente.numeroCliente}
                     </span>
                   </td>
 
                   <td className="px-3 py-2.5">
                     <div className="min-w-0">
-                      <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+                      <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
                         {nombreCompleto}
                       </p>
 
@@ -1586,7 +2034,7 @@ function DesktopTable({
 
                   <td className="px-3 py-2.5">
                     <div className="min-w-0">
-                      <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+                      <p className="truncate text-[12px] font-medium text-slate-950 dark:text-white">
                         {cliente.plan?.nombre || "Sin plan"}
                       </p>
 
@@ -1611,7 +2059,7 @@ function DesktopTable({
 
                       <Link
                         href={`/clientes/${cliente.id}/estado-cuenta`}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263451] dark:bg-[#0b1326] dark:text-slate-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
                         aria-label="Estado de cuenta"
                         title="Estado de cuenta"
                       >
@@ -1620,7 +2068,7 @@ function DesktopTable({
 
                       <Link
                         href={`/clientes/${cliente.id}/editar`}
-                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263451] dark:bg-[#0b1326] dark:text-slate-300 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
                         aria-label="Editar cliente"
                         title="Editar cliente"
                       >
@@ -1641,7 +2089,7 @@ function DesktopTable({
         </table>
       </div>
 
-      <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
+      <div className="flex items-center justify-between border-t border-slate-300 px-3 py-2.5 text-[11px] text-slate-500 dark:border-[#263451] dark:text-slate-400">
         <span>
           Mostrando {clientes.length} de {totalClientes} clientes
         </span>

@@ -741,29 +741,398 @@
 //   );
 // }
 
-// src/app/(dashboard)/clientes/[id]/editar/page.tsx
+// // src/app/(dashboard)/clientes/[id]/editar/page.tsx
+
+// import Link from "next/link";
+// import { notFound } from "next/navigation";
+// import type { ReactNode } from "react";
+// import {
+//   CheckCircle2,
+//   FileText,
+//   IdCard,
+//   Mail,
+//   MapPin,
+//   Phone,
+//   Wifi,
+// } from "lucide-react";
+// import { EditarClienteForm } from "@/components/forms/EditarClienteForm";
+// import { obtenerClientePorId } from "@/services/cliente.service";
+// import { obtenerPlanesActivos } from "@/services/plan.service";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+// import type { ClienteSafe } from "@/types/cliente.types";
+
+// type EditarClientePageProps = {
+//   params: {
+//     id: string;
+//   };
+// };
+
+// export const metadata = {
+//   title: "Editar cliente",
+// };
+
+// const panelClass =
+//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// const sectionTitleClass =
+//   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+// const sectionSubtitleClass =
+//   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+// const sectionDescriptionClass =
+//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// function formatMoney(value?: number | null) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function formatDate(value?: string | null) {
+//   if (!value) return "-";
+
+//   const [year, month, day] = value.split("-");
+
+//   if (!year || !month || !day) return value;
+
+//   return `${day}/${month}/${year}`;
+// }
+
+// function estadoLabel(estado: string) {
+//   if (estado === "activo") return "Activo";
+//   if (estado === "suspendido") return "Suspendido";
+//   return "Baja";
+// }
+
+// function estadoTone(estado: string): "success" | "warning" | "danger" {
+//   if (estado === "activo") return "success";
+//   if (estado === "suspendido") return "warning";
+//   return "danger";
+// }
+
+// function getNombreCompleto(cliente: ClienteSafe) {
+//   const apellido = String(cliente.apellido || "").trim();
+//   const nombre = String(cliente.nombre || "").trim();
+
+//   const completo = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return completo || "Cliente sin nombre";
+// }
+
+// function BackButton() {
+//   return (
+//     <Link
+//       href="/clientes"
+//       className="hidden h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+//     >
+//       Volver
+//     </Link>
+//   );
+// }
+
+// function Badge({
+//   children,
+//   tone = "neutral",
+// }: {
+//   children: ReactNode;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral:
+//       "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+//     primary:
+//       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+//     success:
+//       "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+//     warning:
+//       "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+//     danger:
+//       "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <span
+//       className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+//     >
+//       {children}
+//     </span>
+//   );
+// }
+
+// function PageHeader({ cliente }: { cliente: ClienteSafe }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Clientes</p>
+
+//           <h1 className={sectionSubtitleClass}>Editar cliente</h1>
+
+//           <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
+//             {getNombreCompleto(cliente)} · N° {cliente.numeroCliente} · DNI{" "}
+//             {cliente.dni || "-"}
+//           </p>
+//         </div>
+
+//         <div className="flex flex-col items-start gap-2 lg:items-end">
+//           <BackButton />
+
+//           <div className="flex flex-wrap gap-2 lg:justify-end">
+//             <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+
+//             <Badge tone={estadoTone(cliente.estado)}>
+//               {estadoLabel(cliente.estado)}
+//             </Badge>
+
+//             <Badge tone={cliente.plan ? "success" : "warning"}>
+//               {cliente.plan ? "Con plan" : "Sin plan"}
+//             </Badge>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ResumenItem({
+//   icon,
+//   label,
+//   value,
+//   tone = "neutral",
+// }: {
+//   icon: ReactNode;
+//   label: string;
+//   value: string;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral: "text-slate-950 dark:text-white",
+//     primary: "text-blue-700 dark:text-blue-300",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     danger: "text-red-700 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+//       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+//         <span className="shrink-0 text-blue-700 dark:text-blue-300">
+//           {icon}
+//         </span>
+
+//         <span className="truncate">{label}</span>
+//       </span>
+
+//       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+//         {value}
+//       </span>
+//     </div>
+//   );
+// }
+
+// function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Resumen</p>
+
+//         <h2 className={sectionSubtitleClass}>Información del cliente</h2>
+//       </div>
+
+//       <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+//         <ResumenItem
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Número"
+//           value={String(cliente.numeroCliente)}
+//           tone="primary"
+//         />
+
+//         <ResumenItem
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Estado"
+//           value={estadoLabel(cliente.estado)}
+//           tone={estadoTone(cliente.estado)}
+//         />
+
+//         <ResumenItem
+//           icon={<Wifi className="h-3.5 w-3.5" />}
+//           label="Plan"
+//           value={cliente.plan?.nombre || "Sin plan"}
+//           tone={cliente.plan ? "success" : "warning"}
+//         />
+
+//         <ResumenItem
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Importe"
+//           value={cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
+//           tone={cliente.plan ? "primary" : "neutral"}
+//         />
+
+//         <ResumenItem
+//           icon={<IdCard className="h-3.5 w-3.5" />}
+//           label="DNI"
+//           value={cliente.dni || "-"}
+//         />
+
+//         <ResumenItem
+//           icon={<Phone className="h-3.5 w-3.5" />}
+//           label="Teléfono"
+//           value={cliente.telefono || "-"}
+//         />
+
+//         <ResumenItem
+//           icon={<Mail className="h-3.5 w-3.5" />}
+//           label="Email"
+//           value={cliente.email || "-"}
+//         />
+
+//         <ResumenItem
+//           icon={<MapPin className="h-3.5 w-3.5" />}
+//           label="Ubicación"
+//           value={`${cliente.localidad || "-"}, ${cliente.provincia || "-"}`}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function EstadoServicio({ cliente }: { cliente: ClienteSafe }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Estado del servicio</p>
+
+//         <h2 className={sectionSubtitleClass}>Datos operativos</h2>
+//       </div>
+
+//       <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+//         <ResumenItem
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Estado actual"
+//           value={estadoLabel(cliente.estado)}
+//           tone={estadoTone(cliente.estado)}
+//         />
+
+//         <ResumenItem
+//           icon={<Wifi className="h-3.5 w-3.5" />}
+//           label="Plan actual"
+//           value={cliente.plan?.nombre || "Sin plan"}
+//           tone={cliente.plan ? "success" : "warning"}
+//         />
+
+//         <ResumenItem
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Alta"
+//           value={formatDate(cliente.fechaAlta)}
+//         />
+
+//         <ResumenItem
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Último cambio"
+//           value={cliente.ultimoCambioPlan || "Sin cambios"}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function NotaEstado() {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Importante</p>
+
+//         <h2 className={sectionSubtitleClass}>Estado del cliente</h2>
+//       </div>
+
+//       <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[12px] leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
+//         Si cambiás el estado a suspendido o baja, el acceso al servicio puede
+//         quedar restringido según las reglas del sistema.
+//       </div>
+//     </section>
+//   );
+// }
+
+// export default async function EditarClientePage({
+//   params,
+// }: EditarClientePageProps) {
+//   const [cliente, planesActivos] = await Promise.all([
+//     obtenerClientePorId(params.id),
+//     obtenerPlanesActivos(),
+//   ]);
+
+//   if (!cliente) {
+//     notFound();
+//   }
+
+//   const planesParaFormulario =
+//     cliente.plan && !planesActivos.some((plan) => plan.id === cliente.plan?.id)
+//       ? [cliente.plan, ...planesActivos]
+//       : planesActivos;
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <PageHeader cliente={cliente} />
+
+//           <div className="mt-3">
+//             <EditarClienteForm cliente={cliente} planes={planesParaFormulario} />
+//           </div>
+//         </DashboardMain>
+
+//         <DashboardAside>
+//           <ResumenCliente cliente={cliente} />
+
+//           <div className="mt-3">
+//             <EstadoServicio cliente={cliente} />
+//           </div>
+
+//           <div className="mt-3 hidden xl:block">
+//             <NotaEstado />
+//           </div>
+//         </DashboardAside>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import {
+  CalendarDays,
   CheckCircle2,
   FileText,
   IdCard,
   Mail,
   MapPin,
   Phone,
+  ShieldAlert,
+  UserRound,
   Wifi,
 } from "lucide-react";
+
 import { EditarClienteForm } from "@/components/forms/EditarClienteForm";
-import { obtenerClientePorId } from "@/services/cliente.service";
-import { obtenerPlanesActivos } from "@/services/plan.service";
-import { PageShell } from "@/components/ui/PageShell";
 import {
   DashboardAside,
   DashboardGrid,
   DashboardMain,
 } from "@/components/ui/DashboardGrid";
+import { PageShell } from "@/components/ui/PageShell";
+import { obtenerClientePorId } from "@/services/cliente.service";
+import { obtenerPlanesActivos } from "@/services/plan.service";
 import type { ClienteSafe } from "@/types/cliente.types";
 
 type EditarClientePageProps = {
@@ -772,49 +1141,78 @@ type EditarClientePageProps = {
   };
 };
 
+type Tone =
+  | "neutral"
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger";
+
 export const metadata = {
   title: "Editar cliente",
 };
 
 const panelClass =
-  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+  "dark:border-[#263451] dark:bg-[#111b31] " +
+  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
 
-const sectionTitleClass =
-  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+const buttonBaseClass =
+  "inline-flex h-8 items-center justify-center rounded-lg border px-3 " +
+  "text-[12px] font-medium leading-none shadow-sm transition " +
+  "active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60";
 
-const sectionSubtitleClass =
-  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
-
-const sectionDescriptionClass =
-  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+const secondaryButtonClass =
+  `${buttonBaseClass} border-slate-300 bg-white text-slate-700 ` +
+  "hover:border-slate-400 hover:bg-slate-50 " +
+  "dark:border-[#354462] dark:bg-[#111b31] dark:text-slate-200 " +
+  "dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
 
 function formatMoney(value?: number | null) {
-  const amount = Number(value || 0);
-  const [integerPart, decimalPart] = amount.toFixed(2).split(".");
-  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  return `$ ${formattedInteger},${decimalPart}`;
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value || 0));
 }
 
 function formatDate(value?: string | null) {
-  if (!value) return "-";
+  if (!value) {
+    return "-";
+  }
 
-  const [year, month, day] = value.split("-");
+  const dateOnly = String(value).split("T")[0];
+  const [year, month, day] = dateOnly.split("-");
 
-  if (!year || !month || !day) return value;
+  if (!year || !month || !day) {
+    return value;
+  }
 
   return `${day}/${month}/${year}`;
 }
 
 function estadoLabel(estado: string) {
-  if (estado === "activo") return "Activo";
-  if (estado === "suspendido") return "Suspendido";
+  if (estado === "activo") {
+    return "Activo";
+  }
+
+  if (estado === "suspendido") {
+    return "Suspendido";
+  }
+
   return "Baja";
 }
 
-function estadoTone(estado: string): "success" | "warning" | "danger" {
-  if (estado === "activo") return "success";
-  if (estado === "suspendido") return "warning";
+function estadoTone(estado: string): Tone {
+  if (estado === "activo") {
+    return "success";
+  }
+
+  if (estado === "suspendido") {
+    return "warning";
+  }
+
   return "danger";
 }
 
@@ -822,82 +1220,192 @@ function getNombreCompleto(cliente: ClienteSafe) {
   const apellido = String(cliente.apellido || "").trim();
   const nombre = String(cliente.nombre || "").trim();
 
-  const completo = `${apellido}, ${nombre}`
+  const nombreCompleto = `${apellido}, ${nombre}`
     .replace(/^,\s*/, "")
     .replace(/,\s*$/, "")
     .trim();
 
-  return completo || "Cliente sin nombre";
+  return nombreCompleto || "Cliente sin nombre";
 }
 
 function BackButton() {
   return (
     <Link
       href="/clientes"
-      className="hidden h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+      className={`${secondaryButtonClass} hidden sm:inline-flex`}
     >
-      Volver
+      <span className="text-[12px] leading-none">
+        Volver
+      </span>
     </Link>
   );
 }
 
-function Badge({
+function StatusBadge({
   children,
   tone = "neutral",
+  dotClass,
 }: {
   children: ReactNode;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+  tone?: Tone;
+  dotClass?: string;
 }) {
-  const toneClass = {
+  const toneClass: Record<Tone, string> = {
     neutral:
-      "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+      "border-slate-200 bg-slate-50 text-slate-700 " +
+      "dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300",
+
     primary:
-      "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+      "border-blue-200 bg-blue-50 text-blue-700 " +
+      "dark:border-blue-800/70 dark:bg-blue-950/25 dark:text-blue-300",
+
     success:
-      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+      "border-emerald-200 bg-emerald-50 text-emerald-700 " +
+      "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
+
     warning:
-      "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+      "border-amber-200 bg-amber-50 text-amber-700 " +
+      "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
+
     danger:
-      "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
-  }[tone];
+      "border-red-200 bg-red-50 text-red-700 " +
+      "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
+  };
 
   return (
     <span
-      className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+      className={`
+        inline-flex h-7 items-center justify-center gap-1.5
+        rounded-md border px-2.5
+        text-[10px] font-medium
+        ${toneClass[tone]}
+      `}
     >
-      {children}
+      {dotClass ? (
+        <span
+          className={`
+            h-1.5 w-1.5 shrink-0 rounded-full
+            ${dotClass}
+          `}
+        />
+      ) : null}
+
+      <span className="whitespace-nowrap leading-none">
+        {children}
+      </span>
     </span>
   );
 }
 
-function PageHeader({ cliente }: { cliente: ClienteSafe }) {
+function PageHeader({
+  cliente,
+}: {
+  cliente: ClienteSafe;
+}) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <p className={sectionTitleClass}>Clientes</p>
+    <section className={panelClass}>
+      <div
+        className="
+          border-b border-slate-200
+          bg-slate-50/80 px-3 py-3
+          dark:border-[#263451]
+          dark:bg-[#0e172a]
+          sm:px-4
+        "
+      >
+        <div
+          className="
+            flex min-h-12 items-center
+            justify-between gap-3
+          "
+        >
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <UserRound
+                className="
+                  h-5 w-5 shrink-0
+                  text-blue-700
+                  dark:text-blue-300
+                "
+              />
 
-          <h1 className={sectionSubtitleClass}>Editar cliente</h1>
+              <h1
+                className="
+                  truncate text-base font-medium
+                  text-slate-950 dark:text-white
+                "
+              >
+                Editar cliente
+              </h1>
+            </div>
 
-          <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
-            {getNombreCompleto(cliente)} · N° {cliente.numeroCliente} · DNI{" "}
-            {cliente.dni || "-"}
-          </p>
-        </div>
+            <p
+              className="
+                mt-1 hidden max-w-3xl
+                truncate text-[12px] leading-5
+                text-slate-600
+                dark:text-slate-400
+                sm:block
+              "
+            >
+              {getNombreCompleto(cliente)} · N°{" "}
+              {cliente.numeroCliente} · DNI{" "}
+              {cliente.dni || "-"}
+            </p>
 
-        <div className="flex flex-col items-start gap-2 lg:items-end">
-          <BackButton />
+            <p
+              className="
+                mt-1 truncate text-[11px]
+                text-slate-500
+                dark:text-slate-400
+                sm:hidden
+              "
+            >
+              N° {cliente.numeroCliente} ·{" "}
+              {getNombreCompleto(cliente)}
+            </p>
+          </div>
 
-          <div className="flex flex-wrap gap-2 lg:justify-end">
-            <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+          <div
+            className="
+              flex h-8 shrink-0
+              items-center gap-2
+            "
+          >
+            <div className="hidden items-center gap-2 lg:flex">
+              <StatusBadge
+                tone="primary"
+                dotClass="bg-blue-500"
+              >
+                N° {cliente.numeroCliente}
+              </StatusBadge>
 
-            <Badge tone={estadoTone(cliente.estado)}>
-              {estadoLabel(cliente.estado)}
-            </Badge>
+              <StatusBadge
+                tone={estadoTone(cliente.estado)}
+                dotClass={
+                  cliente.estado === "activo"
+                    ? "bg-emerald-500"
+                    : cliente.estado === "suspendido"
+                      ? "bg-amber-500"
+                      : "bg-red-500"
+                }
+              >
+                {estadoLabel(cliente.estado)}
+              </StatusBadge>
 
-            <Badge tone={cliente.plan ? "success" : "warning"}>
-              {cliente.plan ? "Con plan" : "Sin plan"}
-            </Badge>
+              <StatusBadge
+                tone={cliente.plan ? "success" : "warning"}
+                dotClass={
+                  cliente.plan
+                    ? "bg-emerald-500"
+                    : "bg-amber-500"
+                }
+              >
+                {cliente.plan ? "Con plan" : "Sin plan"}
+              </StatusBadge>
+            </div>
+
+            <BackButton />
           </div>
         </div>
       </div>
@@ -910,52 +1418,123 @@ function ResumenItem({
   label,
   value,
   tone = "neutral",
+  dotClass,
 }: {
   icon: ReactNode;
   label: string;
   value: string;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+  tone?: Tone;
+  dotClass?: string;
 }) {
-  const toneClass = {
-    neutral: "text-slate-950 dark:text-white",
-    primary: "text-blue-700 dark:text-blue-300",
-    success: "text-emerald-700 dark:text-emerald-300",
-    warning: "text-amber-700 dark:text-amber-300",
-    danger: "text-red-700 dark:text-red-300",
-  }[tone];
+  const toneClass: Record<Tone, string> = {
+    neutral:
+      "text-slate-900 dark:text-slate-100",
+    primary:
+      "text-blue-700 dark:text-blue-300",
+    success:
+      "text-emerald-700 dark:text-emerald-300",
+    warning:
+      "text-amber-700 dark:text-amber-300",
+    danger:
+      "text-red-700 dark:text-red-300",
+  };
 
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
-      <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-        <span className="shrink-0 text-blue-700 dark:text-blue-300">
+    <div
+      className="
+        flex items-center justify-between gap-3
+        border-b border-slate-200
+        px-3 py-2.5
+        last:border-b-0
+        dark:border-[#263451]
+      "
+    >
+      <span
+        className="
+          flex min-w-0 items-center gap-2.5
+          text-[12px] text-slate-600
+          dark:text-slate-300
+        "
+      >
+        <span
+          className="
+            shrink-0 text-blue-700
+            dark:text-blue-300
+          "
+        >
           {icon}
         </span>
 
-        <span className="truncate">{label}</span>
+        <span className="truncate">
+          {label}
+        </span>
       </span>
 
-      <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
-        {value}
+      <span
+        className={`
+          flex min-w-0 items-center gap-1.5
+          truncate text-right text-[12px]
+          font-medium
+          ${toneClass[tone]}
+        `}
+        title={value}
+      >
+        {dotClass ? (
+          <span
+            className={`
+              h-1.5 w-1.5 shrink-0 rounded-full
+              ${dotClass}
+            `}
+          />
+        ) : null}
+
+        <span className="truncate">
+          {value}
+        </span>
       </span>
     </div>
   );
 }
 
-function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
+function ResumenCliente({
+  cliente,
+}: {
+  cliente: ClienteSafe;
+}) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Resumen</p>
+    <section className={`${panelClass} p-4`}>
+      <div className="flex items-center gap-2">
+        <UserRound
+          className="
+            h-4 w-4 text-blue-700
+            dark:text-blue-300
+          "
+        />
 
-        <h2 className={sectionSubtitleClass}>Información del cliente</h2>
+        <h2
+          className="
+            text-sm font-medium
+            text-slate-950 dark:text-white
+          "
+        >
+          Resumen del cliente
+        </h2>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+      <div
+        className="
+          mt-3 overflow-hidden rounded-lg
+          border border-slate-200 bg-slate-50
+          dark:border-[#2b3957]
+          dark:bg-[#0d172a]
+        "
+      >
         <ResumenItem
           icon={<FileText className="h-3.5 w-3.5" />}
           label="Número"
           value={String(cliente.numeroCliente)}
           tone="primary"
+          dotClass="bg-blue-500"
         />
 
         <ResumenItem
@@ -963,6 +1542,13 @@ function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
           label="Estado"
           value={estadoLabel(cliente.estado)}
           tone={estadoTone(cliente.estado)}
+          dotClass={
+            cliente.estado === "activo"
+              ? "bg-emerald-500"
+              : cliente.estado === "suspendido"
+                ? "bg-amber-500"
+                : "bg-red-500"
+          }
         />
 
         <ResumenItem
@@ -970,12 +1556,21 @@ function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
           label="Plan"
           value={cliente.plan?.nombre || "Sin plan"}
           tone={cliente.plan ? "success" : "warning"}
+          dotClass={
+            cliente.plan
+              ? "bg-emerald-500"
+              : "bg-amber-500"
+          }
         />
 
         <ResumenItem
           icon={<FileText className="h-3.5 w-3.5" />}
           label="Importe"
-          value={cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
+          value={
+            cliente.plan
+              ? formatMoney(cliente.plan.importe)
+              : "-"
+          }
           tone={cliente.plan ? "primary" : "neutral"}
         />
 
@@ -1000,28 +1595,60 @@ function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
         <ResumenItem
           icon={<MapPin className="h-3.5 w-3.5" />}
           label="Ubicación"
-          value={`${cliente.localidad || "-"}, ${cliente.provincia || "-"}`}
+          value={`${cliente.localidad || "-"}, ${
+            cliente.provincia || "-"
+          }`}
         />
       </div>
     </section>
   );
 }
 
-function EstadoServicio({ cliente }: { cliente: ClienteSafe }) {
+function EstadoServicio({
+  cliente,
+}: {
+  cliente: ClienteSafe;
+}) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Estado del servicio</p>
+    <section className={`${panelClass} p-4`}>
+      <div className="flex items-center gap-2">
+        <Wifi
+          className="
+            h-4 w-4 text-blue-700
+            dark:text-blue-300
+          "
+        />
 
-        <h2 className={sectionSubtitleClass}>Datos operativos</h2>
+        <h2
+          className="
+            text-sm font-medium
+            text-slate-950 dark:text-white
+          "
+        >
+          Estado del servicio
+        </h2>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+      <div
+        className="
+          mt-3 overflow-hidden rounded-lg
+          border border-slate-200 bg-slate-50
+          dark:border-[#2b3957]
+          dark:bg-[#0d172a]
+        "
+      >
         <ResumenItem
           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
           label="Estado actual"
           value={estadoLabel(cliente.estado)}
           tone={estadoTone(cliente.estado)}
+          dotClass={
+            cliente.estado === "activo"
+              ? "bg-emerald-500"
+              : cliente.estado === "suspendido"
+                ? "bg-amber-500"
+                : "bg-red-500"
+          }
         />
 
         <ResumenItem
@@ -1029,18 +1656,26 @@ function EstadoServicio({ cliente }: { cliente: ClienteSafe }) {
           label="Plan actual"
           value={cliente.plan?.nombre || "Sin plan"}
           tone={cliente.plan ? "success" : "warning"}
+          dotClass={
+            cliente.plan
+              ? "bg-emerald-500"
+              : "bg-amber-500"
+          }
         />
 
         <ResumenItem
-          icon={<FileText className="h-3.5 w-3.5" />}
-          label="Alta"
+          icon={<CalendarDays className="h-3.5 w-3.5" />}
+          label="Fecha de alta"
           value={formatDate(cliente.fechaAlta)}
         />
 
         <ResumenItem
           icon={<FileText className="h-3.5 w-3.5" />}
           label="Último cambio"
-          value={cliente.ultimoCambioPlan || "Sin cambios"}
+          value={
+            cliente.ultimoCambioPlan ||
+            "Sin cambios registrados"
+          }
         />
       </div>
     </section>
@@ -1049,16 +1684,40 @@ function EstadoServicio({ cliente }: { cliente: ClienteSafe }) {
 
 function NotaEstado() {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Importante</p>
+    <section className={`${panelClass} p-4`}>
+      <div className="flex items-center gap-2">
+        <ShieldAlert
+          className="
+            h-4 w-4 text-amber-700
+            dark:text-amber-300
+          "
+        />
 
-        <h2 className={sectionSubtitleClass}>Estado del cliente</h2>
+        <h2
+          className="
+            text-sm font-medium
+            text-slate-950 dark:text-white
+          "
+        >
+          Cambio de estado
+        </h2>
       </div>
 
-      <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[12px] leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
-        Si cambiás el estado a suspendido o baja, el acceso al servicio puede
-        quedar restringido según las reglas del sistema.
+      <div
+        className="
+          mt-3 rounded-lg border
+          border-amber-200 bg-amber-50
+          px-3 py-2.5
+          text-[12px] leading-5
+          text-amber-800
+          dark:border-amber-800/70
+          dark:bg-amber-950/25
+          dark:text-amber-300
+        "
+      >
+        Al cambiar el estado a suspendido o baja,
+        el acceso al servicio puede quedar restringido
+        según las reglas del sistema.
       </div>
     </section>
   );
@@ -1077,32 +1736,43 @@ export default async function EditarClientePage({
   }
 
   const planesParaFormulario =
-    cliente.plan && !planesActivos.some((plan) => plan.id === cliente.plan?.id)
+    cliente.plan &&
+    !planesActivos.some(
+      (plan) => plan.id === cliente.plan?.id,
+    )
       ? [cliente.plan, ...planesActivos]
       : planesActivos;
 
   return (
-    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+    <PageShell
+      maxWidth="wide"
+      className="pb-20 lg:pb-6"
+    >
       <DashboardGrid>
         <DashboardMain>
           <PageHeader cliente={cliente} />
 
           <div className="mt-3">
-            <EditarClienteForm cliente={cliente} planes={planesParaFormulario} />
+            <EditarClienteForm
+              cliente={cliente}
+              planes={planesParaFormulario}
+            />
           </div>
         </DashboardMain>
 
-        <DashboardAside>
-          <ResumenCliente cliente={cliente} />
+        <div className="hidden lg:block">
+          <DashboardAside>
+            <ResumenCliente cliente={cliente} />
 
-          <div className="mt-3">
-            <EstadoServicio cliente={cliente} />
-          </div>
+            <div className="mt-3">
+              <EstadoServicio cliente={cliente} />
+            </div>
 
-          <div className="mt-3 hidden xl:block">
-            <NotaEstado />
-          </div>
-        </DashboardAside>
+            <div className="mt-3 hidden xl:block">
+              <NotaEstado />
+            </div>
+          </DashboardAside>
+        </div>
       </DashboardGrid>
     </PageShell>
   );

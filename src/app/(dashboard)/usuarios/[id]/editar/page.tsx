@@ -1754,10 +1754,423 @@
 //   );
 // }
 
-// src/app/(dashboard)/usuarios/[id]/editar/page.tsx
+// // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
+
+// import Link from "next/link";
+// import { notFound } from "next/navigation";
+// import type { ReactNode } from "react";
+// import type { LucideIcon } from "lucide-react";
+// import {
+//   CalendarClock,
+//   IdCard,
+//   KeyRound,
+//   Mail,
+//   ShieldAlert,
+//   ShieldCheck,
+//   UserRound,
+// } from "lucide-react";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+// import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+// import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+// import { getCurrentUser } from "@/lib/current-user";
+// import { obtenerUsuarioPorId } from "@/services/usuario.service";
+// import type { UsuarioSafe } from "@/types/usuario.types";
+
+// type EditarUsuarioPageProps = {
+//   params: {
+//     id: string;
+//   };
+// };
+
+// export const metadata = {
+//   title: "Editar usuario",
+// };
+
+// type PermisosEdicion = {
+//   actorEsProtegido: boolean;
+//   usuarioEsProtegido: boolean;
+//   puedeEditarDatos: boolean;
+//   puedeCambiarRolEstado: boolean;
+//   puedeResetearPassword: boolean;
+//   avisoEdicion?: string;
+//   avisoReset?: string;
+// };
+
+// const panelClass =
+//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// const sectionTitleClass =
+//   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+// const sectionSubtitleClass =
+//   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+// const sectionDescriptionClass =
+//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// function rolLabel(rol: string) {
+//   if (rol === "admin") return "Admin";
+//   if (rol === "cobrador") return "Cobrador";
+//   return "Cliente";
+// }
+
+// function estadoLabel(estado: string) {
+//   if (estado === "activo") return "Activo";
+//   return "Suspendido";
+// }
+
+// function getNombreCompleto(usuario: UsuarioSafe) {
+//   const apellido = String(usuario.apellido || "").trim();
+//   const nombre = String(usuario.nombre || "").trim();
+
+//   const completo = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return completo || "Usuario";
+// }
+
+// function formatDate(value?: string | null) {
+//   if (!value) return "Sin fecha";
+
+//   const date = new Date(value);
+
+//   if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+//   const day = String(date.getDate()).padStart(2, "0");
+//   const month = String(date.getMonth() + 1).padStart(2, "0");
+//   const year = date.getFullYear();
+
+//   return `${day}/${month}/${year}`;
+// }
+
+// function formatDateTime(value?: string | null) {
+//   if (!value) return "Nunca";
+
+//   const date = new Date(value);
+
+//   if (Number.isNaN(date.getTime())) return "Nunca";
+
+//   const day = String(date.getDate()).padStart(2, "0");
+//   const month = String(date.getMonth() + 1).padStart(2, "0");
+//   const year = date.getFullYear();
+//   const hours = String(date.getHours()).padStart(2, "0");
+//   const minutes = String(date.getMinutes()).padStart(2, "0");
+
+//   return `${day}/${month}/${year} ${hours}:${minutes}`;
+// }
+
+// function construirPermisos(
+//   usuario: UsuarioSafe,
+//   actor: UsuarioSafe | null,
+// ): PermisosEdicion {
+//   const actorEsProtegido = Boolean(actor?.esProtegido);
+//   const usuarioEsProtegido = Boolean(usuario.esProtegido);
+
+//   if (!usuarioEsProtegido) {
+//     return {
+//       actorEsProtegido,
+//       usuarioEsProtegido,
+//       puedeEditarDatos: true,
+//       puedeCambiarRolEstado: true,
+//       puedeResetearPassword: true,
+//     };
+//   }
+
+//   if (actorEsProtegido) {
+//     return {
+//       actorEsProtegido,
+//       usuarioEsProtegido,
+//       puedeEditarDatos: true,
+//       puedeCambiarRolEstado: false,
+//       puedeResetearPassword: true,
+//       avisoEdicion:
+//         "Administrador protegido: podés editar datos básicos, pero no cambiar rol ni suspenderlo.",
+//       avisoReset:
+//         "Administrador protegido: el reset de contraseña está permitido solo entre administradores protegidos.",
+//     };
+//   }
+
+//   return {
+//     actorEsProtegido,
+//     usuarioEsProtegido,
+//     puedeEditarDatos: false,
+//     puedeCambiarRolEstado: false,
+//     puedeResetearPassword: false,
+//     avisoEdicion:
+//       "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos básicos.",
+//     avisoReset:
+//       "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
+//   };
+// }
+
+// function Badge({
+//   children,
+//   tone = "neutral",
+// }: {
+//   children: ReactNode;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral:
+//       "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+//     primary:
+//       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+//     success:
+//       "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+//     warning:
+//       "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+//     danger:
+//       "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <span
+//       className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+//     >
+//       {children}
+//     </span>
+//   );
+// }
+
+// function BackButton() {
+//   return (
+//     <Link
+//       href="/usuarios"
+//       className="hidden h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+//     >
+//       Volver
+//     </Link>
+//   );
+// }
+
+// function PageTitle({ usuario }: { usuario: UsuarioSafe }) {
+//   return (
+//     <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+//       <div className="min-w-0">
+//         <p className={sectionTitleClass}>Usuarios</p>
+
+//         <h1 className={sectionSubtitleClass}>Editar usuario</h1>
+
+//         <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
+//           {getNombreCompleto(usuario)} · DNI {usuario.dni || "-"} ·{" "}
+//           {usuario.email}
+//         </p>
+//       </div>
+
+//       <div className="flex flex-col items-start gap-2 lg:items-end">
+//         <BackButton />
+
+//         <div className="flex flex-wrap gap-2 lg:justify-end">
+//           <Badge tone="primary">{rolLabel(usuario.rol)}</Badge>
+
+//           <Badge tone={usuario.estado === "activo" ? "success" : "danger"}>
+//             {estadoLabel(usuario.estado)}
+//           </Badge>
+
+//           {usuario.esProtegido ? <Badge tone="warning">Protegido</Badge> : null}
+
+//           <Badge tone={usuario.debeCambiarPassword ? "warning" : "success"}>
+//             {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
+//           </Badge>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// function ResumenItem({
+//   icon: Icon,
+//   label,
+//   value,
+//   tone = "neutral",
+// }: {
+//   icon: LucideIcon;
+//   label: string;
+//   value: string;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral: "text-slate-950 dark:text-white",
+//     primary: "text-blue-700 dark:text-blue-300",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     danger: "text-red-700 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+//       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+//         <Icon className="h-3.5 w-3.5 shrink-0 text-blue-700 dark:text-blue-300" />
+//         <span className="truncate">{label}</span>
+//       </span>
+
+//       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+//         {value}
+//       </span>
+//     </div>
+//   );
+// }
+
+// function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Resumen</p>
+
+//         <h2 className={sectionSubtitleClass}>Datos actuales</h2>
+//       </div>
+
+//       <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+//         <ResumenItem
+//           icon={UserRound}
+//           label="Rol"
+//           value={rolLabel(usuario.rol)}
+//           tone="primary"
+//         />
+
+//         <ResumenItem
+//           icon={ShieldCheck}
+//           label="Estado"
+//           value={estadoLabel(usuario.estado)}
+//           tone={usuario.estado === "activo" ? "success" : "danger"}
+//         />
+
+//         <ResumenItem
+//           icon={ShieldAlert}
+//           label="Protección"
+//           value={usuario.esProtegido ? "Protegido" : "Normal"}
+//           tone={usuario.esProtegido ? "warning" : "neutral"}
+//         />
+
+//         <ResumenItem
+//           icon={KeyRound}
+//           label="Contraseña"
+//           value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
+//           tone={usuario.debeCambiarPassword ? "warning" : "success"}
+//         />
+
+//         <ResumenItem icon={IdCard} label="DNI" value={usuario.dni || "-"} />
+
+//         <ResumenItem icon={Mail} label="Email" value={usuario.email} />
+
+//         <ResumenItem
+//           icon={CalendarClock}
+//           label="Último acceso"
+//           value={formatDateTime(usuario.ultimoAcceso)}
+//         />
+
+//         <ResumenItem
+//           icon={CalendarClock}
+//           label="Creado"
+//           value={formatDate(usuario.creadoEn)}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ResetPasswordPanel({
+//   usuarioId,
+//   permisos,
+// }: {
+//   usuarioId: string;
+//   permisos: PermisosEdicion;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Reset de contraseña</p>
+
+//         <h2 className={sectionSubtitleClass}>Contraseña temporal</h2>
+
+//         <p className={sectionDescriptionClass}>
+//           El sistema genera una clave provisoria y la muestra una sola vez.
+//         </p>
+//       </div>
+
+//       <ResetPasswordForm
+//         usuarioId={usuarioId}
+//         disabled={!permisos.puedeResetearPassword}
+//         disabledMessage={permisos.avisoReset}
+//       />
+//     </section>
+//   );
+// }
+
+// function NotaReset() {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Seguridad</p>
+
+//         <h2 className={sectionSubtitleClass}>Clave temporal</h2>
+//       </div>
+
+//       <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[12px] leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
+//         La contraseña temporal se muestra una sola vez. Copiala antes de salir
+//         de esta pantalla.
+//       </div>
+//     </section>
+//   );
+// }
+
+// export default async function EditarUsuarioPage({
+//   params,
+// }: EditarUsuarioPageProps) {
+//   const usuario = await obtenerUsuarioPorId(params.id);
+
+//   if (!usuario) {
+//     notFound();
+//   }
+
+//   const currentUser = await getCurrentUser();
+//   const actor = currentUser?.userId
+//     ? await obtenerUsuarioPorId(currentUser.userId)
+//     : null;
+
+//   const permisos = construirPermisos(usuario, actor);
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <section className={`${panelClass} p-3.5`}>
+//             <PageTitle usuario={usuario} />
+
+//             <EditarUsuarioForm
+//               usuario={usuario}
+//               puedeEditarDatos={permisos.puedeEditarDatos}
+//               puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
+//               avisoPermisos={permisos.avisoEdicion}
+//             />
+//           </section>
+
+//           <div className="mt-3">
+//             <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
+//           </div>
+//         </DashboardMain>
+
+//         <DashboardAside>
+//           <ResumenUsuario usuario={usuario} />
+
+//           <div className="mt-3">
+//             <NotaReset />
+//           </div>
+//         </DashboardAside>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
 
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -1769,14 +2182,15 @@ import {
   ShieldCheck,
   UserRound,
 } from "lucide-react";
-import { PageShell } from "@/components/ui/PageShell";
+
+import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
 import {
   DashboardAside,
   DashboardGrid,
   DashboardMain,
 } from "@/components/ui/DashboardGrid";
-import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
-import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+import { PageShell } from "@/components/ui/PageShell";
 import { getCurrentUser } from "@/lib/current-user";
 import { obtenerUsuarioPorId } from "@/services/usuario.service";
 import type { UsuarioSafe } from "@/types/usuario.types";
@@ -1785,10 +2199,6 @@ type EditarUsuarioPageProps = {
   params: {
     id: string;
   };
-};
-
-export const metadata = {
-  title: "Editar usuario",
 };
 
 type PermisosEdicion = {
@@ -1801,47 +2211,60 @@ type PermisosEdicion = {
   avisoReset?: string;
 };
 
+type BadgeTone =
+  | "neutral"
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger";
+
+export const metadata = {
+  title: "Editar usuario",
+};
+
 const panelClass =
-  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
-
-const sectionTitleClass =
-  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
-
-const sectionSubtitleClass =
-  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
-
-const sectionDescriptionClass =
-  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+  "dark:border-[#263451] dark:bg-[#111b31] " +
+  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
 
 function rolLabel(rol: string) {
-  if (rol === "admin") return "Admin";
-  if (rol === "cobrador") return "Cobrador";
+  if (rol === "admin") {
+    return "Administrador";
+  }
+
+  if (rol === "cobrador") {
+    return "Cobrador";
+  }
+
   return "Cliente";
 }
 
 function estadoLabel(estado: string) {
-  if (estado === "activo") return "Activo";
-  return "Suspendido";
+  return estado === "activo" ? "Activo" : "Suspendido";
 }
 
 function getNombreCompleto(usuario: UsuarioSafe) {
   const apellido = String(usuario.apellido || "").trim();
   const nombre = String(usuario.nombre || "").trim();
 
-  const completo = `${apellido}, ${nombre}`
+  const nombreCompleto = `${apellido}, ${nombre}`
     .replace(/^,\s*/, "")
     .replace(/,\s*$/, "")
     .trim();
 
-  return completo || "Usuario";
+  return nombreCompleto || "Usuario";
 }
 
 function formatDate(value?: string | null) {
-  if (!value) return "Sin fecha";
+  if (!value) {
+    return "Sin fecha";
+  }
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) return "Sin fecha";
+  if (Number.isNaN(date.getTime())) {
+    return "Sin fecha";
+  }
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -1851,11 +2274,15 @@ function formatDate(value?: string | null) {
 }
 
 function formatDateTime(value?: string | null) {
-  if (!value) return "Nunca";
+  if (!value) {
+    return "Nunca";
+  }
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) return "Nunca";
+  if (Number.isNaN(date.getTime())) {
+    return "Nunca";
+  }
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -1891,9 +2318,9 @@ function construirPermisos(
       puedeCambiarRolEstado: false,
       puedeResetearPassword: true,
       avisoEdicion:
-        "Administrador protegido: podés editar datos básicos, pero no cambiar rol ni suspenderlo.",
+        "Administrador protegido: podés editar sus datos básicos, pero no cambiar su rol ni suspenderlo.",
       avisoReset:
-        "Administrador protegido: el reset de contraseña está permitido solo entre administradores protegidos.",
+        "El reset de contraseña está permitido únicamente entre administradores protegidos.",
     };
   }
 
@@ -1904,169 +2331,398 @@ function construirPermisos(
     puedeCambiarRolEstado: false,
     puedeResetearPassword: false,
     avisoEdicion:
-      "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos básicos.",
+      "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos.",
     avisoReset:
       "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
   };
 }
 
-function Badge({
+function StatusBadge({
   children,
   tone = "neutral",
+  dotClass,
 }: {
   children: ReactNode;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+  tone?: BadgeTone;
+  dotClass?: string;
 }) {
-  const toneClass = {
+  const toneClass: Record<BadgeTone, string> = {
     neutral:
-      "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+      "border-slate-200 bg-slate-50 text-slate-700 " +
+      "dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300",
+
     primary:
-      "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+      "border-blue-200 bg-blue-50 text-blue-700 " +
+      "dark:border-indigo-800/70 dark:bg-indigo-950/25 dark:text-indigo-300",
+
     success:
-      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+      "border-emerald-200 bg-emerald-50 text-emerald-700 " +
+      "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
+
     warning:
-      "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+      "border-amber-200 bg-amber-50 text-amber-700 " +
+      "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
+
     danger:
-      "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
-  }[tone];
+      "border-red-200 bg-red-50 text-red-700 " +
+      "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
+  };
 
   return (
     <span
-      className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+      className={`
+        inline-flex min-h-7 items-center justify-center gap-1.5
+        rounded-md border px-2.5 py-1
+        text-[10px] font-medium
+        ${toneClass[tone]}
+      `}
     >
-      {children}
+      {dotClass ? (
+        <span
+          className={`
+            h-1.5 w-1.5 shrink-0 rounded-full
+            ${dotClass}
+          `}
+        />
+      ) : null}
+
+      <span className="whitespace-nowrap leading-none">
+        {children}
+      </span>
     </span>
   );
 }
 
-function BackButton() {
+function PageHeader({
+  usuario,
+}: {
+  usuario: UsuarioSafe;
+}) {
   return (
-    <Link
-      href="/usuarios"
-      className="hidden h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+    <header
+      className="
+        flex flex-col gap-3
+        border-b border-slate-200
+        bg-slate-50/80 px-3 py-3
+        dark:border-[#263451]
+        dark:bg-[#0e172a]
+        sm:px-4
+        lg:flex-row lg:items-center
+        lg:justify-between
+      "
     >
-      Volver
-    </Link>
-  );
-}
-
-function PageTitle({ usuario }: { usuario: UsuarioSafe }) {
-  return (
-    <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
       <div className="min-w-0">
-        <p className={sectionTitleClass}>Usuarios</p>
+        <div className="flex items-center gap-2.5">
+          <UserRound
+            className="
+              h-5 w-5 shrink-0
+              text-blue-700
+              dark:text-indigo-300
+            "
+          />
 
-        <h1 className={sectionSubtitleClass}>Editar usuario</h1>
+          <h1
+            className="
+              truncate text-base font-medium
+              text-slate-950 dark:text-white
+            "
+          >
+            Editar usuario
+          </h1>
+        </div>
 
-        <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
-          {getNombreCompleto(usuario)} · DNI {usuario.dni || "-"} ·{" "}
-          {usuario.email}
+        <p
+          className="
+            mt-1 truncate text-[11px]
+            text-slate-500 dark:text-slate-400
+            sm:text-[12px]
+          "
+        >
+          {getNombreCompleto(usuario)}
+          <span className="hidden sm:inline">
+            {" "}
+            · DNI {usuario.dni || "-"} · {usuario.email}
+          </span>
         </p>
       </div>
 
-      <div className="flex flex-col items-start gap-2 lg:items-end">
-        <BackButton />
+      <div className="flex flex-wrap items-center gap-2">
+        <StatusBadge
+          tone="primary"
+          dotClass="bg-blue-500"
+        >
+          {rolLabel(usuario.rol)}
+        </StatusBadge>
 
-        <div className="flex flex-wrap gap-2 lg:justify-end">
-          <Badge tone="primary">{rolLabel(usuario.rol)}</Badge>
+        <StatusBadge
+          tone={
+            usuario.estado === "activo"
+              ? "success"
+              : "danger"
+          }
+          dotClass={
+            usuario.estado === "activo"
+              ? "bg-emerald-500"
+              : "bg-red-500"
+          }
+        >
+          {estadoLabel(usuario.estado)}
+        </StatusBadge>
 
-          <Badge tone={usuario.estado === "activo" ? "success" : "danger"}>
-            {estadoLabel(usuario.estado)}
-          </Badge>
+        {usuario.esProtegido ? (
+          <StatusBadge
+            tone="warning"
+            dotClass="bg-amber-500"
+          >
+            Protegido
+          </StatusBadge>
+        ) : null}
 
-          {usuario.esProtegido ? <Badge tone="warning">Protegido</Badge> : null}
+        <StatusBadge
+          tone={
+            usuario.debeCambiarPassword
+              ? "warning"
+              : "success"
+          }
+          dotClass={
+            usuario.debeCambiarPassword
+              ? "bg-amber-500"
+              : "bg-emerald-500"
+          }
+        >
+          {usuario.debeCambiarPassword
+            ? "Cambiar clave"
+            : "Clave OK"}
+        </StatusBadge>
 
-          <Badge tone={usuario.debeCambiarPassword ? "warning" : "success"}>
-            {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
-          </Badge>
-        </div>
+        <Link
+          href="/usuarios"
+          className="
+            hidden h-8 items-center justify-center
+            rounded-lg border border-slate-300
+            bg-white px-3 text-[12px]
+            font-medium text-slate-700
+            shadow-sm transition
+            hover:border-slate-400
+            hover:bg-slate-50
+            active:scale-[0.99]
+            dark:border-[#354462]
+            dark:bg-[#111b31]
+            dark:text-slate-200
+            dark:hover:bg-[#16223c]
+            sm:inline-flex
+          "
+        >
+          <span className="text-[12px] leading-none">
+            Volver
+          </span>
+        </Link>
       </div>
-    </div>
+    </header>
   );
 }
 
-function ResumenItem({
+function SummaryRow({
   icon: Icon,
   label,
   value,
   tone = "neutral",
+  dotClass,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+  tone?: BadgeTone;
+  dotClass?: string;
 }) {
-  const toneClass = {
-    neutral: "text-slate-950 dark:text-white",
-    primary: "text-blue-700 dark:text-blue-300",
-    success: "text-emerald-700 dark:text-emerald-300",
-    warning: "text-amber-700 dark:text-amber-300",
-    danger: "text-red-700 dark:text-red-300",
-  }[tone];
+  const valueClass: Record<BadgeTone, string> = {
+    neutral:
+      "text-slate-900 dark:text-slate-100",
+    primary:
+      "text-blue-700 dark:text-indigo-300",
+    success:
+      "text-emerald-700 dark:text-emerald-300",
+    warning:
+      "text-amber-700 dark:text-amber-300",
+    danger:
+      "text-red-700 dark:text-red-300",
+  };
 
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
-      <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-        <Icon className="h-3.5 w-3.5 shrink-0 text-blue-700 dark:text-blue-300" />
-        <span className="truncate">{label}</span>
+    <div
+      className="
+        flex items-center justify-between gap-3
+        border-b border-slate-200
+        px-3 py-2.5
+        last:border-b-0
+        dark:border-[#263451]
+      "
+    >
+      <span
+        className="
+          flex min-w-0 items-center gap-2.5
+          text-[12px] text-slate-600
+          dark:text-slate-300
+        "
+      >
+        <Icon
+          className="
+            h-3.5 w-3.5 shrink-0
+            text-blue-700
+            dark:text-indigo-300
+          "
+        />
+
+        <span className="truncate">
+          {label}
+        </span>
       </span>
 
-      <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
-        {value}
+      <span
+        className={`
+          flex min-w-0 items-center gap-1.5
+          truncate text-right text-[12px]
+          font-medium
+          ${valueClass[tone]}
+        `}
+        title={value}
+      >
+        {dotClass ? (
+          <span
+            className={`
+              h-1.5 w-1.5 shrink-0 rounded-full
+              ${dotClass}
+            `}
+          />
+        ) : null}
+
+        <span className="truncate">
+          {value}
+        </span>
       </span>
     </div>
   );
 }
 
-function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
+function UserSummary({
+  usuario,
+}: {
+  usuario: UsuarioSafe;
+}) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Resumen</p>
+    <section className={`${panelClass} p-4`}>
+      <div className="flex items-center gap-2">
+        <UserRound
+          className="
+            h-4 w-4 text-blue-700
+            dark:text-indigo-300
+          "
+        />
 
-        <h2 className={sectionSubtitleClass}>Datos actuales</h2>
+        <h2
+          className="
+            text-sm font-medium
+            text-slate-950 dark:text-white
+          "
+        >
+          Resumen del usuario
+        </h2>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
-        <ResumenItem
+      <div
+        className="
+          mt-3 overflow-hidden rounded-lg
+          border border-slate-200
+          bg-slate-50
+          dark:border-[#2b3957]
+          dark:bg-[#0d172a]
+        "
+      >
+        <SummaryRow
           icon={UserRound}
           label="Rol"
           value={rolLabel(usuario.rol)}
           tone="primary"
+          dotClass="bg-blue-500"
         />
 
-        <ResumenItem
+        <SummaryRow
           icon={ShieldCheck}
           label="Estado"
           value={estadoLabel(usuario.estado)}
-          tone={usuario.estado === "activo" ? "success" : "danger"}
+          tone={
+            usuario.estado === "activo"
+              ? "success"
+              : "danger"
+          }
+          dotClass={
+            usuario.estado === "activo"
+              ? "bg-emerald-500"
+              : "bg-red-500"
+          }
         />
 
-        <ResumenItem
+        <SummaryRow
           icon={ShieldAlert}
           label="Protección"
-          value={usuario.esProtegido ? "Protegido" : "Normal"}
-          tone={usuario.esProtegido ? "warning" : "neutral"}
+          value={
+            usuario.esProtegido
+              ? "Protegido"
+              : "Normal"
+          }
+          tone={
+            usuario.esProtegido
+              ? "warning"
+              : "neutral"
+          }
+          dotClass={
+            usuario.esProtegido
+              ? "bg-amber-500"
+              : "bg-slate-400"
+          }
         />
 
-        <ResumenItem
+        <SummaryRow
           icon={KeyRound}
           label="Contraseña"
-          value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
-          tone={usuario.debeCambiarPassword ? "warning" : "success"}
+          value={
+            usuario.debeCambiarPassword
+              ? "Cambio requerido"
+              : "Clave correcta"
+          }
+          tone={
+            usuario.debeCambiarPassword
+              ? "warning"
+              : "success"
+          }
+          dotClass={
+            usuario.debeCambiarPassword
+              ? "bg-amber-500"
+              : "bg-emerald-500"
+          }
         />
 
-        <ResumenItem icon={IdCard} label="DNI" value={usuario.dni || "-"} />
+        <SummaryRow
+          icon={IdCard}
+          label="DNI"
+          value={usuario.dni || "-"}
+        />
 
-        <ResumenItem icon={Mail} label="Email" value={usuario.email} />
+        <SummaryRow
+          icon={Mail}
+          label="Email"
+          value={usuario.email}
+        />
 
-        <ResumenItem
+        <SummaryRow
           icon={CalendarClock}
           label="Último acceso"
-          value={formatDateTime(usuario.ultimoAcceso)}
+          value={formatDateTime(
+            usuario.ultimoAcceso,
+          )}
         />
 
-        <ResumenItem
+        <SummaryRow
           icon={CalendarClock}
           label="Creado"
           value={formatDate(usuario.creadoEn)}
@@ -2084,38 +2740,111 @@ function ResetPasswordPanel({
   permisos: PermisosEdicion;
 }) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Reset de contraseña</p>
+    <section className={panelClass}>
+      <div
+        className="
+          border-b border-slate-200
+          bg-slate-50/80 px-3 py-3
+          dark:border-[#263451]
+          dark:bg-[#0e172a]
+          sm:px-4
+        "
+      >
+        <div className="flex items-center gap-2">
+          <KeyRound
+            className="
+              h-4 w-4 text-amber-700
+              dark:text-amber-300
+            "
+          />
 
-        <h2 className={sectionSubtitleClass}>Contraseña temporal</h2>
+          <h2
+            className="
+              text-sm font-medium
+              text-slate-950 dark:text-white
+            "
+          >
+            Reset de contraseña
+          </h2>
+        </div>
 
-        <p className={sectionDescriptionClass}>
-          El sistema genera una clave provisoria y la muestra una sola vez.
+        <p
+          className="
+            mt-1 text-[11px] leading-5
+            text-slate-500 dark:text-slate-400
+            sm:text-[12px]
+          "
+        >
+          Genera una contraseña temporal y obliga al
+          usuario a cambiarla al iniciar sesión.
         </p>
       </div>
 
-      <ResetPasswordForm
-        usuarioId={usuarioId}
-        disabled={!permisos.puedeResetearPassword}
-        disabledMessage={permisos.avisoReset}
-      />
+      <div className="p-3 sm:p-4">
+        {permisos.avisoReset ? (
+          <div
+            className="
+              mb-3 flex gap-2 rounded-lg
+              border border-amber-200
+              bg-amber-50 px-3 py-2
+              text-[11px] leading-5
+              text-amber-800
+              dark:border-amber-800/70
+              dark:bg-amber-950/25
+              dark:text-amber-300
+              sm:text-[12px]
+            "
+          >
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+
+            <span>{permisos.avisoReset}</span>
+          </div>
+        ) : null}
+
+        <ResetPasswordForm
+          usuarioId={usuarioId}
+          disabled={!permisos.puedeResetearPassword}
+          disabledMessage={permisos.avisoReset}
+        />
+      </div>
     </section>
   );
 }
 
-function NotaReset() {
+function SecurityNote() {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Seguridad</p>
+    <section className={`${panelClass} p-4`}>
+      <div className="flex items-center gap-2">
+        <KeyRound
+          className="
+            h-4 w-4 text-amber-700
+            dark:text-amber-300
+          "
+        />
 
-        <h2 className={sectionSubtitleClass}>Clave temporal</h2>
+        <h2
+          className="
+            text-sm font-medium
+            text-slate-950 dark:text-white
+          "
+        >
+          Contraseña temporal
+        </h2>
       </div>
 
-      <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[12px] leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
-        La contraseña temporal se muestra una sola vez. Copiala antes de salir
-        de esta pantalla.
+      <div
+        className="
+          mt-3 rounded-lg border
+          border-amber-200 bg-amber-50
+          px-3 py-2.5 text-[12px]
+          leading-5 text-amber-800
+          dark:border-amber-800/70
+          dark:bg-amber-950/25
+          dark:text-amber-300
+        "
+      >
+        La contraseña temporal se muestra una sola vez.
+        Copiala antes de salir de esta pantalla.
       </div>
     </section>
   );
@@ -2124,46 +2853,74 @@ function NotaReset() {
 export default async function EditarUsuarioPage({
   params,
 }: EditarUsuarioPageProps) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    redirect("/login");
+  }
+
+  if (currentUser.rol !== "admin") {
+    redirect(`/${currentUser.rol}`);
+  }
+
   const usuario = await obtenerUsuarioPorId(params.id);
 
   if (!usuario) {
     notFound();
   }
 
-  const currentUser = await getCurrentUser();
-  const actor = currentUser?.userId
+  const actor = currentUser.userId
     ? await obtenerUsuarioPorId(currentUser.userId)
     : null;
 
-  const permisos = construirPermisos(usuario, actor);
+  const permisos = construirPermisos(
+    usuario,
+    actor,
+  );
 
   return (
-    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+    <PageShell
+      maxWidth="wide"
+      className="pb-20 lg:pb-6"
+    >
       <DashboardGrid>
         <DashboardMain>
-          <section className={`${panelClass} p-3.5`}>
-            <PageTitle usuario={usuario} />
+          <section className={panelClass}>
+            <PageHeader usuario={usuario} />
 
-            <EditarUsuarioForm
-              usuario={usuario}
-              puedeEditarDatos={permisos.puedeEditarDatos}
-              puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
-              avisoPermisos={permisos.avisoEdicion}
-            />
+            <div className="p-3 sm:p-4">
+              <EditarUsuarioForm
+                usuario={usuario}
+                puedeEditarDatos={
+                  permisos.puedeEditarDatos
+                }
+                puedeCambiarRolEstado={
+                  permisos.puedeCambiarRolEstado
+                }
+                avisoPermisos={
+                  permisos.avisoEdicion
+                }
+              />
+            </div>
           </section>
 
           <div className="mt-3">
-            <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
+            <ResetPasswordPanel
+              usuarioId={usuario.id}
+              permisos={permisos}
+            />
           </div>
         </DashboardMain>
 
-        <DashboardAside>
-          <ResumenUsuario usuario={usuario} />
+        <div className="hidden lg:block">
+          <DashboardAside>
+            <UserSummary usuario={usuario} />
 
-          <div className="mt-3">
-            <NotaReset />
-          </div>
-        </DashboardAside>
+            <div className="mt-3">
+              <SecurityNote />
+            </div>
+          </DashboardAside>
+        </div>
       </DashboardGrid>
     </PageShell>
   );

@@ -1076,13 +1076,516 @@
 //   );
 // }
 
-// src/app/(dashboard)/clientes/[id]/page.tsx
+// // src/app/(dashboard)/clientes/[id]/page.tsx
+
+// import Link from "next/link";
+// import { notFound } from "next/navigation";
+// import type { ReactNode } from "react";
+// import {
+//   ArrowRight,
+//   CheckCircle2,
+//   FileText,
+//   IdCard,
+//   Mail,
+//   MapPin,
+//   Pencil,
+//   Phone,
+//   ReceiptText,
+//   UserRound,
+//   Wifi,
+// } from "lucide-react";
+// import { obtenerClientePorId } from "@/services/cliente.service";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+// import type { ClienteSafe } from "@/types/cliente.types";
+
+// type VerClientePageProps = {
+//   params: {
+//     id: string;
+//   };
+// };
+
+// export const metadata = {
+//   title: "Ver cliente",
+// };
+
+// const panelClass =
+//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// const innerPanelClass =
+//   "overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none";
+
+// const sectionTitleClass =
+//   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+// const sectionSubtitleClass =
+//   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+// const sectionDescriptionClass =
+//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// const buttonPrimaryClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white shadow-sm shadow-blue-950/10 transition hover:bg-blue-700 active:scale-[0.99] dark:bg-blue-500 dark:text-white dark:hover:bg-blue-600";
+
+// const buttonSecondaryClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900";
+
+// function formatMoney(value?: number | null) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function formatDate(value?: string | null) {
+//   if (!value) return "-";
+
+//   const [year, month, day] = value.split("-");
+
+//   if (!year || !month || !day) return value;
+
+//   return `${day}/${month}/${year}`;
+// }
+
+// function estadoLabel(estado: string) {
+//   if (estado === "activo") return "Activo";
+//   if (estado === "suspendido") return "Suspendido";
+//   return "Baja";
+// }
+
+// function estadoTone(estado: string): "success" | "warning" | "danger" {
+//   if (estado === "activo") return "success";
+//   if (estado === "suspendido") return "warning";
+//   return "danger";
+// }
+
+// function getNombreCompleto(cliente: ClienteSafe) {
+//   const apellido = String(cliente.apellido || "").trim();
+//   const nombre = String(cliente.nombre || "").trim();
+
+//   const completo = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return completo || "Cliente sin nombre";
+// }
+
+// function BackButton() {
+//   return (
+//     <Link
+//       href="/clientes"
+//       className={`${buttonSecondaryClass} hidden sm:inline-flex`}
+//     >
+//       Volver
+//     </Link>
+//   );
+// }
+
+// function Badge({
+//   children,
+//   tone = "neutral",
+// }: {
+//   children: ReactNode;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral:
+//       "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+//     primary:
+//       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+//     success:
+//       "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+//     warning:
+//       "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+//     danger:
+//       "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <span
+//       className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+//     >
+//       {children}
+//     </span>
+//   );
+// }
+
+// function HeaderCliente({ cliente }: { cliente: ClienteSafe }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Clientes</p>
+
+//           <h1 className={sectionSubtitleClass}>Ver cliente</h1>
+
+//           <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
+//             {getNombreCompleto(cliente)} · N° {cliente.numeroCliente} · DNI{" "}
+//             {cliente.dni || "-"}
+//           </p>
+//         </div>
+
+//         <div className="flex flex-col items-start gap-2 lg:items-end">
+//           <BackButton />
+
+//           <div className="flex flex-wrap gap-2 lg:justify-end">
+//             <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+
+//             <Badge tone={estadoTone(cliente.estado)}>
+//               {estadoLabel(cliente.estado)}
+//             </Badge>
+
+//             <Badge tone={cliente.plan ? "success" : "warning"}>
+//               {cliente.plan ? "Con plan" : "Sin plan"}
+//             </Badge>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function InfoRow({
+//   icon,
+//   label,
+//   value,
+//   tone = "neutral",
+// }: {
+//   icon: ReactNode;
+//   label: string;
+//   value?: string | number | null;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral: "text-slate-950 dark:text-white",
+//     primary: "text-blue-700 dark:text-blue-300",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     danger: "text-red-700 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+//       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+//         <span className="shrink-0 text-blue-700 dark:text-blue-300">
+//           {icon}
+//         </span>
+
+//         <span className="truncate">{label}</span>
+//       </span>
+
+//       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+//         {value || "-"}
+//       </span>
+//     </div>
+//   );
+// }
+
+// function DetailSection({
+//   title,
+//   children,
+// }: {
+//   title: string;
+//   children: ReactNode;
+// }) {
+//   return (
+//     <section className={innerPanelClass}>
+//       <div className="border-b border-slate-200 bg-slate-50 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950/50">
+//         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//           {title}
+//         </p>
+//       </div>
+
+//       {children}
+//     </section>
+//   );
+// }
+
+// function FichaCliente({
+//   cliente,
+//   nombreCompleto,
+// }: {
+//   cliente: ClienteSafe;
+//   nombreCompleto: string;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Ficha del cliente</p>
+
+//         <h2 className={sectionSubtitleClass}>Datos registrados</h2>
+
+//         <p className={sectionDescriptionClass}>
+//           Información personal, ubicación y servicio contratado.
+//         </p>
+//       </div>
+
+//       <div className="grid gap-3 xl:grid-cols-2">
+//         <DetailSection title="Datos personales">
+//           <InfoRow
+//             icon={<UserRound className="h-3.5 w-3.5" />}
+//             label="Nombre completo"
+//             value={nombreCompleto}
+//             tone="primary"
+//           />
+
+//           <InfoRow
+//             icon={<IdCard className="h-3.5 w-3.5" />}
+//             label="DNI"
+//             value={cliente.dni}
+//           />
+
+//           <InfoRow
+//             icon={<Phone className="h-3.5 w-3.5" />}
+//             label="Teléfono"
+//             value={cliente.telefono}
+//           />
+
+//           <InfoRow
+//             icon={<Mail className="h-3.5 w-3.5" />}
+//             label="Email"
+//             value={cliente.email || "-"}
+//           />
+//         </DetailSection>
+
+//         <DetailSection title="Ubicación">
+//           <InfoRow
+//             icon={<MapPin className="h-3.5 w-3.5" />}
+//             label="Dirección"
+//             value={cliente.direccion}
+//             tone="primary"
+//           />
+
+//           <InfoRow
+//             icon={<MapPin className="h-3.5 w-3.5" />}
+//             label="Localidad"
+//             value={cliente.localidad}
+//           />
+
+//           <InfoRow
+//             icon={<MapPin className="h-3.5 w-3.5" />}
+//             label="Provincia"
+//             value={cliente.provincia}
+//           />
+//         </DetailSection>
+
+//         <section className={`${innerPanelClass} xl:col-span-2`}>
+//           <div className="border-b border-slate-200 bg-slate-50 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950/50">
+//             <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//               Servicio contratado
+//             </p>
+//           </div>
+
+//           <div className="grid gap-0 md:grid-cols-2">
+//             <InfoRow
+//               icon={<Wifi className="h-3.5 w-3.5" />}
+//               label="Plan"
+//               value={cliente.plan?.nombre || "Sin plan asignado"}
+//               tone={cliente.plan ? "primary" : "warning"}
+//             />
+
+//             <InfoRow
+//               icon={<Wifi className="h-3.5 w-3.5" />}
+//               label="Tipo"
+//               value={cliente.plan?.tipo || "-"}
+//             />
+
+//             <InfoRow
+//               icon={<FileText className="h-3.5 w-3.5" />}
+//               label="Importe"
+//               value={cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
+//               tone={cliente.plan ? "primary" : "neutral"}
+//             />
+
+//             <InfoRow
+//               icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//               label="Estado"
+//               value={estadoLabel(cliente.estado)}
+//               tone={estadoTone(cliente.estado)}
+//             />
+
+//             <InfoRow
+//               icon={<FileText className="h-3.5 w-3.5" />}
+//               label="Fecha de alta"
+//               value={formatDate(cliente.fechaAlta)}
+//             />
+
+//             <InfoRow
+//               icon={<FileText className="h-3.5 w-3.5" />}
+//               label="Último cambio"
+//               value={cliente.ultimoCambioPlan || "Sin cambios"}
+//             />
+//           </div>
+
+//           <div className="border-t border-slate-200 px-3 py-2.5 dark:border-slate-700">
+//             <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//               Detalle del plan
+//             </p>
+
+//             <p className="mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+//               {cliente.plan?.detalle || "Sin detalle disponible."}
+//             </p>
+//           </div>
+//         </section>
+//       </div>
+
+//       <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
+//         <Link
+//           href={`/clientes/${cliente.id}/estado-cuenta`}
+//           className={buttonSecondaryClass}
+//         >
+//           <ReceiptText className="h-3.5 w-3.5" />
+//           Estado de cuenta
+//         </Link>
+
+//         <Link
+//           href={`/clientes/${cliente.id}/editar`}
+//           className={buttonPrimaryClass}
+//         >
+//           <Pencil className="h-3.5 w-3.5 text-white" />
+//           <span className="text-white">Editar cliente</span>
+//         </Link>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Resumen</p>
+
+//         <h2 className={sectionSubtitleClass}>Información del cliente</h2>
+//       </div>
+
+//       <div className={innerPanelClass}>
+//         <InfoRow
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Número"
+//           value={cliente.numeroCliente}
+//           tone="primary"
+//         />
+
+//         <InfoRow
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Estado"
+//           value={estadoLabel(cliente.estado)}
+//           tone={estadoTone(cliente.estado)}
+//         />
+
+//         <InfoRow
+//           icon={<Wifi className="h-3.5 w-3.5" />}
+//           label="Plan"
+//           value={cliente.plan?.nombre || "Sin plan"}
+//           tone={cliente.plan ? "success" : "warning"}
+//         />
+
+//         <InfoRow
+//           icon={<ReceiptText className="h-3.5 w-3.5" />}
+//           label="Importe"
+//           value={cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
+//           tone={cliente.plan ? "primary" : "neutral"}
+//         />
+
+//         <InfoRow
+//           icon={<Phone className="h-3.5 w-3.5" />}
+//           label="Teléfono"
+//           value={cliente.telefono || "-"}
+//         />
+
+//         <InfoRow
+//           icon={<MapPin className="h-3.5 w-3.5" />}
+//           label="Ubicación"
+//           value={`${cliente.localidad || "-"}, ${cliente.provincia || "-"}`}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function AccionesCliente({ cliente }: { cliente: ClienteSafe }) {
+//   return (
+//     <section className={`${panelClass} hidden p-3.5 xl:block`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Acciones</p>
+
+//         <h2 className={sectionSubtitleClass}>Gestión del cliente</h2>
+//       </div>
+
+//       <div className="grid gap-2">
+//         <Link
+//           href={`/clientes/${cliente.id}/estado-cuenta`}
+//           className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+//         >
+//           <span className="flex min-w-0 items-center gap-2.5">
+//             <ReceiptText className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
+//             <span className="truncate">Estado de cuenta</span>
+//           </span>
+
+//           <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//         </Link>
+
+//         <Link
+//           href={`/clientes/${cliente.id}/editar`}
+//           className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+//         >
+//           <span className="flex min-w-0 items-center gap-2.5">
+//             <Pencil className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
+//             <span className="truncate">Editar cliente</span>
+//           </span>
+
+//           <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//         </Link>
+//       </div>
+//     </section>
+//   );
+// }
+
+// export default async function VerClientePage({ params }: VerClientePageProps) {
+//   const cliente = await obtenerClientePorId(params.id);
+
+//   if (!cliente) {
+//     notFound();
+//   }
+
+//   const nombreCompleto = getNombreCompleto(cliente);
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <HeaderCliente cliente={cliente} />
+
+//           <div className="mt-3">
+//             <FichaCliente cliente={cliente} nombreCompleto={nombreCompleto} />
+//           </div>
+//         </DashboardMain>
+
+//         <DashboardAside>
+//           <ResumenCliente cliente={cliente} />
+
+//           <div className="mt-3">
+//             <AccionesCliente cliente={cliente} />
+//           </div>
+//         </DashboardAside>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   ArrowRight,
+  CalendarDays,
   CheckCircle2,
   FileText,
   IdCard,
@@ -1094,13 +1597,14 @@ import {
   UserRound,
   Wifi,
 } from "lucide-react";
-import { obtenerClientePorId } from "@/services/cliente.service";
-import { PageShell } from "@/components/ui/PageShell";
+
 import {
   DashboardAside,
   DashboardGrid,
   DashboardMain,
 } from "@/components/ui/DashboardGrid";
+import { PageShell } from "@/components/ui/PageShell";
+import { obtenerClientePorId } from "@/services/cliente.service";
 import type { ClienteSafe } from "@/types/cliente.types";
 
 type VerClientePageProps = {
@@ -1109,141 +1613,282 @@ type VerClientePageProps = {
   };
 };
 
+type Tone =
+  | "neutral"
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger";
+
 export const metadata = {
   title: "Ver cliente",
 };
 
 const panelClass =
-  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+  "dark:border-[#263451] dark:bg-[#111b31] " +
+  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
 
 const innerPanelClass =
-  "overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none";
+  "overflow-hidden rounded-lg border border-slate-200 bg-slate-50 " +
+  "dark:border-[#2b3957] dark:bg-[#0d172a]";
 
-const sectionTitleClass =
-  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+const buttonBaseClass =
+  "inline-flex h-8 items-center justify-center rounded-lg border px-3 " +
+  "text-[12px] font-medium leading-none shadow-sm transition " +
+  "active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60";
 
-const sectionSubtitleClass =
-  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+const primaryButtonClass =
+  `${buttonBaseClass} gap-1.5 border-blue-600 bg-blue-600 !text-white ` +
+  "hover:border-blue-700 hover:bg-blue-700 hover:!text-white " +
+  "dark:border-blue-500 dark:bg-blue-500 dark:!text-white " +
+  "dark:hover:border-blue-600 dark:hover:bg-blue-600 " +
+  "dark:hover:!text-white";
 
-const sectionDescriptionClass =
-  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
-
-const buttonPrimaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white shadow-sm shadow-blue-950/10 transition hover:bg-blue-700 active:scale-[0.99] dark:bg-blue-500 dark:text-white dark:hover:bg-blue-600";
-
-const buttonSecondaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900";
+const secondaryButtonClass =
+  `${buttonBaseClass} gap-1.5 border-slate-300 bg-white text-slate-700 ` +
+  "hover:border-slate-400 hover:bg-slate-50 " +
+  "dark:border-[#354462] dark:bg-[#111b31] dark:text-slate-200 " +
+  "dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
 
 function formatMoney(value?: number | null) {
-  const amount = Number(value || 0);
-  const [integerPart, decimalPart] = amount.toFixed(2).split(".");
-  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  return `$ ${formattedInteger},${decimalPart}`;
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value || 0));
 }
 
 function formatDate(value?: string | null) {
-  if (!value) return "-";
+  if (!value) {
+    return "-";
+  }
 
-  const [year, month, day] = value.split("-");
+  const dateOnly = String(value).split("T")[0];
+  const [year, month, day] = dateOnly.split("-");
 
-  if (!year || !month || !day) return value;
+  if (!year || !month || !day) {
+    return String(value);
+  }
 
   return `${day}/${month}/${year}`;
 }
 
 function estadoLabel(estado: string) {
-  if (estado === "activo") return "Activo";
-  if (estado === "suspendido") return "Suspendido";
+  if (estado === "activo") {
+    return "Activo";
+  }
+
+  if (estado === "suspendido") {
+    return "Suspendido";
+  }
+
   return "Baja";
 }
 
-function estadoTone(estado: string): "success" | "warning" | "danger" {
-  if (estado === "activo") return "success";
-  if (estado === "suspendido") return "warning";
+function estadoTone(estado: string): Tone {
+  if (estado === "activo") {
+    return "success";
+  }
+
+  if (estado === "suspendido") {
+    return "warning";
+  }
+
   return "danger";
+}
+
+function estadoDotClass(estado: string) {
+  if (estado === "activo") {
+    return "bg-emerald-500";
+  }
+
+  if (estado === "suspendido") {
+    return "bg-amber-500";
+  }
+
+  return "bg-red-500";
 }
 
 function getNombreCompleto(cliente: ClienteSafe) {
   const apellido = String(cliente.apellido || "").trim();
   const nombre = String(cliente.nombre || "").trim();
 
-  const completo = `${apellido}, ${nombre}`
+  const nombreCompleto = `${apellido}, ${nombre}`
     .replace(/^,\s*/, "")
     .replace(/,\s*$/, "")
     .trim();
 
-  return completo || "Cliente sin nombre";
+  return nombreCompleto || "Cliente sin nombre";
 }
 
-function BackButton() {
-  return (
-    <Link
-      href="/clientes"
-      className={`${buttonSecondaryClass} hidden sm:inline-flex`}
-    >
-      Volver
-    </Link>
-  );
-}
-
-function Badge({
+function StatusBadge({
   children,
   tone = "neutral",
+  dotClass,
 }: {
   children: ReactNode;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+  tone?: Tone;
+  dotClass?: string;
 }) {
-  const toneClass = {
+  const toneClass: Record<Tone, string> = {
     neutral:
-      "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+      "border-slate-200 bg-slate-50 text-slate-700 " +
+      "dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300",
+
     primary:
-      "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+      "border-blue-200 bg-blue-50 text-blue-700 " +
+      "dark:border-blue-800/70 dark:bg-blue-950/25 dark:text-blue-300",
+
     success:
-      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+      "border-emerald-200 bg-emerald-50 text-emerald-700 " +
+      "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
+
     warning:
-      "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+      "border-amber-200 bg-amber-50 text-amber-700 " +
+      "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
+
     danger:
-      "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
-  }[tone];
+      "border-red-200 bg-red-50 text-red-700 " +
+      "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
+  };
 
   return (
     <span
-      className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+      className={`
+        inline-flex h-7 items-center justify-center gap-1.5
+        rounded-md border px-2.5
+        text-[10px] font-medium
+        ${toneClass[tone]}
+      `}
     >
-      {children}
+      {dotClass ? (
+        <span
+          className={`
+            h-1.5 w-1.5 shrink-0 rounded-full
+            ${dotClass}
+          `}
+        />
+      ) : null}
+
+      <span className="whitespace-nowrap leading-none">
+        {children}
+      </span>
     </span>
   );
 }
 
-function HeaderCliente({ cliente }: { cliente: ClienteSafe }) {
+function PageHeader({
+  cliente,
+}: {
+  cliente: ClienteSafe;
+}) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <p className={sectionTitleClass}>Clientes</p>
+    <section className={panelClass}>
+      <div
+        className="
+          border-b border-slate-200
+          bg-slate-50/80 px-3 py-3
+          dark:border-[#263451]
+          dark:bg-[#0e172a]
+          sm:px-4
+        "
+      >
+        <div
+          className="
+            flex min-h-12 items-center
+            justify-between gap-3
+          "
+        >
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <UserRound
+                className="
+                  h-5 w-5 shrink-0
+                  text-blue-700
+                  dark:text-blue-300
+                "
+              />
 
-          <h1 className={sectionSubtitleClass}>Ver cliente</h1>
+              <h1
+                className="
+                  truncate text-base font-medium
+                  text-slate-950 dark:text-white
+                "
+              >
+                Ver cliente
+              </h1>
+            </div>
 
-          <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
-            {getNombreCompleto(cliente)} · N° {cliente.numeroCliente} · DNI{" "}
-            {cliente.dni || "-"}
-          </p>
-        </div>
+            <p
+              className="
+                mt-1 hidden max-w-3xl
+                truncate text-[12px] leading-5
+                text-slate-600
+                dark:text-slate-400
+                sm:block
+              "
+            >
+              {getNombreCompleto(cliente)} · N°{" "}
+              {cliente.numeroCliente} · DNI{" "}
+              {cliente.dni || "-"}
+            </p>
 
-        <div className="flex flex-col items-start gap-2 lg:items-end">
-          <BackButton />
+            <p
+              className="
+                mt-1 truncate text-[11px]
+                text-slate-500
+                dark:text-slate-400
+                sm:hidden
+              "
+            >
+              N° {cliente.numeroCliente} ·{" "}
+              {getNombreCompleto(cliente)}
+            </p>
+          </div>
 
-          <div className="flex flex-wrap gap-2 lg:justify-end">
-            <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+          <div
+            className="
+              flex h-8 shrink-0
+              items-center gap-2
+            "
+          >
+            <div className="hidden items-center gap-2 xl:flex">
+              <StatusBadge
+                tone="primary"
+                dotClass="bg-blue-500"
+              >
+                N° {cliente.numeroCliente}
+              </StatusBadge>
 
-            <Badge tone={estadoTone(cliente.estado)}>
-              {estadoLabel(cliente.estado)}
-            </Badge>
+              <StatusBadge
+                tone={estadoTone(cliente.estado)}
+                dotClass={estadoDotClass(cliente.estado)}
+              >
+                {estadoLabel(cliente.estado)}
+              </StatusBadge>
 
-            <Badge tone={cliente.plan ? "success" : "warning"}>
-              {cliente.plan ? "Con plan" : "Sin plan"}
-            </Badge>
+              <StatusBadge
+                tone={cliente.plan ? "success" : "warning"}
+                dotClass={
+                  cliente.plan
+                    ? "bg-emerald-500"
+                    : "bg-amber-500"
+                }
+              >
+                {cliente.plan ? "Con plan" : "Sin plan"}
+              </StatusBadge>
+            </div>
+
+            <Link
+              href="/clientes"
+              className={`${secondaryButtonClass} hidden sm:inline-flex`}
+            >
+              <span className="text-[12px] leading-none">
+                Volver
+              </span>
+            </Link>
           </div>
         </div>
       </div>
@@ -1256,221 +1901,476 @@ function InfoRow({
   label,
   value,
   tone = "neutral",
+  dotClass,
 }: {
   icon: ReactNode;
   label: string;
   value?: string | number | null;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+  tone?: Tone;
+  dotClass?: string;
 }) {
-  const toneClass = {
-    neutral: "text-slate-950 dark:text-white",
-    primary: "text-blue-700 dark:text-blue-300",
-    success: "text-emerald-700 dark:text-emerald-300",
-    warning: "text-amber-700 dark:text-amber-300",
-    danger: "text-red-700 dark:text-red-300",
-  }[tone];
+  const toneClass: Record<Tone, string> = {
+    neutral:
+      "text-slate-900 dark:text-slate-100",
+    primary:
+      "text-blue-700 dark:text-blue-300",
+    success:
+      "text-emerald-700 dark:text-emerald-300",
+    warning:
+      "text-amber-700 dark:text-amber-300",
+    danger:
+      "text-red-700 dark:text-red-300",
+  };
+
+  const displayValue =
+    value === null ||
+    value === undefined ||
+    value === ""
+      ? "-"
+      : String(value);
 
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
-      <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-        <span className="shrink-0 text-blue-700 dark:text-blue-300">
+    <div
+      className="
+        flex min-h-10 items-center
+        justify-between gap-3
+        border-b border-slate-200
+        px-3 py-2.5
+        last:border-b-0
+        dark:border-[#263451]
+      "
+    >
+      <span
+        className="
+          flex min-w-0 items-center gap-2.5
+          text-[12px] text-slate-600
+          dark:text-slate-300
+        "
+      >
+        <span
+          className="
+            shrink-0 text-blue-700
+            dark:text-blue-300
+          "
+        >
           {icon}
         </span>
 
-        <span className="truncate">{label}</span>
+        <span className="truncate">
+          {label}
+        </span>
       </span>
 
-      <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
-        {value || "-"}
+      <span
+        className={`
+          flex min-w-0 items-center
+          justify-end gap-1.5
+          truncate text-right text-[12px]
+          font-medium
+          ${toneClass[tone]}
+        `}
+        title={displayValue}
+      >
+        {dotClass ? (
+          <span
+            className={`
+              h-1.5 w-1.5 shrink-0 rounded-full
+              ${dotClass}
+            `}
+          />
+        ) : null}
+
+        <span className="truncate">
+          {displayValue}
+        </span>
       </span>
     </div>
   );
 }
 
 function DetailSection({
+  icon,
   title,
+  description,
   children,
+  className = "",
 }: {
+  icon: ReactNode;
   title: string;
+  description: string;
   children: ReactNode;
+  className?: string;
 }) {
   return (
-    <section className={innerPanelClass}>
-      <div className="border-b border-slate-200 bg-slate-50 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950/50">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-          {title}
-        </p>
-      </div>
-
-      {children}
-    </section>
-  );
-}
-
-function FichaCliente({
-  cliente,
-  nombreCompleto,
-}: {
-  cliente: ClienteSafe;
-  nombreCompleto: string;
-}) {
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Ficha del cliente</p>
-
-        <h2 className={sectionSubtitleClass}>Datos registrados</h2>
-
-        <p className={sectionDescriptionClass}>
-          Información personal, ubicación y servicio contratado.
-        </p>
-      </div>
-
-      <div className="grid gap-3 xl:grid-cols-2">
-        <DetailSection title="Datos personales">
-          <InfoRow
-            icon={<UserRound className="h-3.5 w-3.5" />}
-            label="Nombre completo"
-            value={nombreCompleto}
-            tone="primary"
-          />
-
-          <InfoRow
-            icon={<IdCard className="h-3.5 w-3.5" />}
-            label="DNI"
-            value={cliente.dni}
-          />
-
-          <InfoRow
-            icon={<Phone className="h-3.5 w-3.5" />}
-            label="Teléfono"
-            value={cliente.telefono}
-          />
-
-          <InfoRow
-            icon={<Mail className="h-3.5 w-3.5" />}
-            label="Email"
-            value={cliente.email || "-"}
-          />
-        </DetailSection>
-
-        <DetailSection title="Ubicación">
-          <InfoRow
-            icon={<MapPin className="h-3.5 w-3.5" />}
-            label="Dirección"
-            value={cliente.direccion}
-            tone="primary"
-          />
-
-          <InfoRow
-            icon={<MapPin className="h-3.5 w-3.5" />}
-            label="Localidad"
-            value={cliente.localidad}
-          />
-
-          <InfoRow
-            icon={<MapPin className="h-3.5 w-3.5" />}
-            label="Provincia"
-            value={cliente.provincia}
-          />
-        </DetailSection>
-
-        <section className={`${innerPanelClass} xl:col-span-2`}>
-          <div className="border-b border-slate-200 bg-slate-50 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950/50">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-              Servicio contratado
-            </p>
-          </div>
-
-          <div className="grid gap-0 md:grid-cols-2">
-            <InfoRow
-              icon={<Wifi className="h-3.5 w-3.5" />}
-              label="Plan"
-              value={cliente.plan?.nombre || "Sin plan asignado"}
-              tone={cliente.plan ? "primary" : "warning"}
-            />
-
-            <InfoRow
-              icon={<Wifi className="h-3.5 w-3.5" />}
-              label="Tipo"
-              value={cliente.plan?.tipo || "-"}
-            />
-
-            <InfoRow
-              icon={<FileText className="h-3.5 w-3.5" />}
-              label="Importe"
-              value={cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
-              tone={cliente.plan ? "primary" : "neutral"}
-            />
-
-            <InfoRow
-              icon={<CheckCircle2 className="h-3.5 w-3.5" />}
-              label="Estado"
-              value={estadoLabel(cliente.estado)}
-              tone={estadoTone(cliente.estado)}
-            />
-
-            <InfoRow
-              icon={<FileText className="h-3.5 w-3.5" />}
-              label="Fecha de alta"
-              value={formatDate(cliente.fechaAlta)}
-            />
-
-            <InfoRow
-              icon={<FileText className="h-3.5 w-3.5" />}
-              label="Último cambio"
-              value={cliente.ultimoCambioPlan || "Sin cambios"}
-            />
-          </div>
-
-          <div className="border-t border-slate-200 px-3 py-2.5 dark:border-slate-700">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-              Detalle del plan
-            </p>
-
-            <p className="mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400">
-              {cliente.plan?.detalle || "Sin detalle disponible."}
-            </p>
-          </div>
-        </section>
-      </div>
-
-      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
-        <Link
-          href={`/clientes/${cliente.id}/estado-cuenta`}
-          className={buttonSecondaryClass}
+    <section
+      className={`
+        rounded-lg border border-slate-200
+        bg-slate-50 p-3
+        dark:border-[#2b3957]
+        dark:bg-[#0d172a]
+        ${className}
+      `}
+    >
+      <div className="mb-3 flex items-start gap-2.5">
+        <div
+          className="
+            flex h-8 w-8 shrink-0
+            items-center justify-center
+            rounded-lg border
+            border-blue-200 bg-blue-50
+            text-blue-700
+            dark:border-blue-800/70
+            dark:bg-blue-950/25
+            dark:text-blue-300
+          "
         >
-          <ReceiptText className="h-3.5 w-3.5" />
-          Estado de cuenta
-        </Link>
+          {icon}
+        </div>
 
-        <Link
-          href={`/clientes/${cliente.id}/editar`}
-          className={buttonPrimaryClass}
-        >
-          <Pencil className="h-3.5 w-3.5 text-white" />
-          <span className="text-white">Editar cliente</span>
-        </Link>
-      </div>
-    </section>
-  );
-}
+        <div className="min-w-0">
+          <h2
+            className="
+              text-sm font-medium
+              text-slate-950 dark:text-white
+            "
+          >
+            {title}
+          </h2>
 
-function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Resumen</p>
-
-        <h2 className={sectionSubtitleClass}>Información del cliente</h2>
+          <p
+            className="
+              mt-0.5 text-[11px] leading-5
+              text-slate-500
+              dark:text-slate-400
+              sm:text-[12px]
+            "
+          >
+            {description}
+          </p>
+        </div>
       </div>
 
       <div className={innerPanelClass}>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function ClienteDetails({
+  cliente,
+}: {
+  cliente: ClienteSafe;
+}) {
+  const nombreCompleto = getNombreCompleto(cliente);
+
+  return (
+    <section className={panelClass}>
+      <div
+        className="
+          border-b border-slate-200
+          bg-slate-50/80 px-3 py-3
+          dark:border-[#263451]
+          dark:bg-[#0e172a]
+          sm:px-4
+        "
+      >
+        <div className="flex min-h-12 items-center">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <FileText
+                className="
+                  h-5 w-5 shrink-0
+                  text-blue-700
+                  dark:text-blue-300
+                "
+              />
+
+              <h2
+                className="
+                  truncate text-base font-medium
+                  text-slate-950 dark:text-white
+                "
+              >
+                Datos del cliente
+              </h2>
+            </div>
+
+            <p
+              className="
+                mt-1 hidden max-w-3xl
+                truncate text-[12px] leading-5
+                text-slate-600
+                dark:text-slate-400
+                sm:block
+              "
+            >
+              Información personal, ubicación y servicio
+              contratado.
+            </p>
+
+            <p
+              className="
+                mt-1 truncate text-[11px]
+                text-slate-500
+                dark:text-slate-400
+                sm:hidden
+              "
+            >
+              Información personal y del servicio
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-3 sm:p-4">
+        <div className="grid gap-3">
+          <div className="grid gap-3 xl:grid-cols-2">
+            <DetailSection
+              icon={<UserRound className="h-4 w-4" />}
+              title="Datos personales"
+              description="Información registrada del titular."
+            >
+              <InfoRow
+                icon={<UserRound className="h-3.5 w-3.5" />}
+                label="Nombre completo"
+                value={nombreCompleto}
+                tone="primary"
+              />
+
+              <InfoRow
+                icon={<IdCard className="h-3.5 w-3.5" />}
+                label="DNI"
+                value={cliente.dni}
+              />
+
+              <InfoRow
+                icon={<Phone className="h-3.5 w-3.5" />}
+                label="Teléfono"
+                value={cliente.telefono}
+              />
+
+              <InfoRow
+                icon={<Mail className="h-3.5 w-3.5" />}
+                label="Email"
+                value={cliente.email}
+              />
+            </DetailSection>
+
+            <DetailSection
+              icon={<MapPin className="h-4 w-4" />}
+              title="Domicilio"
+              description="Ubicación principal del servicio."
+            >
+              <InfoRow
+                icon={<MapPin className="h-3.5 w-3.5" />}
+                label="Dirección"
+                value={cliente.direccion}
+                tone="primary"
+              />
+
+              <InfoRow
+                icon={<MapPin className="h-3.5 w-3.5" />}
+                label="Localidad"
+                value={cliente.localidad}
+              />
+
+              <InfoRow
+                icon={<MapPin className="h-3.5 w-3.5" />}
+                label="Provincia"
+                value={cliente.provincia}
+              />
+            </DetailSection>
+          </div>
+
+          <DetailSection
+            icon={<Wifi className="h-4 w-4" />}
+            title="Servicio contratado"
+            description="Plan, estado y fechas relacionadas con el servicio."
+          >
+            <div className="grid md:grid-cols-2">
+              <div
+                className="
+                  border-b border-slate-200
+                  dark:border-[#263451]
+                  md:border-b-0
+                  md:border-r
+                "
+              >
+                <InfoRow
+                  icon={<Wifi className="h-3.5 w-3.5" />}
+                  label="Plan"
+                  value={
+                    cliente.plan?.nombre ||
+                    "Sin plan asignado"
+                  }
+                  tone={
+                    cliente.plan
+                      ? "primary"
+                      : "warning"
+                  }
+                  dotClass={
+                    cliente.plan
+                      ? "bg-blue-500"
+                      : "bg-amber-500"
+                  }
+                />
+
+                <InfoRow
+                  icon={<Wifi className="h-3.5 w-3.5" />}
+                  label="Tipo"
+                  value={cliente.plan?.tipo}
+                />
+
+                <InfoRow
+                  icon={<FileText className="h-3.5 w-3.5" />}
+                  label="Importe"
+                  value={
+                    cliente.plan
+                      ? formatMoney(cliente.plan.importe)
+                      : "-"
+                  }
+                  tone={
+                    cliente.plan
+                      ? "primary"
+                      : "neutral"
+                  }
+                />
+              </div>
+
+              <div>
+                <InfoRow
+                  icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+                  label="Estado"
+                  value={estadoLabel(cliente.estado)}
+                  tone={estadoTone(cliente.estado)}
+                  dotClass={estadoDotClass(cliente.estado)}
+                />
+
+                <InfoRow
+                  icon={<CalendarDays className="h-3.5 w-3.5" />}
+                  label="Fecha de alta"
+                  value={formatDate(cliente.fechaAlta)}
+                />
+
+                <InfoRow
+                  icon={<CalendarDays className="h-3.5 w-3.5" />}
+                  label="Último cambio de plan"
+                  value={
+                    cliente.ultimoCambioPlan ||
+                    "Sin cambios registrados"
+                  }
+                />
+              </div>
+            </div>
+
+            <div
+              className="
+                border-t border-slate-200
+                px-3 py-2.5
+                dark:border-[#263451]
+              "
+            >
+              <p
+                className="
+                  text-[10px] font-medium
+                  uppercase tracking-[0.08em]
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
+                Detalle del plan
+              </p>
+
+              <p
+                className="
+                  mt-1 text-[12px] leading-5
+                  text-slate-600
+                  dark:text-slate-300
+                "
+              >
+                {cliente.plan?.detalle ||
+                  "Sin detalle disponible."}
+              </p>
+            </div>
+          </DetailSection>
+        </div>
+
+        <div
+          className="
+            mt-3 grid grid-cols-2 gap-2
+            sm:flex sm:justify-end
+          "
+        >
+          <Link
+            href={`/clientes/${cliente.id}/estado-cuenta`}
+            className={secondaryButtonClass}
+          >
+            <ReceiptText className="h-3.5 w-3.5 shrink-0" />
+
+            <span className="text-[12px] leading-none">
+              Estado de cuenta
+            </span>
+          </Link>
+
+          <Link
+            href={`/clientes/${cliente.id}/editar`}
+            className={primaryButtonClass}
+          >
+            <Pencil
+              className="
+                h-3.5 w-3.5 shrink-0
+                !text-white
+              "
+            />
+
+            <span
+              className="
+                text-[12px] leading-none
+                !text-white
+              "
+            >
+              Editar cliente
+            </span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ResumenCliente({
+  cliente,
+}: {
+  cliente: ClienteSafe;
+}) {
+  return (
+    <section className={`${panelClass} p-4`}>
+      <div className="flex items-center gap-2">
+        <UserRound
+          className="
+            h-4 w-4 text-blue-700
+            dark:text-blue-300
+          "
+        />
+
+        <h2
+          className="
+            text-sm font-medium
+            text-slate-950 dark:text-white
+          "
+        >
+          Resumen del cliente
+        </h2>
+      </div>
+
+      <div className={`mt-3 ${innerPanelClass}`}>
         <InfoRow
           icon={<FileText className="h-3.5 w-3.5" />}
           label="Número"
           value={cliente.numeroCliente}
           tone="primary"
+          dotClass="bg-blue-500"
         />
 
         <InfoRow
@@ -1478,6 +2378,7 @@ function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
           label="Estado"
           value={estadoLabel(cliente.estado)}
           tone={estadoTone(cliente.estado)}
+          dotClass={estadoDotClass(cliente.estado)}
         />
 
         <InfoRow
@@ -1485,96 +2386,196 @@ function ResumenCliente({ cliente }: { cliente: ClienteSafe }) {
           label="Plan"
           value={cliente.plan?.nombre || "Sin plan"}
           tone={cliente.plan ? "success" : "warning"}
+          dotClass={
+            cliente.plan
+              ? "bg-emerald-500"
+              : "bg-amber-500"
+          }
         />
 
         <InfoRow
           icon={<ReceiptText className="h-3.5 w-3.5" />}
           label="Importe"
-          value={cliente.plan ? formatMoney(cliente.plan.importe) : "-"}
+          value={
+            cliente.plan
+              ? formatMoney(cliente.plan.importe)
+              : "-"
+          }
           tone={cliente.plan ? "primary" : "neutral"}
         />
 
         <InfoRow
           icon={<Phone className="h-3.5 w-3.5" />}
           label="Teléfono"
-          value={cliente.telefono || "-"}
+          value={cliente.telefono}
         />
 
         <InfoRow
           icon={<MapPin className="h-3.5 w-3.5" />}
           label="Ubicación"
-          value={`${cliente.localidad || "-"}, ${cliente.provincia || "-"}`}
+          value={`${cliente.localidad || "-"}, ${
+            cliente.provincia || "-"
+          }`}
         />
       </div>
     </section>
   );
 }
 
-function AccionesCliente({ cliente }: { cliente: ClienteSafe }) {
-  return (
-    <section className={`${panelClass} hidden p-3.5 xl:block`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Acciones</p>
+function AccionesCliente({
+  cliente,
+}: {
+  cliente: ClienteSafe;
+}) {
+  const actions = [
+    {
+      label: "Estado de cuenta",
+      description: "Facturas y movimientos",
+      href: `/clientes/${cliente.id}/estado-cuenta`,
+      icon: ReceiptText,
+    },
+    {
+      label: "Editar cliente",
+      description: "Modificar datos y servicio",
+      href: `/clientes/${cliente.id}/editar`,
+      icon: Pencil,
+    },
+  ];
 
-        <h2 className={sectionSubtitleClass}>Gestión del cliente</h2>
+  return (
+    <section className={`${panelClass} hidden p-4 xl:block`}>
+      <div className="flex items-center gap-2">
+        <CheckCircle2
+          className="
+            h-4 w-4 text-blue-700
+            dark:text-blue-300
+          "
+        />
+
+        <h2
+          className="
+            text-sm font-medium
+            text-slate-950 dark:text-white
+          "
+        >
+          Acciones del cliente
+        </h2>
       </div>
 
-      <div className="grid gap-2">
-        <Link
-          href={`/clientes/${cliente.id}/estado-cuenta`}
-          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
-        >
-          <span className="flex min-w-0 items-center gap-2.5">
-            <ReceiptText className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
-            <span className="truncate">Estado de cuenta</span>
-          </span>
+      <div className="mt-3 grid gap-2">
+        {actions.map((item) => {
+          const Icon = item.icon;
 
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
-        </Link>
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="
+                group flex items-center
+                justify-between gap-3
+                rounded-lg border
+                border-slate-200
+                bg-slate-50 px-3 py-2.5
+                transition
+                hover:border-blue-300
+                hover:bg-blue-50
+                dark:border-[#2b3957]
+                dark:bg-[#0d172a]
+                dark:hover:border-blue-500/60
+                dark:hover:bg-[#16223c]
+              "
+            >
+              <div
+                className="
+                  flex min-w-0
+                  items-center gap-2.5
+                "
+              >
+                <Icon
+                  className="
+                    h-4 w-4 shrink-0
+                    text-slate-500
+                    transition
+                    group-hover:text-blue-700
+                    dark:text-slate-400
+                    dark:group-hover:text-blue-300
+                  "
+                />
 
-        <Link
-          href={`/clientes/${cliente.id}/editar`}
-          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
-        >
-          <span className="flex min-w-0 items-center gap-2.5">
-            <Pencil className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
-            <span className="truncate">Editar cliente</span>
-          </span>
+                <div className="min-w-0">
+                  <p
+                    className="
+                      truncate text-[12px]
+                      font-medium
+                      text-slate-900
+                      dark:text-slate-100
+                    "
+                  >
+                    {item.label}
+                  </p>
 
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
-        </Link>
+                  <p
+                    className="
+                      truncate text-[10px]
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+
+              <ArrowRight
+                className="
+                  h-3.5 w-3.5 shrink-0
+                  text-slate-400
+                  transition
+                  group-hover:translate-x-0.5
+                  group-hover:text-blue-700
+                  dark:group-hover:text-blue-300
+                "
+              />
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
 }
 
-export default async function VerClientePage({ params }: VerClientePageProps) {
+export default async function VerClientePage({
+  params,
+}: VerClientePageProps) {
   const cliente = await obtenerClientePorId(params.id);
 
   if (!cliente) {
     notFound();
   }
 
-  const nombreCompleto = getNombreCompleto(cliente);
-
   return (
-    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+    <PageShell
+      maxWidth="wide"
+      className="pb-20 lg:pb-6"
+    >
       <DashboardGrid>
         <DashboardMain>
-          <HeaderCliente cliente={cliente} />
+          <PageHeader cliente={cliente} />
 
           <div className="mt-3">
-            <FichaCliente cliente={cliente} nombreCompleto={nombreCompleto} />
+            <ClienteDetails cliente={cliente} />
           </div>
         </DashboardMain>
 
-        <DashboardAside>
-          <ResumenCliente cliente={cliente} />
+        <div className="hidden lg:block">
+          <DashboardAside>
+            <ResumenCliente cliente={cliente} />
 
-          <div className="mt-3">
-            <AccionesCliente cliente={cliente} />
-          </div>
-        </DashboardAside>
+            <div className="mt-3">
+              <AccionesCliente cliente={cliente} />
+            </div>
+          </DashboardAside>
+        </div>
       </DashboardGrid>
     </PageShell>
   );

@@ -1747,7 +1747,512 @@
 //   );
 // }
 
-// src/components/forms/EditarUsuarioForm.tsx
+// // src/components/forms/EditarUsuarioForm.tsx
+
+// "use client";
+
+// import {
+//   useEffect,
+//   useMemo,
+//   useState,
+//   type ChangeEvent,
+//   type ClipboardEvent,
+//   type KeyboardEvent,
+//   type ReactNode,
+// } from "react";
+// import { useFormState, useFormStatus } from "react-dom";
+// import { useRouter } from "next/navigation";
+// import {
+//   Banknote,
+//   ChevronDown,
+//   Loader2,
+//   Save,
+//   ShieldAlert,
+// } from "lucide-react";
+// import {
+//   actualizarUsuarioAction,
+//   type UsuarioActionState,
+// } from "@/actions/usuario.actions";
+// import type { UserRole, UsuarioSafe } from "@/types/usuario.types";
+
+// type EditarUsuarioFormProps = {
+//   usuario: UsuarioSafe;
+//   puedeEditarDatos?: boolean;
+//   puedeCambiarRolEstado?: boolean;
+//   avisoPermisos?: string;
+// };
+
+// const LIMITE_CAJA_MINIMO = 100000;
+
+// const initialState: UsuarioActionState = {
+//   ok: false,
+//   message: "",
+// };
+
+// const inputClass =
+//   "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-normal text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-500";
+
+// const readOnlyInputClass =
+//   "h-8 w-full rounded-lg border border-slate-300 bg-slate-100 px-2.5 text-[12px] font-normal text-slate-500 outline-none dark:border-slate-700 dark:bg-slate-950/45 dark:text-slate-500";
+
+// const selectClass =
+//   "h-8 w-full appearance-none rounded-lg border border-slate-300 bg-white px-2.5 pr-8 text-[12px] font-normal text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:focus:border-blue-500";
+
+// const disabledSelectClass =
+//   "h-8 w-full appearance-none rounded-lg border border-slate-300 bg-slate-100 px-2.5 pr-8 text-[12px] font-normal text-slate-500 outline-none dark:border-slate-700 dark:bg-slate-950/45 dark:text-slate-500";
+
+// const buttonPrimaryClass =
+//   "inline-flex h-8 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 active:scale-[0.99] dark:bg-blue-500 dark:hover:bg-blue-400";
+
+// const buttonDisabledClass =
+//   "inline-flex h-8 cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-slate-300 bg-slate-100 px-3 text-[12px] font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-600";
+
+// function extraerEntero(value?: number | string | null) {
+//   if (value === null || value === undefined) return "";
+
+//   const raw = String(value).trim();
+
+//   if (!raw) return "";
+
+//   const sinMoneda = raw.replace(/\$/g, "").replace(/\s/g, "");
+//   const parteEntera = sinMoneda.includes(",")
+//     ? sinMoneda.split(",")[0]
+//     : sinMoneda;
+
+//   return parteEntera.replace(/\D/g, "");
+// }
+
+// function formatCurrencyFromDigits(digits: string) {
+//   const cleanDigits = extraerEntero(digits);
+
+//   if (!cleanDigits) return "$ ";
+
+//   const formattedInteger = cleanDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},00`;
+// }
+
+// function formatMoney(value?: number | null) {
+//   const number = Number(value || 0);
+//   const [integerPart, decimalPart] = number.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function getNombreCompleto(usuario: UsuarioSafe) {
+//   const apellido = String(usuario.apellido || "").trim();
+//   const nombre = String(usuario.nombre || "").trim();
+
+//   const completo = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return completo || "Usuario";
+// }
+
+// function SubmitButton({ disabled }: { disabled?: boolean }) {
+//   const { pending } = useFormStatus();
+
+//   return (
+//     <button
+//       type="submit"
+//       disabled={pending || disabled}
+//       className={disabled ? buttonDisabledClass : buttonPrimaryClass}
+//     >
+//       {pending ? (
+//         <>
+//           <Loader2 className="h-3.5 w-3.5 animate-spin" />
+//           Guardando
+//         </>
+//       ) : (
+//         <>
+//           <Save className="h-3.5 w-3.5" />
+//           Guardar cambios
+//         </>
+//       )}
+//     </button>
+//   );
+// }
+
+// function FieldLabel({
+//   htmlFor,
+//   children,
+// }: {
+//   htmlFor: string;
+//   children: ReactNode;
+// }) {
+//   return (
+//     <label
+//       htmlFor={htmlFor}
+//       className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400"
+//     >
+//       {children}
+//     </label>
+//   );
+// }
+
+// function SelectField({
+//   id,
+//   name,
+//   value,
+//   defaultValue,
+//   onChange,
+//   disabled,
+//   children,
+// }: {
+//   id: string;
+//   name: string;
+//   value?: string;
+//   defaultValue?: string;
+//   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
+//   disabled?: boolean;
+//   children: ReactNode;
+// }) {
+//   return (
+//     <div className="relative">
+//       <select
+//         id={id}
+//         name={name}
+//         value={value}
+//         defaultValue={defaultValue}
+//         onChange={onChange}
+//         disabled={disabled}
+//         className={disabled ? disabledSelectClass : selectClass}
+//       >
+//         {children}
+//       </select>
+
+//       <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+//     </div>
+//   );
+// }
+
+// function LimiteCajaInput({
+//   defaultValue,
+//   disabled,
+// }: {
+//   defaultValue?: number | null;
+//   disabled?: boolean;
+// }) {
+//   const initialDigits = useMemo(() => {
+//     return extraerEntero(defaultValue || LIMITE_CAJA_MINIMO);
+//   }, [defaultValue]);
+
+//   const [digitsValue, setDigitsValue] = useState(initialDigits);
+//   const [displayValue, setDisplayValue] = useState(
+//     formatCurrencyFromDigits(initialDigits),
+//   );
+
+//   function updateValue(nextValue: string) {
+//     const nextDigits = extraerEntero(nextValue);
+//     setDigitsValue(nextDigits);
+//     setDisplayValue(formatCurrencyFromDigits(nextDigits));
+//   }
+
+//   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+//     if (disabled) return;
+
+//     const allowedControlKeys = [
+//       "Tab",
+//       "ArrowLeft",
+//       "ArrowRight",
+//       "ArrowUp",
+//       "ArrowDown",
+//       "Home",
+//       "End",
+//       "Escape",
+//       "Enter",
+//     ];
+
+//     if (allowedControlKeys.includes(event.key)) return;
+//     if (event.ctrlKey || event.metaKey) return;
+
+//     if (event.key === "Backspace") {
+//       event.preventDefault();
+//       updateValue(digitsValue.slice(0, -1));
+//       return;
+//     }
+
+//     if (event.key === "Delete") {
+//       event.preventDefault();
+//       updateValue("");
+//       return;
+//     }
+
+//     if (/^\d$/.test(event.key)) {
+//       event.preventDefault();
+//       updateValue(digitsValue === "0" ? event.key : `${digitsValue}${event.key}`);
+//       return;
+//     }
+
+//     event.preventDefault();
+//   }
+
+//   function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
+//     if (disabled) return;
+
+//     event.preventDefault();
+//     updateValue(event.clipboardData.getData("text"));
+//   }
+
+//   function handleChange(event: ChangeEvent<HTMLInputElement>) {
+//     if (disabled) return;
+
+//     updateValue(event.target.value);
+//   }
+
+//   return (
+//     <>
+//       <input type="hidden" name="limiteCajaCobrador" value={digitsValue} />
+
+//       <input
+//         id="limiteCajaCobradorDisplay"
+//         type="text"
+//         inputMode="numeric"
+//         value={displayValue}
+//         onKeyDown={handleKeyDown}
+//         onPaste={handlePaste}
+//         onChange={handleChange}
+//         readOnly={disabled}
+//         placeholder="$ 100.000,00"
+//         className={disabled ? readOnlyInputClass : inputClass}
+//       />
+//     </>
+//   );
+// }
+
+// function SectionTitle({
+//   title,
+//   description,
+// }: {
+//   title: string;
+//   description: string;
+// }) {
+//   return (
+//     <div className="mb-3">
+//       <h3 className="text-sm font-medium text-slate-950 dark:text-white">
+//         {title}
+//       </h3>
+
+//       <p className="mt-0.5 text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+//         {description}
+//       </p>
+//     </div>
+//   );
+// }
+
+// export function EditarUsuarioForm({
+//   usuario,
+//   puedeEditarDatos = true,
+//   puedeCambiarRolEstado = true,
+//   avisoPermisos,
+// }: EditarUsuarioFormProps) {
+//   const router = useRouter();
+//   const [rolSeleccionado, setRolSeleccionado] = useState<UserRole>(usuario.rol);
+//   const [state, formAction] = useFormState(actualizarUsuarioAction, initialState);
+
+//   useEffect(() => {
+//     if (state.ok) {
+//       router.refresh();
+//     }
+//   }, [router, state.ok]);
+
+//   const limiteActual =
+//     usuario.rol === "cobrador"
+//       ? usuario.limiteCajaCobrador || LIMITE_CAJA_MINIMO
+//       : LIMITE_CAJA_MINIMO;
+
+//   const textFieldsReadOnly = !puedeEditarDatos;
+//   const rolEstadoDisabled = !puedeCambiarRolEstado;
+//   const submitDisabled = !puedeEditarDatos;
+
+//   return (
+//     <form action={formAction}>
+//       <input type="hidden" name="id" value={usuario.id} />
+
+//       {rolEstadoDisabled ? (
+//         <>
+//           <input type="hidden" name="rol" value={usuario.rol} />
+//           <input type="hidden" name="estado" value={usuario.estado} />
+//         </>
+//       ) : null}
+
+//       {avisoPermisos ? (
+//         <div
+//           className={`mb-3 flex gap-2 rounded-lg border px-3 py-2 text-[12px] leading-5 ${
+//             puedeEditarDatos
+//               ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
+//               : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
+//           }`}
+//         >
+//           <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+//           <span>{avisoPermisos}</span>
+//         </div>
+//       ) : null}
+
+//       <div className="rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50">
+//         <SectionTitle
+//           title="Información básica"
+//           description="Datos visibles para identificar al usuario dentro del sistema."
+//         />
+
+//         <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+//           <div>
+//             <FieldLabel htmlFor="nombre">Nombre</FieldLabel>
+
+//             <input
+//               id="nombre"
+//               name="nombre"
+//               type="text"
+//               readOnly={textFieldsReadOnly}
+//               defaultValue={usuario.nombre}
+//               className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+//             />
+//           </div>
+
+//           <div>
+//             <FieldLabel htmlFor="apellido">Apellido</FieldLabel>
+
+//             <input
+//               id="apellido"
+//               name="apellido"
+//               type="text"
+//               readOnly={textFieldsReadOnly}
+//               defaultValue={usuario.apellido}
+//               className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+//             />
+//           </div>
+
+//           <div>
+//             <FieldLabel htmlFor="dni">DNI</FieldLabel>
+
+//             <input
+//               id="dni"
+//               name="dni"
+//               type="text"
+//               inputMode="numeric"
+//               readOnly={textFieldsReadOnly}
+//               defaultValue={usuario.dni}
+//               className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+//             />
+//           </div>
+
+//           <div>
+//             <FieldLabel htmlFor="email">Email</FieldLabel>
+
+//             <input
+//               id="email"
+//               name="email"
+//               type="email"
+//               readOnly={textFieldsReadOnly}
+//               defaultValue={usuario.email}
+//               className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+//             />
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="mt-3 rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50">
+//         <SectionTitle
+//           title="Acceso y operación"
+//           description="Rol, estado de acceso y límite de caja cuando corresponda."
+//         />
+
+//         <div
+//           className={`grid gap-2 ${
+//             rolSeleccionado === "cobrador"
+//               ? "md:grid-cols-2 xl:grid-cols-[140px_140px_minmax(220px,1fr)_150px]"
+//               : "md:grid-cols-2 xl:grid-cols-[140px_140px_minmax(220px,1fr)]"
+//           }`}
+//         >
+//           <div>
+//             <FieldLabel htmlFor="rol">Rol</FieldLabel>
+
+//             <SelectField
+//               id="rol"
+//               name="rol"
+//               value={rolSeleccionado}
+//               disabled={rolEstadoDisabled}
+//               onChange={(event) =>
+//                 setRolSeleccionado(event.target.value as UserRole)
+//               }
+//             >
+//               <option value="admin">Administrador</option>
+//               <option value="cobrador">Cobrador</option>
+//               <option value="cliente">Cliente</option>
+//             </SelectField>
+//           </div>
+
+//           <div>
+//             <FieldLabel htmlFor="estado">Estado</FieldLabel>
+
+//             <SelectField
+//               id="estado"
+//               name="estado"
+//               defaultValue={usuario.estado}
+//               disabled={rolEstadoDisabled}
+//             >
+//               <option value="activo">Activo</option>
+//               <option value="suspendido">Suspendido</option>
+//             </SelectField>
+//           </div>
+
+//           {rolSeleccionado === "cobrador" ? (
+//             <>
+//               <div>
+//                 <FieldLabel htmlFor="limiteCajaCobradorDisplay">
+//                   Límite máximo de caja
+//                 </FieldLabel>
+
+//                 <LimiteCajaInput
+//                   defaultValue={limiteActual}
+//                   disabled={!puedeEditarDatos}
+//                 />
+//               </div>
+
+//               <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/55 dark:shadow-black/10">
+//                 <div className="flex items-center gap-2">
+//                   <Banknote className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+
+//                   <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//                     Mínimo
+//                   </p>
+//                 </div>
+
+//                 <p className="mt-1 text-[12px] font-medium text-slate-950 dark:text-white">
+//                   {formatMoney(LIMITE_CAJA_MINIMO)}
+//                 </p>
+//               </div>
+//             </>
+//           ) : (
+//             <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-[12px] leading-5 text-slate-600 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-400 dark:shadow-black/10">
+//               El límite de caja solo se configura cuando el usuario tiene rol
+//               cobrador.
+//             </div>
+//           )}
+//         </div>
+//       </div>
+
+//       {state.message ? (
+//         <div
+//           className={`mt-3 rounded-lg border px-3 py-2 text-[12px] leading-5 ${
+//             state.ok
+//               ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+//               : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
+//           }`}
+//         >
+//           {state.message}
+//         </div>
+//       ) : null}
+
+//       <div className="mt-3 flex justify-end">
+//         <SubmitButton disabled={submitDisabled} />
+//       </div>
+//     </form>
+//   );
+// }
 
 "use client";
 
@@ -1769,11 +2274,15 @@ import {
   Save,
   ShieldAlert,
 } from "lucide-react";
+
 import {
   actualizarUsuarioAction,
   type UsuarioActionState,
 } from "@/actions/usuario.actions";
-import type { UserRole, UsuarioSafe } from "@/types/usuario.types";
+import type {
+  UserRole,
+  UsuarioSafe,
+} from "@/types/usuario.types";
 
 type EditarUsuarioFormProps = {
   usuario: UsuarioSafe;
@@ -1790,31 +2299,53 @@ const initialState: UsuarioActionState = {
 };
 
 const inputClass =
-  "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-[12px] font-normal text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:placeholder:text-slate-600 dark:focus:border-blue-500";
+  "h-9 w-full rounded-lg border border-slate-300 bg-white px-3 " +
+  "text-[12px] font-normal text-slate-950 outline-none transition " +
+  "placeholder:text-slate-400 focus:border-blue-500 " +
+  "focus:ring-2 focus:ring-blue-500/10 " +
+  "dark:border-[#354462] dark:bg-[#0b1326] dark:text-white " +
+  "dark:placeholder:text-slate-500 dark:focus:border-indigo-500 " +
+  "dark:focus:ring-indigo-500/15";
 
 const readOnlyInputClass =
-  "h-8 w-full rounded-lg border border-slate-300 bg-slate-100 px-2.5 text-[12px] font-normal text-slate-500 outline-none dark:border-slate-700 dark:bg-slate-950/45 dark:text-slate-500";
+  "h-9 w-full cursor-not-allowed rounded-lg border border-slate-300 " +
+  "bg-slate-100 px-3 text-[12px] font-normal text-slate-500 outline-none " +
+  "dark:border-[#354462] dark:bg-[#0b1326]/70 dark:text-slate-500";
 
 const selectClass =
-  "h-8 w-full appearance-none rounded-lg border border-slate-300 bg-white px-2.5 pr-8 text-[12px] font-normal text-slate-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-700 dark:bg-slate-950/60 dark:text-white dark:focus:border-blue-500";
+  "h-9 w-full appearance-none rounded-lg border border-slate-300 " +
+  "bg-white px-3 pr-9 text-[12px] font-normal text-slate-950 " +
+  "outline-none transition focus:border-blue-500 " +
+  "focus:ring-2 focus:ring-blue-500/10 " +
+  "dark:border-[#354462] dark:bg-[#0b1326] dark:text-white " +
+  "dark:focus:border-indigo-500 dark:focus:ring-indigo-500/15";
 
 const disabledSelectClass =
-  "h-8 w-full appearance-none rounded-lg border border-slate-300 bg-slate-100 px-2.5 pr-8 text-[12px] font-normal text-slate-500 outline-none dark:border-slate-700 dark:bg-slate-950/45 dark:text-slate-500";
+  "h-9 w-full cursor-not-allowed appearance-none rounded-lg " +
+  "border border-slate-300 bg-slate-100 px-3 pr-9 " +
+  "text-[12px] font-normal text-slate-500 outline-none " +
+  "dark:border-[#354462] dark:bg-[#0b1326]/70 dark:text-slate-500";
 
-const buttonPrimaryClass =
-  "inline-flex h-8 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 text-[12px] font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70 active:scale-[0.99] dark:bg-blue-500 dark:hover:bg-blue-400";
-
-const buttonDisabledClass =
-  "inline-flex h-8 cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-slate-300 bg-slate-100 px-3 text-[12px] font-medium text-slate-400 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-600";
-
-function extraerEntero(value?: number | string | null) {
-  if (value === null || value === undefined) return "";
+function extraerEntero(
+  value?: number | string | null,
+) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
 
   const raw = String(value).trim();
 
-  if (!raw) return "";
+  if (!raw) {
+    return "";
+  }
 
-  const sinMoneda = raw.replace(/\$/g, "").replace(/\s/g, "");
+  const sinMoneda = raw
+    .replace(/\$/g, "")
+    .replace(/\s/g, "");
+
   const parteEntera = sinMoneda.includes(",")
     ? sinMoneda.split(",")[0]
     : sinMoneda;
@@ -1822,54 +2353,71 @@ function extraerEntero(value?: number | string | null) {
   return parteEntera.replace(/\D/g, "");
 }
 
-function formatCurrencyFromDigits(digits: string) {
+function formatCurrencyFromDigits(
+  digits: string,
+) {
   const cleanDigits = extraerEntero(digits);
 
-  if (!cleanDigits) return "$ ";
+  if (!cleanDigits) {
+    return "$ ";
+  }
 
-  const formattedInteger = cleanDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const formattedInteger = cleanDigits.replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    ".",
+  );
 
   return `$ ${formattedInteger},00`;
 }
 
-function formatMoney(value?: number | null) {
+function formatMoney(
+  value?: number | null,
+) {
   const number = Number(value || 0);
-  const [integerPart, decimalPart] = number.toFixed(2).split(".");
-  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-  return `$ ${formattedInteger},${decimalPart}`;
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(number);
 }
 
-function getNombreCompleto(usuario: UsuarioSafe) {
-  const apellido = String(usuario.apellido || "").trim();
-  const nombre = String(usuario.nombre || "").trim();
-
-  const completo = `${apellido}, ${nombre}`
-    .replace(/^,\s*/, "")
-    .replace(/,\s*$/, "")
-    .trim();
-
-  return completo || "Usuario";
-}
-
-function SubmitButton({ disabled }: { disabled?: boolean }) {
+function SubmitButton({
+  disabled,
+}: {
+  disabled?: boolean;
+}) {
   const { pending } = useFormStatus();
+
+  const isDisabled = pending || disabled;
 
   return (
     <button
       type="submit"
-      disabled={pending || disabled}
-      className={disabled ? buttonDisabledClass : buttonPrimaryClass}
+      disabled={isDisabled}
+      className={`
+        inline-flex h-9 w-full items-center
+        justify-center gap-2 rounded-lg
+        px-4 text-[12px] font-medium
+        leading-none transition
+        sm:w-auto
+        ${
+          disabled
+            ? "cursor-not-allowed border border-slate-300 bg-slate-100 text-slate-400 dark:border-[#354462] dark:bg-[#0b1326] dark:text-slate-600"
+            : "border border-blue-600 bg-blue-600 text-white shadow-sm hover:border-blue-700 hover:bg-blue-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 dark:border-indigo-500 dark:bg-indigo-500 dark:hover:border-indigo-400 dark:hover:bg-indigo-400"
+        }
+      `}
     >
       {pending ? (
         <>
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          Guardando
+          <span>Guardando</span>
         </>
       ) : (
         <>
           <Save className="h-3.5 w-3.5" />
-          Guardar cambios
+          <span>Guardar cambios</span>
         </>
       )}
     </button>
@@ -1886,7 +2434,13 @@ function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400"
+      className="
+        mb-1.5 block text-[10px]
+        font-medium uppercase
+        tracking-[0.08em]
+        text-slate-500
+        dark:text-slate-400
+      "
     >
       {children}
     </label>
@@ -1906,7 +2460,9 @@ function SelectField({
   name: string;
   value?: string;
   defaultValue?: string;
-  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (
+    event: ChangeEvent<HTMLSelectElement>,
+  ) => void;
   disabled?: boolean;
   children: ReactNode;
 }) {
@@ -1919,12 +2475,24 @@ function SelectField({
         defaultValue={defaultValue}
         onChange={onChange}
         disabled={disabled}
-        className={disabled ? disabledSelectClass : selectClass}
+        className={
+          disabled
+            ? disabledSelectClass
+            : selectClass
+        }
       >
         {children}
       </select>
 
-      <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+      <ChevronDown
+        className="
+          pointer-events-none absolute
+          right-3 top-1/2 h-3.5 w-3.5
+          -translate-y-1/2
+          text-slate-400
+          dark:text-slate-500
+        "
+      />
     </div>
   );
 }
@@ -1937,22 +2505,35 @@ function LimiteCajaInput({
   disabled?: boolean;
 }) {
   const initialDigits = useMemo(() => {
-    return extraerEntero(defaultValue || LIMITE_CAJA_MINIMO);
+    return extraerEntero(
+      defaultValue || LIMITE_CAJA_MINIMO,
+    );
   }, [defaultValue]);
 
-  const [digitsValue, setDigitsValue] = useState(initialDigits);
-  const [displayValue, setDisplayValue] = useState(
-    formatCurrencyFromDigits(initialDigits),
-  );
+  const [digitsValue, setDigitsValue] =
+    useState(initialDigits);
+
+  const [displayValue, setDisplayValue] =
+    useState(
+      formatCurrencyFromDigits(initialDigits),
+    );
 
   function updateValue(nextValue: string) {
-    const nextDigits = extraerEntero(nextValue);
+    const nextDigits =
+      extraerEntero(nextValue);
+
     setDigitsValue(nextDigits);
-    setDisplayValue(formatCurrencyFromDigits(nextDigits));
+    setDisplayValue(
+      formatCurrencyFromDigits(nextDigits),
+    );
   }
 
-  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (disabled) return;
+  function handleKeyDown(
+    event: KeyboardEvent<HTMLInputElement>,
+  ) {
+    if (disabled) {
+      return;
+    }
 
     const allowedControlKeys = [
       "Tab",
@@ -1966,46 +2547,79 @@ function LimiteCajaInput({
       "Enter",
     ];
 
-    if (allowedControlKeys.includes(event.key)) return;
-    if (event.ctrlKey || event.metaKey) return;
+    if (
+      allowedControlKeys.includes(event.key)
+    ) {
+      return;
+    }
+
+    if (event.ctrlKey || event.metaKey) {
+      return;
+    }
 
     if (event.key === "Backspace") {
       event.preventDefault();
-      updateValue(digitsValue.slice(0, -1));
+
+      updateValue(
+        digitsValue.slice(0, -1),
+      );
+
       return;
     }
 
     if (event.key === "Delete") {
       event.preventDefault();
       updateValue("");
+
       return;
     }
 
     if (/^\d$/.test(event.key)) {
       event.preventDefault();
-      updateValue(digitsValue === "0" ? event.key : `${digitsValue}${event.key}`);
+
+      updateValue(
+        digitsValue === "0"
+          ? event.key
+          : `${digitsValue}${event.key}`,
+      );
+
       return;
     }
 
     event.preventDefault();
   }
 
-  function handlePaste(event: ClipboardEvent<HTMLInputElement>) {
-    if (disabled) return;
+  function handlePaste(
+    event: ClipboardEvent<HTMLInputElement>,
+  ) {
+    if (disabled) {
+      return;
+    }
 
     event.preventDefault();
-    updateValue(event.clipboardData.getData("text"));
+
+    updateValue(
+      event.clipboardData.getData("text"),
+    );
   }
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    if (disabled) return;
+  function handleChange(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    if (disabled) {
+      return;
+    }
 
     updateValue(event.target.value);
   }
 
   return (
     <>
-      <input type="hidden" name="limiteCajaCobrador" value={digitsValue} />
+      <input
+        type="hidden"
+        name="limiteCajaCobrador"
+        value={digitsValue}
+      />
 
       <input
         id="limiteCajaCobradorDisplay"
@@ -2017,13 +2631,17 @@ function LimiteCajaInput({
         onChange={handleChange}
         readOnly={disabled}
         placeholder="$ 100.000,00"
-        className={disabled ? readOnlyInputClass : inputClass}
+        className={
+          disabled
+            ? readOnlyInputClass
+            : inputClass
+        }
       />
     </>
   );
 }
 
-function SectionTitle({
+function SectionHeader({
   title,
   description,
 }: {
@@ -2032,11 +2650,22 @@ function SectionTitle({
 }) {
   return (
     <div className="mb-3">
-      <h3 className="text-sm font-medium text-slate-950 dark:text-white">
+      <h3
+        className="
+          text-sm font-medium
+          text-slate-950 dark:text-white
+        "
+      >
         {title}
       </h3>
 
-      <p className="mt-0.5 text-[12px] leading-5 text-slate-600 dark:text-slate-400">
+      <p
+        className="
+          mt-0.5 text-[11px] leading-5
+          text-slate-500 dark:text-slate-400
+          sm:text-[12px]
+        "
+      >
         {description}
       </p>
     </div>
@@ -2050,8 +2679,14 @@ export function EditarUsuarioForm({
   avisoPermisos,
 }: EditarUsuarioFormProps) {
   const router = useRouter();
-  const [rolSeleccionado, setRolSeleccionado] = useState<UserRole>(usuario.rol);
-  const [state, formAction] = useFormState(actualizarUsuarioAction, initialState);
+
+  const [rolSeleccionado, setRolSeleccionado] =
+    useState<UserRole>(usuario.rol);
+
+  const [state, formAction] = useFormState(
+    actualizarUsuarioAction,
+    initialState,
+  );
 
   useEffect(() => {
     if (state.ok) {
@@ -2061,46 +2696,88 @@ export function EditarUsuarioForm({
 
   const limiteActual =
     usuario.rol === "cobrador"
-      ? usuario.limiteCajaCobrador || LIMITE_CAJA_MINIMO
+      ? usuario.limiteCajaCobrador ||
+        LIMITE_CAJA_MINIMO
       : LIMITE_CAJA_MINIMO;
 
-  const textFieldsReadOnly = !puedeEditarDatos;
-  const rolEstadoDisabled = !puedeCambiarRolEstado;
-  const submitDisabled = !puedeEditarDatos;
+  const textFieldsReadOnly =
+    !puedeEditarDatos;
+
+  const rolEstadoDisabled =
+    !puedeCambiarRolEstado;
+
+  const submitDisabled =
+    !puedeEditarDatos;
 
   return (
     <form action={formAction}>
-      <input type="hidden" name="id" value={usuario.id} />
+      <input
+        type="hidden"
+        name="id"
+        value={usuario.id}
+      />
 
       {rolEstadoDisabled ? (
         <>
-          <input type="hidden" name="rol" value={usuario.rol} />
-          <input type="hidden" name="estado" value={usuario.estado} />
+          <input
+            type="hidden"
+            name="rol"
+            value={usuario.rol}
+          />
+
+          <input
+            type="hidden"
+            name="estado"
+            value={usuario.estado}
+          />
         </>
       ) : null}
 
       {avisoPermisos ? (
         <div
-          className={`mb-3 flex gap-2 rounded-lg border px-3 py-2 text-[12px] leading-5 ${
-            puedeEditarDatos
-              ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
-              : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
-          }`}
+          className={`
+            mb-3 flex gap-2 rounded-lg
+            border px-3 py-2
+            text-[11px] leading-5
+            sm:text-[12px]
+            ${
+              puedeEditarDatos
+                ? "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300"
+                : "border-red-200 bg-red-50 text-red-700 dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300"
+            }
+          `}
         >
           <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+
           <span>{avisoPermisos}</span>
         </div>
       ) : null}
 
-      <div className="rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50">
-        <SectionTitle
+      <section
+        className="
+          rounded-lg border
+          border-slate-200 bg-slate-50
+          p-3
+          dark:border-[#2b3957]
+          dark:bg-[#0d172a]
+        "
+      >
+        <SectionHeader
           title="Información básica"
-          description="Datos visibles para identificar al usuario dentro del sistema."
+          description="Datos utilizados para identificar al usuario dentro del sistema."
         />
 
-        <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+        <div
+          className="
+            grid gap-3
+            md:grid-cols-2
+            xl:grid-cols-4
+          "
+        >
           <div>
-            <FieldLabel htmlFor="nombre">Nombre</FieldLabel>
+            <FieldLabel htmlFor="nombre">
+              Nombre
+            </FieldLabel>
 
             <input
               id="nombre"
@@ -2108,12 +2785,18 @@ export function EditarUsuarioForm({
               type="text"
               readOnly={textFieldsReadOnly}
               defaultValue={usuario.nombre}
-              className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+              className={
+                textFieldsReadOnly
+                  ? readOnlyInputClass
+                  : inputClass
+              }
             />
           </div>
 
           <div>
-            <FieldLabel htmlFor="apellido">Apellido</FieldLabel>
+            <FieldLabel htmlFor="apellido">
+              Apellido
+            </FieldLabel>
 
             <input
               id="apellido"
@@ -2121,12 +2804,18 @@ export function EditarUsuarioForm({
               type="text"
               readOnly={textFieldsReadOnly}
               defaultValue={usuario.apellido}
-              className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+              className={
+                textFieldsReadOnly
+                  ? readOnlyInputClass
+                  : inputClass
+              }
             />
           </div>
 
           <div>
-            <FieldLabel htmlFor="dni">DNI</FieldLabel>
+            <FieldLabel htmlFor="dni">
+              DNI
+            </FieldLabel>
 
             <input
               id="dni"
@@ -2135,12 +2824,18 @@ export function EditarUsuarioForm({
               inputMode="numeric"
               readOnly={textFieldsReadOnly}
               defaultValue={usuario.dni}
-              className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+              className={
+                textFieldsReadOnly
+                  ? readOnlyInputClass
+                  : inputClass
+              }
             />
           </div>
 
           <div>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">
+              Email
+            </FieldLabel>
 
             <input
               id="email"
@@ -2148,27 +2843,45 @@ export function EditarUsuarioForm({
               type="email"
               readOnly={textFieldsReadOnly}
               defaultValue={usuario.email}
-              className={textFieldsReadOnly ? readOnlyInputClass : inputClass}
+              className={
+                textFieldsReadOnly
+                  ? readOnlyInputClass
+                  : inputClass
+              }
             />
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="mt-3 rounded-lg border border-slate-300 bg-slate-50 p-2.5 dark:border-slate-700 dark:bg-slate-950/50">
-        <SectionTitle
+      <section
+        className="
+          mt-3 rounded-lg border
+          border-slate-200 bg-slate-50
+          p-3
+          dark:border-[#2b3957]
+          dark:bg-[#0d172a]
+        "
+      >
+        <SectionHeader
           title="Acceso y operación"
           description="Rol, estado de acceso y límite de caja cuando corresponda."
         />
 
         <div
-          className={`grid gap-2 ${
-            rolSeleccionado === "cobrador"
-              ? "md:grid-cols-2 xl:grid-cols-[140px_140px_minmax(220px,1fr)_150px]"
-              : "md:grid-cols-2 xl:grid-cols-[140px_140px_minmax(220px,1fr)]"
-          }`}
+          className={`
+            grid gap-3
+            md:grid-cols-2
+            ${
+              rolSeleccionado === "cobrador"
+                ? "xl:grid-cols-[150px_150px_minmax(220px,1fr)_170px]"
+                : "xl:grid-cols-[180px_180px_minmax(260px,1fr)]"
+            }
+          `}
         >
           <div>
-            <FieldLabel htmlFor="rol">Rol</FieldLabel>
+            <FieldLabel htmlFor="rol">
+              Rol
+            </FieldLabel>
 
             <SelectField
               id="rol"
@@ -2176,17 +2889,29 @@ export function EditarUsuarioForm({
               value={rolSeleccionado}
               disabled={rolEstadoDisabled}
               onChange={(event) =>
-                setRolSeleccionado(event.target.value as UserRole)
+                setRolSeleccionado(
+                  event.target.value as UserRole,
+                )
               }
             >
-              <option value="admin">Administrador</option>
-              <option value="cobrador">Cobrador</option>
-              <option value="cliente">Cliente</option>
+              <option value="admin">
+                Administrador
+              </option>
+
+              <option value="cobrador">
+                Cobrador
+              </option>
+
+              <option value="cliente">
+                Cliente
+              </option>
             </SelectField>
           </div>
 
           <div>
-            <FieldLabel htmlFor="estado">Estado</FieldLabel>
+            <FieldLabel htmlFor="estado">
+              Estado
+            </FieldLabel>
 
             <SelectField
               id="estado"
@@ -2194,8 +2919,13 @@ export function EditarUsuarioForm({
               defaultValue={usuario.estado}
               disabled={rolEstadoDisabled}
             >
-              <option value="activo">Activo</option>
-              <option value="suspendido">Suspendido</option>
+              <option value="activo">
+                Activo
+              </option>
+
+              <option value="suspendido">
+                Suspendido
+              </option>
             </SelectField>
           </div>
 
@@ -2212,43 +2942,92 @@ export function EditarUsuarioForm({
                 />
               </div>
 
-              <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/55 dark:shadow-black/10">
-                <div className="flex items-center gap-2">
-                  <Banknote className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+              <div
+                className="
+                  flex min-h-9 items-center
+                  justify-between gap-3
+                  rounded-lg border
+                  border-blue-200 bg-blue-50
+                  px-3 py-2
+                  dark:border-indigo-800/70
+                  dark:bg-indigo-950/25
+                "
+              >
+                <span
+                  className="
+                    inline-flex items-center
+                    gap-2 text-[11px]
+                    text-blue-700
+                    dark:text-indigo-300
+                  "
+                >
+                  <Banknote className="h-4 w-4 shrink-0" />
 
-                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                    Mínimo
-                  </p>
-                </div>
+                  Mínimo
+                </span>
 
-                <p className="mt-1 text-[12px] font-medium text-slate-950 dark:text-white">
-                  {formatMoney(LIMITE_CAJA_MINIMO)}
-                </p>
+                <strong
+                  className="
+                    whitespace-nowrap text-[12px]
+                    font-medium tabular-nums
+                    text-blue-800
+                    dark:text-indigo-200
+                  "
+                >
+                  {formatMoney(
+                    LIMITE_CAJA_MINIMO,
+                  )}
+                </strong>
               </div>
             </>
           ) : (
-            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-[12px] leading-5 text-slate-600 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-400 dark:shadow-black/10">
-              El límite de caja solo se configura cuando el usuario tiene rol
-              cobrador.
+            <div
+              className="
+                flex min-h-9 items-center
+                rounded-lg border
+                border-slate-200 bg-white
+                px-3 py-2
+                text-[11px] leading-5
+                text-slate-500
+                dark:border-[#354462]
+                dark:bg-[#111b31]
+                dark:text-slate-400
+                sm:text-[12px]
+              "
+            >
+              El límite de caja se habilita únicamente
+              cuando el usuario tiene rol cobrador.
             </div>
           )}
         </div>
-      </div>
+      </section>
 
       {state.message ? (
         <div
-          className={`mt-3 rounded-lg border px-3 py-2 text-[12px] leading-5 ${
-            state.ok
-              ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-              : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
-          }`}
+          role="status"
+          className={`
+            mt-3 rounded-lg border px-3 py-2
+            text-[11px] leading-5
+            sm:text-[12px]
+            ${
+              state.ok
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300"
+                : "border-red-200 bg-red-50 text-red-700 dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300"
+            }
+          `}
         >
           {state.message}
         </div>
       ) : null}
 
-      <div className="mt-3 flex justify-end">
-        <SubmitButton disabled={submitDisabled} />
+      <div
+        className="
+          mt-3 flex justify-end
+        "
+      >
+        <SubmitButton
+          disabled={submitDisabled}
+        />
       </div>
     </form>
   );
