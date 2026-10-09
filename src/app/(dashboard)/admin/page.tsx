@@ -7474,28 +7474,941 @@
 //   );
 // }
 
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import {
-  Activity,
-  Banknote,
-  CalendarClock,
-  CheckCircle2,
-  CircleDollarSign,
-  Clock3,
-  FileClock,
-  FileText,
-  Gauge,
-  ReceiptText,
-  ShieldCheck,
-  UserRound,
-  UsersRound,
-  WalletCards,
-  Wifi,
-} from "lucide-react";
+// import Link from "next/link";
+// import { redirect } from "next/navigation";
+// import type { LucideIcon } from "lucide-react";
+// import {
+//   Activity,
+//   Banknote,
+//   CalendarClock,
+//   CheckCircle2,
+//   CircleDollarSign,
+//   Clock3,
+//   FileClock,
+//   FileText,
+//   Gauge,
+//   ReceiptText,
+//   ShieldCheck,
+//   UserRound,
+//   UsersRound,
+//   WalletCards,
+//   Wifi,
+// } from "lucide-react";
 
-import { PageShell } from "@/components/ui/PageShell";
+// import { PageShell } from "@/components/ui/PageShell";
+// import { getCurrentUser } from "@/lib/current-user";
+// import {
+//   obtenerAdminDashboardResumen,
+//   type AdminDashboardCobradorCard,
+//   type AdminDashboardResumen,
+//   type AdminDashboardUltimoMovimiento,
+// } from "@/services/admin-dashboard.service";
+
+// export const metadata = {
+//   title: "Administrador",
+// };
+
+// function formatMoney(value: number) {
+//   return new Intl.NumberFormat("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   }).format(Number(value || 0));
+// }
+
+// function formatDate(value: string | null) {
+//   if (!value) {
+//     return "Sin retiro";
+//   }
+
+//   const date = new Date(value);
+
+//   if (Number.isNaN(date.getTime())) {
+//     return "Sin retiro";
+//   }
+
+//   return new Intl.DateTimeFormat("es-AR", {
+//     day: "2-digit",
+//     month: "2-digit",
+//     year: "numeric",
+//     hour: "2-digit",
+//     minute: "2-digit",
+//   }).format(date);
+// }
+
+// function movimientoLabel(tipo: string) {
+//   return (
+//     {
+//       factura: "Factura",
+//       pago: "Cobranza",
+//       nota_debito: "Nota de débito",
+//       nota_credito: "Nota de crédito",
+//       ajuste: "Ajuste",
+//     }[tipo] || "Movimiento"
+//   );
+// }
+
+// function getInitials(name: string) {
+//   return (
+//     name
+//       .replace(",", " ")
+//       .split(" ")
+//       .map((item) => item.trim())
+//       .filter(Boolean)
+//       .slice(0, 2)
+//       .map((item) => item[0]?.toUpperCase())
+//       .join("") || "CB"
+//   );
+// }
+
+// const panelClass =
+//   "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+//   "dark:border-[#263451] dark:bg-[#111b31] " +
+//   "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
+
+// const toneClasses = {
+//   primary: "text-blue-700 dark:text-indigo-300",
+//   danger: "text-red-700 dark:text-red-300",
+//   warning: "text-amber-700 dark:text-amber-300",
+//   neutral: "text-slate-700 dark:text-slate-300",
+//   success: "text-emerald-700 dark:text-emerald-300",
+// };
+
+// type KpiCardProps = {
+//   title: string;
+//   value: string;
+//   detail: string;
+//   href: string;
+//   icon: LucideIcon;
+//   tone?: keyof typeof toneClasses;
+// };
+
+// function KpiCard({
+//   title,
+//   value,
+//   detail,
+//   href,
+//   icon: Icon,
+//   tone = "primary",
+// }: KpiCardProps) {
+//   return (
+//     <Link
+//       href={href}
+//       className="
+//         group flex min-h-[114px] flex-col justify-between
+//         rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm
+//         transition
+//         hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md
+//         dark:border-[#263451] dark:bg-[#111b31]
+//         dark:hover:border-indigo-500/70
+//       "
+//     >
+//       <div className="flex items-start justify-between gap-3">
+//         <p
+//           className="
+//             text-[10px] font-medium uppercase tracking-[0.08em]
+//             text-slate-500 dark:text-slate-300
+//           "
+//         >
+//           {title}
+//         </p>
+
+//         <Icon
+//           className={`
+//             h-4 w-4 shrink-0
+//             ${toneClasses[tone]}
+//           `}
+//         />
+//       </div>
+
+//       <div>
+//         <p
+//           className={`
+//             truncate text-[22px] font-medium tabular-nums
+//             ${
+//               tone === "danger"
+//                 ? toneClasses.danger
+//                 : "text-slate-950 dark:text-white"
+//             }
+//           `}
+//         >
+//           {value}
+//         </p>
+
+//         <p
+//           className={`
+//             mt-1 truncate text-[11px] font-normal
+//             ${toneClasses[tone]}
+//           `}
+//         >
+//           {detail}
+//         </p>
+//       </div>
+//     </Link>
+//   );
+// }
+
+// function collectorStatus(cobrador: AdminDashboardCobradorCard) {
+//   if (cobrador.tieneCodigoPendiente) {
+//     return {
+//       label: "Código activo",
+//       dotClass: "bg-amber-500",
+//       className:
+//         "border-amber-200 bg-amber-50 text-amber-700 " +
+//         "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
+//     };
+//   }
+
+//   if (cobrador.saldoActual > 0) {
+//     return {
+//       label: "Pendiente",
+//       dotClass: "bg-red-500",
+//       className:
+//         "border-red-200 bg-red-50 text-red-700 " +
+//         "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
+//     };
+//   }
+
+//   if (cobrador.saldoActual < 0) {
+//     return {
+//       label: "A compensar",
+//       dotClass: "bg-blue-500",
+//       className:
+//         "border-blue-200 bg-blue-50 text-blue-700 " +
+//         "dark:border-blue-800/70 dark:bg-blue-950/25 dark:text-blue-300",
+//     };
+//   }
+
+//   return {
+//     label: "Al día",
+//     dotClass: "bg-emerald-500",
+//     className:
+//       "border-emerald-200 bg-emerald-50 text-emerald-700 " +
+//       "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
+//   };
+// }
+
+// function CollectorsPanel({
+//   cobradores,
+// }: {
+//   cobradores: AdminDashboardCobradorCard[];
+// }) {
+//   return (
+//     <section className={panelClass}>
+//       <div
+//         className="
+//           flex items-center gap-3
+//           border-b border-slate-200 bg-slate-50/80 px-4 py-3
+//           dark:border-[#263451] dark:bg-[#0e172a]
+//         "
+//       >
+//         <WalletCards className="h-5 w-5 shrink-0 text-blue-700 dark:text-indigo-300" />
+
+//         <h2 className="truncate text-base font-medium text-slate-950 dark:text-white">
+//           Cuentas activas de cobradores
+//         </h2>
+//       </div>
+
+//       {cobradores.length === 0 ? (
+//         <p className="p-6 text-sm text-slate-500 dark:text-slate-300">
+//           Todavía no hay usuarios con rol cobrador.
+//         </p>
+//       ) : (
+//         <div className="overflow-x-auto">
+//           <div className="min-w-[790px]">
+//             <div
+//               className="
+//                 grid grid-cols-[1.35fr_1fr_1fr_110px_90px]
+//                 bg-slate-100 px-4 py-2.5
+//                 text-[10px] font-medium uppercase tracking-[0.07em]
+//                 text-slate-500
+//                 dark:bg-[#0b1326] dark:text-slate-300
+//               "
+//             >
+//               <span>Nombre</span>
+//               <span>Balance actual</span>
+//               <span>Último retiro</span>
+//               <span>Estado</span>
+//               <span className="text-right">Acciones</span>
+//             </div>
+
+//             <div className="divide-y divide-slate-200 dark:divide-[#263451]">
+//               {cobradores.slice(0, 8).map((cobrador) => {
+//                 const status = collectorStatus(cobrador);
+
+//                 return (
+//                   <Link
+//                     key={cobrador.cobradorId}
+//                     href="/admin/caja-cobradores"
+//                     aria-label={`Ver caja del cobrador ${cobrador.nombreCompleto}`}
+//                     className="
+//                       group grid grid-cols-[1.35fr_1fr_1fr_110px_90px]
+//                       items-center px-4 py-3
+//                       transition
+//                       hover:bg-blue-50/70
+//                       focus-visible:bg-blue-50
+//                       focus-visible:outline-none
+//                       focus-visible:ring-2
+//                       focus-visible:ring-inset
+//                       focus-visible:ring-blue-500
+//                       dark:hover:bg-[#16223c]
+//                       dark:focus-visible:bg-[#16223c]
+//                       dark:focus-visible:ring-indigo-500
+//                     "
+//                   >
+//                     <div className="flex min-w-0 items-center gap-3">
+//                       <span
+//                         className="
+//                           flex h-8 w-8 shrink-0 items-center justify-center
+//                           rounded-full bg-slate-100
+//                           text-[10px] font-medium text-slate-600
+//                           transition
+//                           group-hover:bg-blue-100
+//                           group-hover:text-blue-700
+//                           dark:bg-[#24324e]
+//                           dark:text-slate-100
+//                           dark:group-hover:bg-indigo-950/50
+//                           dark:group-hover:text-indigo-300
+//                         "
+//                       >
+//                         {getInitials(cobrador.nombreCompleto)}
+//                       </span>
+
+//                       <div className="min-w-0">
+//                         <p
+//                           className="
+//                             truncate text-xs font-medium
+//                             text-slate-900
+//                             transition
+//                             group-hover:text-blue-800
+//                             dark:text-white
+//                             dark:group-hover:text-indigo-200
+//                           "
+//                         >
+//                           {cobrador.nombreCompleto}
+//                         </p>
+
+//                         <p className="mt-0.5 truncate text-[10px] font-normal text-slate-500 dark:text-slate-300">
+//                           {cobrador.email || "Sin email"}
+//                         </p>
+//                       </div>
+//                     </div>
+
+//                     <p
+//                       className={`
+//                         truncate text-sm font-medium tabular-nums
+//                         ${
+//                           cobrador.saldoActual > 0
+//                             ? "text-blue-700 dark:text-indigo-300"
+//                             : cobrador.saldoActual < 0
+//                               ? "text-amber-700 dark:text-amber-300"
+//                               : "text-slate-800 dark:text-slate-100"
+//                         }
+//                       `}
+//                     >
+//                       {formatMoney(cobrador.saldoActual)}
+//                     </p>
+
+//                     <p className="truncate text-xs font-normal text-slate-600 dark:text-slate-200">
+//                       {formatDate(cobrador.ultimoRetiroFecha)}
+//                     </p>
+
+//                     <span
+//                       className={`
+//                         inline-flex min-w-[96px] items-center
+//                         justify-center gap-1.5
+//                         rounded-md border px-2.5 py-1
+//                         text-[10px] font-medium
+//                         ${status.className}
+//                       `}
+//                     >
+//                       <span
+//                         className={`
+//                           h-1.5 w-1.5 shrink-0 rounded-full
+//                           ${status.dotClass}
+//                         `}
+//                       />
+
+//                       <span className="whitespace-nowrap leading-none">
+//                         {status.label}
+//                       </span>
+//                     </span>
+
+//                     <div className="text-right">
+//                       <span
+//                         className="
+//                           inline-flex h-7 items-center justify-center
+//                           rounded-md border border-slate-300 px-2
+//                           text-[10px] font-medium text-blue-700
+//                           transition
+//                           group-hover:border-blue-300
+//                           group-hover:bg-blue-100
+//                           dark:border-[#354462]
+//                           dark:text-indigo-300
+//                           dark:group-hover:border-indigo-500/60
+//                           dark:group-hover:bg-indigo-950/40
+//                         "
+//                       >
+//                         <span className="text-[10px] leading-none">
+//                           Ver
+//                         </span>
+//                       </span>
+//                     </div>
+//                   </Link>
+//                 );
+//               })}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </section>
+//   );
+// }
+
+// function MovementsPanel({
+//   movimientos,
+// }: {
+//   movimientos: AdminDashboardUltimoMovimiento[];
+// }) {
+//   return (
+//     <section className={panelClass}>
+//       <div
+//         className="
+//           flex items-center justify-between gap-3
+//           border-b border-slate-200 bg-slate-50/80 px-4 py-3
+//           dark:border-[#263451] dark:bg-[#0e172a]
+//         "
+//       >
+//         <div className="flex min-w-0 items-center gap-2">
+//           <Clock3 className="h-5 w-5 shrink-0 text-slate-600 dark:text-slate-300" />
+
+//           <h2 className="truncate text-base font-medium text-slate-950 dark:text-white">
+//             Movimientos recientes
+//           </h2>
+//         </div>
+
+//         <Link
+//           href="/clientes"
+//           className="
+//             shrink-0 text-[11px] font-medium
+//             text-blue-700 hover:text-blue-800
+//             dark:text-indigo-300
+//           "
+//         >
+//           Ver historial completo
+//         </Link>
+//       </div>
+
+//       {movimientos.length === 0 ? (
+//         <p className="p-6 text-sm text-slate-500 dark:text-slate-300">
+//           Todavía no hay movimientos registrados.
+//         </p>
+//       ) : (
+//         <div className="overflow-x-auto">
+//           <div className="min-w-[920px]">
+//             <div
+//               className="
+//                 grid
+//                 grid-cols-[195px_170px_minmax(280px,1fr)_155px_110px]
+//                 gap-x-5
+//                 bg-slate-100 px-4 py-2.5
+//                 text-[10px] font-medium uppercase tracking-[0.07em]
+//                 text-slate-500
+//                 dark:bg-[#0b1326] dark:text-slate-300
+//               "
+//             >
+//               <span>Fecha</span>
+//               <span>Tipo</span>
+//               <span>Detalle</span>
+//               <span>Monto</span>
+//               <span>Estado</span>
+//             </div>
+
+//             <div className="divide-y divide-slate-200 dark:divide-[#263451]">
+//               {movimientos.slice(0, 5).map((movimiento) => (
+//                 <div
+//                   key={movimiento.id}
+//                   className="
+//                     grid
+//                     grid-cols-[195px_170px_minmax(280px,1fr)_155px_110px]
+//                     items-center gap-x-5
+//                     px-4 py-3 text-xs
+//                     transition hover:bg-slate-50
+//                     dark:hover:bg-[#16223c]
+//                   "
+//                 >
+//                   <span
+//                     className="
+//                       whitespace-nowrap font-normal
+//                       text-slate-600 dark:text-slate-200
+//                     "
+//                   >
+//                     {formatDate(movimiento.fecha)}
+//                   </span>
+
+//                   <span
+//                     className="
+//                       flex items-center gap-2 whitespace-nowrap
+//                       font-medium text-slate-800
+//                       dark:text-slate-100
+//                     "
+//                   >
+//                     <CircleDollarSign className="h-3.5 w-3.5 shrink-0 text-blue-600 dark:text-indigo-300" />
+
+//                     {movimientoLabel(movimiento.tipoMovimiento)}
+//                   </span>
+
+//                   <span className="truncate pr-4 font-normal text-slate-600 dark:text-slate-200">
+//                     {movimiento.detalle}
+//                   </span>
+
+//                   <span className="whitespace-nowrap font-medium tabular-nums text-slate-950 dark:text-white">
+//                     {formatMoney(movimiento.importe)}
+//                   </span>
+
+//                   <span
+//                     className="
+//                       inline-flex w-fit items-center gap-1
+//                       whitespace-nowrap
+//                       text-[10px] font-medium
+//                       text-emerald-700 dark:text-emerald-300
+//                     "
+//                   >
+//                     <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+//                     Confirmado
+//                   </span>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </section>
+//   );
+// }
+
+// function QuickSummary({
+//   resumen,
+// }: {
+//   resumen: AdminDashboardResumen;
+// }) {
+//   const activeRate = resumen.totalClientes
+//     ? (resumen.clientesActivos / resumen.totalClientes) * 100
+//     : 0;
+
+//   const activePercent = Math.round(activeRate);
+//   const suspendedPercent = Math.max(0, 100 - activePercent);
+
+//   const rows = [
+//     {
+//       label: "Tasa de clientes activos",
+//       value: `${activeRate.toFixed(1)}%`,
+//       icon: Gauge,
+//       tone: "text-blue-700 dark:text-indigo-300",
+//     },
+//     {
+//       label: "Códigos pendientes",
+//       value: String(resumen.codigosPendientes),
+//       icon: Clock3,
+//       tone: resumen.codigosPendientes
+//         ? "text-amber-700 dark:text-amber-300"
+//         : "text-emerald-700 dark:text-emerald-300",
+//     },
+//     {
+//       label: "Planes activos",
+//       value: String(resumen.planesActivos),
+//       icon: Wifi,
+//       tone: "text-slate-700 dark:text-slate-200",
+//     },
+//   ];
+
+//   return (
+//     <section className={`${panelClass} p-4`}>
+//       <h2 className="text-base font-medium text-slate-950 dark:text-white">
+//         Resumen rápido
+//       </h2>
+
+//       <div className="mt-3 space-y-2.5">
+//         {rows.map(({ label, value, icon: Icon, tone }) => (
+//           <div
+//             key={label}
+//             className="
+//               flex items-center justify-between gap-3
+//               rounded-lg border border-slate-200
+//               bg-slate-50 px-3 py-3
+//               dark:border-[#2b3957] dark:bg-[#0d172a]
+//             "
+//           >
+//             <span
+//               className="
+//                 flex min-w-0 items-center gap-2.5
+//                 text-xs font-normal text-slate-600
+//                 dark:text-slate-200
+//               "
+//             >
+//               <Icon className={`h-4 w-4 shrink-0 ${tone}`} />
+
+//               <span className="truncate">
+//                 {label}
+//               </span>
+//             </span>
+
+//             <strong
+//               className={`
+//                 shrink-0 text-sm font-medium tabular-nums
+//                 ${tone}
+//               `}
+//             >
+//               {value}
+//             </strong>
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="mt-4">
+//         <p
+//           className="
+//             text-[10px] font-medium uppercase tracking-[0.07em]
+//             text-slate-500 dark:text-slate-300
+//           "
+//         >
+//           Distribución de clientes
+//         </p>
+
+//         <div className="mt-2 flex h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-[#263451]">
+//           <span
+//             className="bg-blue-600 dark:bg-indigo-500"
+//             style={{
+//               width: `${activePercent}%`,
+//             }}
+//           />
+
+//           <span
+//             className="bg-amber-500"
+//             style={{
+//               width: `${suspendedPercent}%`,
+//             }}
+//           />
+//         </div>
+
+//         <div
+//           className="
+//             mt-2 flex justify-between gap-3
+//             text-[10px] font-normal
+//             text-slate-500 dark:text-slate-300
+//           "
+//         >
+//           <span>
+//             Activos{" "}
+//             <strong className="font-medium tabular-nums text-slate-700 dark:text-slate-100">
+//               {resumen.clientesActivos}
+//             </strong>
+//           </span>
+
+//           <span>
+//             Suspendidos{" "}
+//             <strong className="font-medium tabular-nums text-slate-700 dark:text-slate-100">
+//               {resumen.clientesSuspendidos}
+//             </strong>
+//           </span>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function SystemStatus({
+//   resumen,
+// }: {
+//   resumen: AdminDashboardResumen;
+// }) {
+//   const conSaldo = resumen.cobradores.filter(
+//     (item) => item.saldoActual !== 0,
+//   ).length;
+
+//   return (
+//     <section className={`${panelClass} p-4`}>
+//       <div className="flex items-center justify-between gap-3">
+//         <h2 className="text-base font-medium text-slate-950 dark:text-white">
+//           Estado del sistema
+//         </h2>
+
+//         <span
+//           className="
+//             inline-flex shrink-0 items-center gap-1.5
+//             text-[10px] font-medium uppercase tracking-[0.04em]
+//             text-emerald-700 dark:text-emerald-300
+//           "
+//         >
+//           <span className="h-2 w-2 rounded-full bg-emerald-500" />
+//           Online
+//         </span>
+//       </div>
+
+//       <div className="mt-4 space-y-3 text-xs">
+//         <div className="flex justify-between gap-3 border-b border-slate-200 pb-3 dark:border-[#263451]">
+//           <span className="font-normal text-slate-500 dark:text-slate-300">
+//             Sesión activa
+//           </span>
+
+//           <strong className="font-medium text-slate-900 dark:text-slate-100">
+//             Administrador
+//           </strong>
+//         </div>
+
+//         <div className="flex justify-between gap-3 border-b border-slate-200 pb-3 dark:border-[#263451]">
+//           <span className="font-normal text-slate-500 dark:text-slate-300">
+//             Cobradores con saldo
+//           </span>
+
+//           <strong
+//             className={`
+//               font-medium tabular-nums
+//               ${
+//                 conSaldo
+//                   ? "text-amber-700 dark:text-amber-300"
+//                   : "text-emerald-700 dark:text-emerald-300"
+//               }
+//             `}
+//           >
+//             {conSaldo}
+//           </strong>
+//         </div>
+
+//         <div className="flex justify-between gap-3 border-b border-slate-200 pb-3 dark:border-[#263451]">
+//           <span className="font-normal text-slate-500 dark:text-slate-300">
+//             Auditoría
+//           </span>
+
+//           <strong className="font-medium text-blue-700 dark:text-indigo-300">
+//             Activa
+//           </strong>
+//         </div>
+
+//         <div className="flex items-center gap-2 font-normal text-slate-600 dark:text-slate-200">
+//           <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
+//           <span>Integridad operativa verificada</span>
+//         </div>
+//       </div>
+
+//       <Link
+//         href="/admin/auditoria"
+//         className="
+//           mt-4 flex h-9 items-center justify-center
+//           rounded-lg bg-red-50
+//           text-xs font-medium text-red-700
+//           transition hover:bg-red-100
+//           dark:bg-red-950/30 dark:text-red-300
+//           dark:hover:bg-red-950/50
+//         "
+//       >
+//         <span className="text-xs leading-none">
+//           Revisar auditoría
+//         </span>
+//       </Link>
+//     </section>
+//   );
+// }
+
+// function QuickAccess() {
+//   return (
+//     <section className={`${panelClass} p-4`}>
+//       <div className="flex items-center gap-2">
+//         <Activity className="h-4 w-4 text-blue-700 dark:text-indigo-300" />
+
+//         <h2 className="text-sm font-medium text-slate-950 dark:text-white">
+//           Accesos rápidos
+//         </h2>
+//       </div>
+
+//       <div className="mt-3 grid grid-cols-2 gap-2">
+//         <Link
+//           href="/admin/configuracion/facturacion"
+//           className="
+//             rounded-lg border border-slate-200 p-3
+//             text-center text-[11px] font-medium text-slate-700
+//             transition hover:bg-slate-50
+//             dark:border-[#2b3957] dark:text-slate-100
+//             dark:hover:bg-[#16223c]
+//           "
+//         >
+//           <ReceiptText className="mx-auto mb-1 h-4 w-4" />
+
+//           <span className="text-[11px] leading-none">
+//             Facturación
+//           </span>
+//         </Link>
+
+//         <Link
+//           href="/admin/caja-cobradores/cierres"
+//           className="
+//             rounded-lg border border-slate-200 p-3
+//             text-center text-[11px] font-medium text-slate-700
+//             transition hover:bg-slate-50
+//             dark:border-[#2b3957] dark:text-slate-100
+//             dark:hover:bg-[#16223c]
+//           "
+//         >
+//           <CalendarClock className="mx-auto mb-1 h-4 w-4" />
+
+//           <span className="text-[11px] leading-none">
+//             Cierres
+//           </span>
+//         </Link>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function MobileDashboard({
+//   resumen,
+// }: {
+//   resumen: AdminDashboardResumen;
+// }) {
+//   return (
+//     <div className="space-y-3 lg:hidden">
+//       <div className="grid grid-cols-2 gap-3">
+//         <KpiCard
+//           title="Administración"
+//           value={formatMoney(resumen.totalCuentaAdmin)}
+//           detail="Cierres confirmados"
+//           href="/admin/caja-cobradores/cierres"
+//           icon={Banknote}
+//         />
+
+//         <KpiCard
+//           title="En cobradores"
+//           value={formatMoney(resumen.totalEnCajaCobradores)}
+//           detail="Pendiente de cierre"
+//           href="/admin/caja-cobradores"
+//           icon={WalletCards}
+//           tone="danger"
+//         />
+//       </div>
+
+//       <QuickSummary resumen={resumen} />
+
+//       <CollectorsPanel cobradores={resumen.cobradores} />
+
+//       <MovementsPanel movimientos={resumen.ultimosMovimientos} />
+//     </div>
+//   );
+// }
+
+// export default async function AdminPage() {
+//   const user = await getCurrentUser();
+
+//   if (!user) {
+//     redirect("/login");
+//   }
+
+//   if (user.rol !== "admin") {
+//     redirect(`/${user.rol}`);
+//   }
+
+//   const resumen = await obtenerAdminDashboardResumen();
+
+//   const cobradoresConSaldo = resumen.cobradores.filter(
+//     (item) => item.saldoActual > 0,
+//   ).length;
+
+//   return (
+//     <PageShell
+//       maxWidth="wide"
+//       className="pb-20 lg:pb-6"
+//     >
+//       <MobileDashboard resumen={resumen} />
+
+//       <div className="hidden space-y-4 lg:block">
+//         <div className="grid grid-cols-3 gap-3 xl:grid-cols-6">
+//           <KpiCard
+//             title="Administración balance"
+//             value={formatMoney(resumen.totalCuentaAdmin)}
+//             detail="Cierres confirmados"
+//             href="/admin/caja-cobradores/cierres"
+//             icon={Banknote}
+//           />
+
+//           <KpiCard
+//             title="Pendiente en cobradores"
+//             value={formatMoney(resumen.totalEnCajaCobradores)}
+//             detail={`${cobradoresConSaldo} cajas con saldo`}
+//             href="/admin/caja-cobradores"
+//             icon={WalletCards}
+//             tone="warning"
+//           />
+
+//           <KpiCard
+//             title="Cobradores activos"
+//             value={`${resumen.totalCobradores}`}
+//             detail="Usuarios operativos"
+//             href="/usuarios?rol=cobrador"
+//             icon={UsersRound}
+//             tone="neutral"
+//           />
+
+//           <KpiCard
+//             title="Clientes registrados"
+//             value={`${resumen.totalClientes}`}
+//             detail={`${resumen.clientesActivos} activos`}
+//             href="/clientes"
+//             icon={UserRound}
+//           />
+
+//           <KpiCard
+//             title="Facturas emitidas"
+//             value={`${resumen.facturasEmitidas}`}
+//             detail="Comprobantes generados"
+//             href="/admin/configuracion/facturacion"
+//             icon={FileText}
+//             tone="neutral"
+//           />
+
+//           <KpiCard
+//             title="Logs de auditoría"
+//             value={
+//               resumen.codigosPendientes
+//                 ? `${resumen.codigosPendientes} alertas`
+//                 : "Sin alertas"
+//             }
+//             detail="Control de acciones"
+//             href="/admin/auditoria"
+//             icon={FileClock}
+//             tone={
+//               resumen.codigosPendientes
+//                 ? "danger"
+//                 : "success"
+//             }
+//           />
+//         </div>
+
+//         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_330px]">
+//           <div className="min-w-0 space-y-4">
+//             <CollectorsPanel cobradores={resumen.cobradores} />
+
+//             <MovementsPanel
+//               movimientos={resumen.ultimosMovimientos}
+//             />
+//           </div>
+
+//           <aside className="space-y-4">
+//             <QuickSummary resumen={resumen} />
+
+//             <SystemStatus resumen={resumen} />
+
+//             <QuickAccess />
+//           </aside>
+//         </div>
+//       </div>
+//     </PageShell>
+//   );
+// }
+
+import Link from "next/link";
+import { ClickableCollectorRow } from "@/components/tables/ClickableCollectorRow";
+import { redirect } from "next/navigation";
+import { ArrowRight, CalendarCheck, FileClock, Landmark, ReceiptText, UsersRound, WalletCards } from "lucide-react";
 import { getCurrentUser } from "@/lib/current-user";
 import {
   obtenerAdminDashboardResumen,
@@ -7503,904 +8416,220 @@ import {
   type AdminDashboardResumen,
   type AdminDashboardUltimoMovimiento,
 } from "@/services/admin-dashboard.service";
+import { overviewStyles as styles } from "@/components/ui/dashboard-styles";
 
-export const metadata = {
-  title: "Administrador",
-};
+export const metadata = { title: "Panel general" };
 
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value || 0));
+const moneyFormatter = new Intl.NumberFormat("es-AR", {
+  style: "currency", currency: "ARS", minimumFractionDigits: 2, maximumFractionDigits: 2,
+});
+const numberFormatter = new Intl.NumberFormat("es-AR");
+
+function money(value: number) {
+  return moneyFormatter.format(Number(value || 0));
 }
 
-function formatDate(value: string | null) {
-  if (!value) {
-    return "Sin retiro";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Sin retiro";
-  }
-
+function date(value: string | null, withTime = false) {
+  if (!value) return "Sin registro";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "Sin registro";
   return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+    timeZone: "America/Argentina/Buenos_Aires",
+    day: "2-digit", month: "2-digit", year: "numeric",
+    ...(withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
+  }).format(parsed);
 }
 
-function movimientoLabel(tipo: string) {
-  return (
-    {
-      factura: "Factura",
-      pago: "Cobranza",
-      nota_debito: "Nota de débito",
-      nota_credito: "Nota de crédito",
-      ajuste: "Ajuste",
-    }[tipo] || "Movimiento"
-  );
+function initials(name: string) {
+  return name.replace(/,/g, " ").trim().split(/\s+/).filter(Boolean)
+    .slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "CB";
 }
 
-function getInitials(name: string) {
-  return (
-    name
-      .replace(",", " ")
-      .split(" ")
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((item) => item[0]?.toUpperCase())
-      .join("") || "CB"
-  );
+function collectorStatus(collector: AdminDashboardCobradorCard) {
+  if (collector.tieneCodigoPendiente) return { label: "Código activo", tone: styles.warning };
+  if (collector.saldoActual > 0) return { label: "Por rendir", tone: styles.warning };
+  if (collector.saldoActual < 0) return { label: "A compensar", tone: styles.primary };
+  return { label: "Al día", tone: styles.success };
 }
 
-const panelClass =
-  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
-  "dark:border-[#263451] dark:bg-[#111b31] " +
-  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
-
-const toneClasses = {
-  primary: "text-blue-700 dark:text-indigo-300",
-  danger: "text-red-700 dark:text-red-300",
-  warning: "text-amber-700 dark:text-amber-300",
-  neutral: "text-slate-700 dark:text-slate-300",
-  success: "text-emerald-700 dark:text-emerald-300",
-};
-
-type KpiCardProps = {
-  title: string;
-  value: string;
-  detail: string;
-  href: string;
-  icon: LucideIcon;
-  tone?: keyof typeof toneClasses;
-};
-
-function KpiCard({
-  title,
-  value,
-  detail,
-  href,
-  icon: Icon,
-  tone = "primary",
-}: KpiCardProps) {
-  return (
-    <Link
-      href={href}
-      className="
-        group flex min-h-[114px] flex-col justify-between
-        rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm
-        transition
-        hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md
-        dark:border-[#263451] dark:bg-[#111b31]
-        dark:hover:border-indigo-500/70
-      "
-    >
-      <div className="flex items-start justify-between gap-3">
-        <p
-          className="
-            text-[10px] font-medium uppercase tracking-[0.08em]
-            text-slate-500 dark:text-slate-300
-          "
-        >
-          {title}
-        </p>
-
-        <Icon
-          className={`
-            h-4 w-4 shrink-0
-            ${toneClasses[tone]}
-          `}
-        />
-      </div>
-
-      <div>
-        <p
-          className={`
-            truncate text-[22px] font-medium tabular-nums
-            ${
-              tone === "danger"
-                ? toneClasses.danger
-                : "text-slate-950 dark:text-white"
-            }
-          `}
-        >
-          {value}
-        </p>
-
-        <p
-          className={`
-            mt-1 truncate text-[11px] font-normal
-            ${toneClasses[tone]}
-          `}
-        >
-          {detail}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
-function collectorStatus(cobrador: AdminDashboardCobradorCard) {
-  if (cobrador.tieneCodigoPendiente) {
-    return {
-      label: "Código activo",
-      dotClass: "bg-amber-500",
-      className:
-        "border-amber-200 bg-amber-50 text-amber-700 " +
-        "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
-    };
-  }
-
-  if (cobrador.saldoActual > 0) {
-    return {
-      label: "Pendiente",
-      dotClass: "bg-red-500",
-      className:
-        "border-red-200 bg-red-50 text-red-700 " +
-        "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
-    };
-  }
-
-  if (cobrador.saldoActual < 0) {
-    return {
-      label: "A compensar",
-      dotClass: "bg-blue-500",
-      className:
-        "border-blue-200 bg-blue-50 text-blue-700 " +
-        "dark:border-blue-800/70 dark:bg-blue-950/25 dark:text-blue-300",
-    };
-  }
-
-  return {
-    label: "Al día",
-    dotClass: "bg-emerald-500",
-    className:
-      "border-emerald-200 bg-emerald-50 text-emerald-700 " +
-      "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
+function movementLabel(type: string) {
+  const labels: Record<string, string> = {
+    factura: "Factura", pago: "Cobranza", nota_debito: "Nota de débito",
+    nota_credito: "Nota de crédito", ajuste: "Ajuste",
   };
+  return labels[type] || "Movimiento";
 }
 
-function CollectorsPanel({
-  cobradores,
-}: {
-  cobradores: AdminDashboardCobradorCard[];
-}) {
-  return (
-    <section className={panelClass}>
-      <div
-        className="
-          flex items-center gap-3
-          border-b border-slate-200 bg-slate-50/80 px-4 py-3
-          dark:border-[#263451] dark:bg-[#0e172a]
-        "
-      >
-        <WalletCards className="h-5 w-5 shrink-0 text-blue-700 dark:text-indigo-300" />
-
-        <h2 className="truncate text-base font-medium text-slate-950 dark:text-white">
-          Cuentas activas de cobradores
-        </h2>
-      </div>
-
-      {cobradores.length === 0 ? (
-        <p className="p-6 text-sm text-slate-500 dark:text-slate-300">
-          Todavía no hay usuarios con rol cobrador.
-        </p>
-      ) : (
-        <div className="overflow-x-auto">
-          <div className="min-w-[790px]">
-            <div
-              className="
-                grid grid-cols-[1.35fr_1fr_1fr_110px_90px]
-                bg-slate-100 px-4 py-2.5
-                text-[10px] font-medium uppercase tracking-[0.07em]
-                text-slate-500
-                dark:bg-[#0b1326] dark:text-slate-300
-              "
-            >
-              <span>Nombre</span>
-              <span>Balance actual</span>
-              <span>Último retiro</span>
-              <span>Estado</span>
-              <span className="text-right">Acciones</span>
-            </div>
-
-            <div className="divide-y divide-slate-200 dark:divide-[#263451]">
-              {cobradores.slice(0, 8).map((cobrador) => {
-                const status = collectorStatus(cobrador);
-
-                return (
-                  <Link
-                    key={cobrador.cobradorId}
-                    href="/admin/caja-cobradores"
-                    aria-label={`Ver caja del cobrador ${cobrador.nombreCompleto}`}
-                    className="
-                      group grid grid-cols-[1.35fr_1fr_1fr_110px_90px]
-                      items-center px-4 py-3
-                      transition
-                      hover:bg-blue-50/70
-                      focus-visible:bg-blue-50
-                      focus-visible:outline-none
-                      focus-visible:ring-2
-                      focus-visible:ring-inset
-                      focus-visible:ring-blue-500
-                      dark:hover:bg-[#16223c]
-                      dark:focus-visible:bg-[#16223c]
-                      dark:focus-visible:ring-indigo-500
-                    "
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span
-                        className="
-                          flex h-8 w-8 shrink-0 items-center justify-center
-                          rounded-full bg-slate-100
-                          text-[10px] font-medium text-slate-600
-                          transition
-                          group-hover:bg-blue-100
-                          group-hover:text-blue-700
-                          dark:bg-[#24324e]
-                          dark:text-slate-100
-                          dark:group-hover:bg-indigo-950/50
-                          dark:group-hover:text-indigo-300
-                        "
-                      >
-                        {getInitials(cobrador.nombreCompleto)}
-                      </span>
-
-                      <div className="min-w-0">
-                        <p
-                          className="
-                            truncate text-xs font-medium
-                            text-slate-900
-                            transition
-                            group-hover:text-blue-800
-                            dark:text-white
-                            dark:group-hover:text-indigo-200
-                          "
-                        >
-                          {cobrador.nombreCompleto}
-                        </p>
-
-                        <p className="mt-0.5 truncate text-[10px] font-normal text-slate-500 dark:text-slate-300">
-                          {cobrador.email || "Sin email"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <p
-                      className={`
-                        truncate text-sm font-medium tabular-nums
-                        ${
-                          cobrador.saldoActual > 0
-                            ? "text-blue-700 dark:text-indigo-300"
-                            : cobrador.saldoActual < 0
-                              ? "text-amber-700 dark:text-amber-300"
-                              : "text-slate-800 dark:text-slate-100"
-                        }
-                      `}
-                    >
-                      {formatMoney(cobrador.saldoActual)}
-                    </p>
-
-                    <p className="truncate text-xs font-normal text-slate-600 dark:text-slate-200">
-                      {formatDate(cobrador.ultimoRetiroFecha)}
-                    </p>
-
-                    <span
-                      className={`
-                        inline-flex min-w-[96px] items-center
-                        justify-center gap-1.5
-                        rounded-md border px-2.5 py-1
-                        text-[10px] font-medium
-                        ${status.className}
-                      `}
-                    >
-                      <span
-                        className={`
-                          h-1.5 w-1.5 shrink-0 rounded-full
-                          ${status.dotClass}
-                        `}
-                      />
-
-                      <span className="whitespace-nowrap leading-none">
-                        {status.label}
-                      </span>
-                    </span>
-
-                    <div className="text-right">
-                      <span
-                        className="
-                          inline-flex h-7 items-center justify-center
-                          rounded-md border border-slate-300 px-2
-                          text-[10px] font-medium text-blue-700
-                          transition
-                          group-hover:border-blue-300
-                          group-hover:bg-blue-100
-                          dark:border-[#354462]
-                          dark:text-indigo-300
-                          dark:group-hover:border-indigo-500/60
-                          dark:group-hover:bg-indigo-950/40
-                        "
-                      >
-                        <span className="text-[10px] leading-none">
-                          Ver
-                        </span>
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-    </section>
-  );
+function MovementStatus({ state }: { state: AdminDashboardUltimoMovimiento["estado"] }) {
+  return <span className={`${styles.badge} ${state === "pendiente" ? styles.warning : styles.success}`}>
+    {state === "pendiente" ? "Pendiente" : "Confirmado"}
+  </span>;
 }
 
-function MovementsPanel({
-  movimientos,
-}: {
-  movimientos: AdminDashboardUltimoMovimiento[];
-}) {
+function CollectorsPanel({ collectors }: { collectors: AdminDashboardCobradorCard[] }) {
   return (
-    <section className={panelClass}>
-      <div
-        className="
-          flex items-center justify-between gap-3
-          border-b border-slate-200 bg-slate-50/80 px-4 py-3
-          dark:border-[#263451] dark:bg-[#0e172a]
-        "
-      >
-        <div className="flex min-w-0 items-center gap-2">
-          <Clock3 className="h-5 w-5 shrink-0 text-slate-600 dark:text-slate-300" />
-
-          <h2 className="truncate text-base font-medium text-slate-950 dark:text-white">
-            Movimientos recientes
-          </h2>
-        </div>
-
-        <Link
-          href="/clientes"
-          className="
-            shrink-0 text-[11px] font-medium
-            text-blue-700 hover:text-blue-800
-            dark:text-indigo-300
-          "
-        >
-          Ver historial completo
-        </Link>
-      </div>
-
-      {movimientos.length === 0 ? (
-        <p className="p-6 text-sm text-slate-500 dark:text-slate-300">
-          Todavía no hay movimientos registrados.
-        </p>
-      ) : (
-        <div className="overflow-x-auto">
-          <div className="min-w-[920px]">
-            <div
-              className="
-                grid
-                grid-cols-[195px_170px_minmax(280px,1fr)_155px_110px]
-                gap-x-5
-                bg-slate-100 px-4 py-2.5
-                text-[10px] font-medium uppercase tracking-[0.07em]
-                text-slate-500
-                dark:bg-[#0b1326] dark:text-slate-300
-              "
-            >
-              <span>Fecha</span>
-              <span>Tipo</span>
-              <span>Detalle</span>
-              <span>Monto</span>
-              <span>Estado</span>
-            </div>
-
-            <div className="divide-y divide-slate-200 dark:divide-[#263451]">
-              {movimientos.slice(0, 5).map((movimiento) => (
-                <div
-                  key={movimiento.id}
-                  className="
-                    grid
-                    grid-cols-[195px_170px_minmax(280px,1fr)_155px_110px]
-                    items-center gap-x-5
-                    px-4 py-3 text-xs
-                    transition hover:bg-slate-50
-                    dark:hover:bg-[#16223c]
-                  "
-                >
-                  <span
-                    className="
-                      whitespace-nowrap font-normal
-                      text-slate-600 dark:text-slate-200
-                    "
-                  >
-                    {formatDate(movimiento.fecha)}
-                  </span>
-
-                  <span
-                    className="
-                      flex items-center gap-2 whitespace-nowrap
-                      font-medium text-slate-800
-                      dark:text-slate-100
-                    "
-                  >
-                    <CircleDollarSign className="h-3.5 w-3.5 shrink-0 text-blue-600 dark:text-indigo-300" />
-
-                    {movimientoLabel(movimiento.tipoMovimiento)}
-                  </span>
-
-                  <span className="truncate pr-4 font-normal text-slate-600 dark:text-slate-200">
-                    {movimiento.detalle}
-                  </span>
-
-                  <span className="whitespace-nowrap font-medium tabular-nums text-slate-950 dark:text-white">
-                    {formatMoney(movimiento.importe)}
-                  </span>
-
-                  <span
-                    className="
-                      inline-flex w-fit items-center gap-1
-                      whitespace-nowrap
-                      text-[10px] font-medium
-                      text-emerald-700 dark:text-emerald-300
-                    "
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                    Confirmado
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function QuickSummary({
-  resumen,
-}: {
-  resumen: AdminDashboardResumen;
-}) {
-  const activeRate = resumen.totalClientes
-    ? (resumen.clientesActivos / resumen.totalClientes) * 100
-    : 0;
-
-  const activePercent = Math.round(activeRate);
-  const suspendedPercent = Math.max(0, 100 - activePercent);
-
-  const rows = [
-    {
-      label: "Tasa de clientes activos",
-      value: `${activeRate.toFixed(1)}%`,
-      icon: Gauge,
-      tone: "text-blue-700 dark:text-indigo-300",
-    },
-    {
-      label: "Códigos pendientes",
-      value: String(resumen.codigosPendientes),
-      icon: Clock3,
-      tone: resumen.codigosPendientes
-        ? "text-amber-700 dark:text-amber-300"
-        : "text-emerald-700 dark:text-emerald-300",
-    },
-    {
-      label: "Planes activos",
-      value: String(resumen.planesActivos),
-      icon: Wifi,
-      tone: "text-slate-700 dark:text-slate-200",
-    },
-  ];
-
-  return (
-    <section className={`${panelClass} p-4`}>
-      <h2 className="text-base font-medium text-slate-950 dark:text-white">
-        Resumen rápido
-      </h2>
-
-      <div className="mt-3 space-y-2.5">
-        {rows.map(({ label, value, icon: Icon, tone }) => (
-          <div
-            key={label}
-            className="
-              flex items-center justify-between gap-3
-              rounded-lg border border-slate-200
-              bg-slate-50 px-3 py-3
-              dark:border-[#2b3957] dark:bg-[#0d172a]
-            "
-          >
-            <span
-              className="
-                flex min-w-0 items-center gap-2.5
-                text-xs font-normal text-slate-600
-                dark:text-slate-200
-              "
-            >
-              <Icon className={`h-4 w-4 shrink-0 ${tone}`} />
-
-              <span className="truncate">
-                {label}
-              </span>
-            </span>
-
-            <strong
-              className={`
-                shrink-0 text-sm font-medium tabular-nums
-                ${tone}
-              `}
-            >
-              {value}
-            </strong>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-4">
-        <p
-          className="
-            text-[10px] font-medium uppercase tracking-[0.07em]
-            text-slate-500 dark:text-slate-300
-          "
-        >
-          Distribución de clientes
-        </p>
-
-        <div className="mt-2 flex h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-[#263451]">
-          <span
-            className="bg-blue-600 dark:bg-indigo-500"
-            style={{
-              width: `${activePercent}%`,
-            }}
-          />
-
-          <span
-            className="bg-amber-500"
-            style={{
-              width: `${suspendedPercent}%`,
-            }}
-          />
-        </div>
-
-        <div
-          className="
-            mt-2 flex justify-between gap-3
-            text-[10px] font-normal
-            text-slate-500 dark:text-slate-300
-          "
-        >
-          <span>
-            Activos{" "}
-            <strong className="font-medium tabular-nums text-slate-700 dark:text-slate-100">
-              {resumen.clientesActivos}
-            </strong>
-          </span>
-
-          <span>
-            Suspendidos{" "}
-            <strong className="font-medium tabular-nums text-slate-700 dark:text-slate-100">
-              {resumen.clientesSuspendidos}
-            </strong>
-          </span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SystemStatus({
-  resumen,
-}: {
-  resumen: AdminDashboardResumen;
-}) {
-  const conSaldo = resumen.cobradores.filter(
-    (item) => item.saldoActual !== 0,
-  ).length;
-
-  return (
-    <section className={`${panelClass} p-4`}>
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-medium text-slate-950 dark:text-white">
-          Estado del sistema
-        </h2>
-
-        <span
-          className="
-            inline-flex shrink-0 items-center gap-1.5
-            text-[10px] font-medium uppercase tracking-[0.04em]
-            text-emerald-700 dark:text-emerald-300
-          "
-        >
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          Online
-        </span>
-      </div>
-
-      <div className="mt-4 space-y-3 text-xs">
-        <div className="flex justify-between gap-3 border-b border-slate-200 pb-3 dark:border-[#263451]">
-          <span className="font-normal text-slate-500 dark:text-slate-300">
-            Sesión activa
-          </span>
-
-          <strong className="font-medium text-slate-900 dark:text-slate-100">
-            Administrador
-          </strong>
-        </div>
-
-        <div className="flex justify-between gap-3 border-b border-slate-200 pb-3 dark:border-[#263451]">
-          <span className="font-normal text-slate-500 dark:text-slate-300">
-            Cobradores con saldo
-          </span>
-
-          <strong
-            className={`
-              font-medium tabular-nums
-              ${
-                conSaldo
-                  ? "text-amber-700 dark:text-amber-300"
-                  : "text-emerald-700 dark:text-emerald-300"
-              }
-            `}
-          >
-            {conSaldo}
-          </strong>
-        </div>
-
-        <div className="flex justify-between gap-3 border-b border-slate-200 pb-3 dark:border-[#263451]">
-          <span className="font-normal text-slate-500 dark:text-slate-300">
-            Auditoría
-          </span>
-
-          <strong className="font-medium text-blue-700 dark:text-indigo-300">
-            Activa
-          </strong>
-        </div>
-
-        <div className="flex items-center gap-2 font-normal text-slate-600 dark:text-slate-200">
-          <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" />
-          <span>Integridad operativa verificada</span>
-        </div>
-      </div>
-
-      <Link
-        href="/admin/auditoria"
-        className="
-          mt-4 flex h-9 items-center justify-center
-          rounded-lg bg-red-50
-          text-xs font-medium text-red-700
-          transition hover:bg-red-100
-          dark:bg-red-950/30 dark:text-red-300
-          dark:hover:bg-red-950/50
-        "
-      >
-        <span className="text-xs leading-none">
-          Revisar auditoría
-        </span>
+    <section className={styles.panel} aria-labelledby="collectors-title">
+      <Link href="/admin/caja-cobradores" className={`${styles.panelHeader} hover:bg-[var(--overview-soft)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--overview-blue)]`} aria-label="Abrir caja de cobradores">
+        <h2 id="collectors-title">Caja de cobradores</h2>
+        <ArrowRight className="text-[var(--overview-blue)]" aria-hidden="true" />
       </Link>
+      {collectors.length === 0 ? <p className={styles.empty}>Todavía no hay cobradores registrados.</p> : <>
+        <div className={styles.desktopTable}>
+          <table className={styles.table} aria-label="Saldos y estado de las cajas de cobradores">
+            <thead><tr>
+              <th scope="col" className={styles.collectorName}>Cobrador</th>
+              <th scope="col" className={`${styles.collectorMoney} ${styles.money}`}>Saldo actual</th>
+              <th scope="col" className={styles.collectorDate}>Último retiro</th>
+              <th scope="col" className={styles.collectorState}>Estado</th>
+              <th scope="col" className={styles.collectorAction}>Caja</th>
+            </tr></thead>
+            <tbody>{collectors.map((collector) => {
+              const status = collectorStatus(collector);
+              return <ClickableCollectorRow key={collector.cobradorId} href={`/admin/caja-cobradores/${collector.cobradorId}`}>
+                <td><Link href={`/admin/caja-cobradores/${collector.cobradorId}`} className={`${styles.person} !text-inherit !no-underline focus-visible:outline-2 focus-visible:outline-[var(--overview-blue)]`} aria-label={`Abrir caja de ${collector.nombreCompleto}`}><span className={styles.initials} aria-hidden="true">{initials(collector.nombreCompleto)}</span>
+                  <div className={styles.personText}>{collector.nombreCompleto}<small>{collector.email || "Sin email"}</small></div>
+                </Link></td>
+                <td className={styles.money}>{money(collector.saldoActual)}</td>
+                <td>{collector.ultimoRetiroFecha ? date(collector.ultimoRetiroFecha, true) : "Sin retiro"}</td>
+                <td><span className={`${styles.badge} ${status.tone}`}>{status.label}</span></td>
+                <td className={styles.collectorAction}><Link className={styles.textLink}
+                  href={`/admin/caja-cobradores/${collector.cobradorId}`}
+                  aria-label={`Ver caja de ${collector.nombreCompleto}`}>Ver</Link></td>
+              </ClickableCollectorRow>;
+            })}</tbody>
+          </table>
+        </div>
+        <div className={styles.mobileCollectors}>{collectors.map((collector) => {
+          const status = collectorStatus(collector);
+          return <Link key={collector.cobradorId} href={`/admin/caja-cobradores/${collector.cobradorId}`}
+            className={styles.collectorCard} aria-label={`Ver caja de ${collector.nombreCompleto}`}>
+            <div className={styles.person}><span className={styles.initials} aria-hidden="true">{initials(collector.nombreCompleto)}</span>
+              <div className={styles.personText}>{collector.nombreCompleto}<small>Último retiro: {collector.ultimoRetiroFecha ? date(collector.ultimoRetiroFecha) : "Sin retiro"}</small></div>
+            </div>
+            <div className={styles.collectorRight}><p className={styles.money}>{money(collector.saldoActual)}</p>
+              <span className={`${styles.badge} ${status.tone}`}>{status.label}</span>
+            </div>
+          </Link>;
+        })}</div>
+      </>}
     </section>
   );
 }
 
-function QuickAccess() {
+function MovementsPanel({ movements }: { movements: AdminDashboardUltimoMovimiento[] }) {
   return (
-    <section className={`${panelClass} p-4`}>
-      <div className="flex items-center gap-2">
-        <Activity className="h-4 w-4 text-blue-700 dark:text-indigo-300" />
-
-        <h2 className="text-sm font-medium text-slate-950 dark:text-white">
-          Accesos rápidos
-        </h2>
-      </div>
-
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <Link
-          href="/admin/configuracion/facturacion"
-          className="
-            rounded-lg border border-slate-200 p-3
-            text-center text-[11px] font-medium text-slate-700
-            transition hover:bg-slate-50
-            dark:border-[#2b3957] dark:text-slate-100
-            dark:hover:bg-[#16223c]
-          "
-        >
-          <ReceiptText className="mx-auto mb-1 h-4 w-4" />
-
-          <span className="text-[11px] leading-none">
-            Facturación
-          </span>
-        </Link>
-
-        <Link
-          href="/admin/caja-cobradores/cierres"
-          className="
-            rounded-lg border border-slate-200 p-3
-            text-center text-[11px] font-medium text-slate-700
-            transition hover:bg-slate-50
-            dark:border-[#2b3957] dark:text-slate-100
-            dark:hover:bg-[#16223c]
-          "
-        >
-          <CalendarClock className="mx-auto mb-1 h-4 w-4" />
-
-          <span className="text-[11px] leading-none">
-            Cierres
-          </span>
-        </Link>
-      </div>
+    <section className={styles.panel} aria-labelledby="movements-title">
+      <div className={styles.panelHeader}><h2 id="movements-title">Movimientos recientes</h2></div>
+      {movements.length === 0 ? <p className={styles.empty}>Todavía no hay movimientos registrados.</p> : <>
+        <div className={styles.desktopTable}>
+          <table className={styles.table} aria-label="Últimos movimientos financieros">
+            <thead><tr>
+              <th scope="col" className={styles.movementDate}>Fecha</th>
+              <th scope="col" className={styles.movementDetail}>Detalle</th>
+              <th scope="col" className={`${styles.movementMoney} ${styles.money}`}>Importe</th>
+              <th scope="col" className={styles.movementState}>Estado</th>
+            </tr></thead>
+            <tbody>{movements.map((movement) => <tr key={movement.id}>
+              <td>{date(movement.fecha, true)}</td>
+              <td><span className={styles.movementLabel}>{movementLabel(movement.tipoMovimiento)}</span>
+                <span className={styles.movementConcept}>{movement.detalle}</span></td>
+              <td className={styles.money}>{money(movement.importe)}</td>
+              <td><MovementStatus state={movement.estado} /></td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+        <div className={styles.mobileMovements}>{movements.map((movement) => <div key={movement.id} className={styles.movementCard}>
+          <div className={styles.movementTop}><span>{movementLabel(movement.tipoMovimiento)}</span><span className={styles.money}>{money(movement.importe)}</span></div>
+          <p className={styles.movementConcept}>{movement.detalle}</p>
+          <div className={styles.movementBottom}><span>{date(movement.fecha, true)}</span><MovementStatus state={movement.estado} /></div>
+        </div>)}</div>
+      </>}
     </section>
   );
 }
 
-function MobileDashboard({
-  resumen,
-}: {
-  resumen: AdminDashboardResumen;
-}) {
-  return (
-    <div className="space-y-3 lg:hidden">
-      <div className="grid grid-cols-2 gap-3">
-        <KpiCard
-          title="Administración"
-          value={formatMoney(resumen.totalCuentaAdmin)}
-          detail="Cierres confirmados"
-          href="/admin/caja-cobradores/cierres"
-          icon={Banknote}
-        />
-
-        <KpiCard
-          title="En cobradores"
-          value={formatMoney(resumen.totalEnCajaCobradores)}
-          detail="Pendiente de cierre"
-          href="/admin/caja-cobradores"
-          icon={WalletCards}
-          tone="danger"
-        />
-      </div>
-
-      <QuickSummary resumen={resumen} />
-
-      <CollectorsPanel cobradores={resumen.cobradores} />
-
-      <MovementsPanel movimientos={resumen.ultimosMovimientos} />
-    </div>
-  );
+function OperationalSummary({ summary }: { summary: AdminDashboardResumen }) {
+  const rows = [
+    { label: "Cobradores registrados", value: summary.totalCobradores, href: "/usuarios?rol=cobrador" },
+    { label: "Planes activos", value: summary.planesActivos, href: "/planes" },
+    { label: "Facturas emitidas", value: summary.facturasEmitidas, href: "/admin/configuracion/facturacion" },
+    { label: "Códigos pendientes", value: summary.codigosPendientes, href: "/admin/caja-cobradores" },
+    { label: "Usuarios registrados", value: summary.totalUsuarios, href: "/usuarios" },
+  ];
+  return <div className={styles.summaryBody}>{rows.map((row) => <div key={row.label} className={styles.summaryRow}>
+    <span>{row.label}</span><Link href={row.href} className={styles.textLink}
+      aria-label={`${row.label}: ${numberFormatter.format(row.value)}`}>{numberFormatter.format(row.value)}</Link>
+  </div>)}</div>;
 }
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (user.rol !== "admin") redirect(`/${user.rol}`);
 
-  if (!user) {
-    redirect("/login");
-  }
+  const summary = await obtenerAdminDashboardResumen();
+  const pendingCollectors = summary.cobradores.filter((collector) => collector.saldoActual > 0).length;
+  const today = new Intl.DateTimeFormat("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires", day: "numeric", month: "short", year: "numeric",
+  }).format(new Date());
 
-  if (user.rol !== "admin") {
-    redirect(`/${user.rol}`);
-  }
+  return <div className={styles.dashboard}>
+    <div className={styles.heading}>
+      <div><span className={styles.greeting}>Hola, {user.nombre}</span><h1>Panel general</h1><p className={styles.subtitle}>Resumen de administración y cobranzas</p></div>
+      <span className={styles.date}>{today}</span>
+    </div>
 
-  const resumen = await obtenerAdminDashboardResumen();
+    <div className={styles.desktopMetrics}>
+      <Link href="/admin/caja-cobradores/cierres" className={styles.metric}>
+        <div className={styles.metricLabel}>Saldo de administración<Landmark aria-hidden="true" /></div>
+        <div className={styles.metricValue}>{money(summary.totalCuentaAdmin)}</div><p className={styles.muted}>Cierres confirmados</p>
+      </Link>
+      <Link href="/admin/caja-cobradores" className={styles.metric}>
+        <div className={styles.metricLabel}>En caja de cobradores<WalletCards aria-hidden="true" /></div>
+        <div className={styles.metricValue}>{money(summary.totalEnCajaCobradores)}</div>
+        <p className={styles.muted}>{pendingCollectors} {pendingCollectors === 1 ? "caja con saldo por rendir" : "cajas con saldo por rendir"}</p>
+      </Link>
+      <Link href="/clientes" className={styles.metric}>
+        <div className={styles.metricLabel}>Clientes registrados<UsersRound aria-hidden="true" /></div>
+        <div className={styles.metricValue}>{numberFormatter.format(summary.totalClientes)}</div>
+        <p className={styles.muted}>{numberFormatter.format(summary.clientesActivos)} activos · {numberFormatter.format(summary.clientesSuspendidos)} suspendidos</p>
+      </Link>
+    </div>
 
-  const cobradoresConSaldo = resumen.cobradores.filter(
-    (item) => item.saldoActual > 0,
-  ).length;
+    <div className={styles.mobileMetrics}>
+      <section className={styles.balance} aria-label="Resumen de caja">
+        <Link href="/admin/caja-cobradores/cierres"><div className={styles.metricLabel}>Saldo de administración<Landmark aria-hidden="true" /></div>
+          <span className={styles.balanceValue}>{money(summary.totalCuentaAdmin)}</span><span className={styles.muted}>Cierres confirmados</span>
+        </Link>
+        <Link href="/admin/caja-cobradores" className={styles.pendingBalance}>
+          <div><span className={styles.muted}>En caja de cobradores</span><span className={styles.pendingValue}>{money(summary.totalEnCajaCobradores)}</span></div>
+          <span className={`${styles.badge} ${pendingCollectors ? styles.warning : styles.success}`}>
+            {pendingCollectors ? `${pendingCollectors} por rendir` : "Al día"}
+          </span>
+        </Link>
+      </section>
+      <Link href="/clientes" className={styles.mobileClientMetric}>
+        <div><p>Clientes registrados</p><p className={styles.muted}>{numberFormatter.format(summary.clientesActivos)} activos · {numberFormatter.format(summary.clientesSuspendidos)} suspendidos</p></div>
+        <span className={styles.clientValue}>{numberFormatter.format(summary.totalClientes)}</span>
+      </Link>
+    </div>
 
-  return (
-    <PageShell
-      maxWidth="wide"
-      className="pb-20 lg:pb-6"
-    >
-      <MobileDashboard resumen={resumen} />
+    <div className={styles.mobileShortcuts}>
+      <Link href="/admin/configuracion/facturacion"><ReceiptText aria-hidden="true" />Facturación</Link>
+      <Link href="/admin/caja-cobradores/cierres"><CalendarCheck aria-hidden="true" />Cierres de caja</Link>
+    </div>
 
-      <div className="hidden space-y-4 lg:block">
-        <div className="grid grid-cols-3 gap-3 xl:grid-cols-6">
-          <KpiCard
-            title="Administración balance"
-            value={formatMoney(resumen.totalCuentaAdmin)}
-            detail="Cierres confirmados"
-            href="/admin/caja-cobradores/cierres"
-            icon={Banknote}
-          />
-
-          <KpiCard
-            title="Pendiente en cobradores"
-            value={formatMoney(resumen.totalEnCajaCobradores)}
-            detail={`${cobradoresConSaldo} cajas con saldo`}
-            href="/admin/caja-cobradores"
-            icon={WalletCards}
-            tone="warning"
-          />
-
-          <KpiCard
-            title="Cobradores activos"
-            value={`${resumen.totalCobradores}`}
-            detail="Usuarios operativos"
-            href="/usuarios?rol=cobrador"
-            icon={UsersRound}
-            tone="neutral"
-          />
-
-          <KpiCard
-            title="Clientes registrados"
-            value={`${resumen.totalClientes}`}
-            detail={`${resumen.clientesActivos} activos`}
-            href="/clientes"
-            icon={UserRound}
-          />
-
-          <KpiCard
-            title="Facturas emitidas"
-            value={`${resumen.facturasEmitidas}`}
-            detail="Comprobantes generados"
-            href="/admin/configuracion/facturacion"
-            icon={FileText}
-            tone="neutral"
-          />
-
-          <KpiCard
-            title="Logs de auditoría"
-            value={
-              resumen.codigosPendientes
-                ? `${resumen.codigosPendientes} alertas`
-                : "Sin alertas"
-            }
-            detail="Control de acciones"
-            href="/admin/auditoria"
-            icon={FileClock}
-            tone={
-              resumen.codigosPendientes
-                ? "danger"
-                : "success"
-            }
-          />
-        </div>
-
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_330px]">
-          <div className="min-w-0 space-y-4">
-            <CollectorsPanel cobradores={resumen.cobradores} />
-
-            <MovementsPanel
-              movimientos={resumen.ultimosMovimientos}
-            />
-          </div>
-
-          <aside className="space-y-4">
-            <QuickSummary resumen={resumen} />
-
-            <SystemStatus resumen={resumen} />
-
-            <QuickAccess />
-          </aside>
-        </div>
-      </div>
-    </PageShell>
-  );
+    <div className={styles.columns}>
+      <div className={styles.stack}><CollectorsPanel collectors={summary.cobradores} /><MovementsPanel movements={summary.ultimosMovimientos} /></div>
+      <aside className={styles.secondary}>
+        <section className={styles.panel}><div className={styles.panelHeader}><h2>Resumen operativo</h2></div><OperationalSummary summary={summary} /></section>
+        <section className={styles.panel}><div className={styles.panelHeader}><h2>Accesos rápidos</h2></div><div className={styles.summaryBody}>
+          <Link className={styles.shortcut} href="/admin/configuracion/facturacion"><ReceiptText aria-hidden="true" />Facturación mensual</Link>
+          <Link className={styles.shortcut} href="/admin/caja-cobradores/cierres"><CalendarCheck aria-hidden="true" />Cierres de caja</Link>
+          <Link className={styles.shortcut} href="/admin/auditoria"><FileClock aria-hidden="true" />Revisar auditoría</Link>
+        </div></section>
+      </aside>
+    </div>
+    <details className={styles.mobileSummary}><summary>Resumen operativo</summary><OperationalSummary summary={summary} /></details>
+  </div>;
 }

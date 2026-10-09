@@ -1,0 +1,130 @@
+.scroll {
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.scroll:focus-visible {
+  outline: 2px solid var(--overview-blue);
+  outline-offset: -2px;
+}
+
+.table {
+  width: 100%;
+  min-width: 1060px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+.table th {
+  padding: 9px 12px;
+  background: var(--overview-bg);
+  color: var(--overview-muted);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.table td {
+  height: 46px;
+  padding: 7px 12px;
+  border-top: 1px solid var(--overview-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table tbody tr:nth-child(even) {
+  background: var(--overview-bg);
+}
+
+.table tbody tr:hover {
+  background: var(--overview-soft);
+}
+
+.right {
+  text-align: right;
+}
+
+.ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date {
+  font-size: 11px;
+  color: var(--overview-muted);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 30px;
+  height: 30px;
+  padding: 5px 7px;
+  border: 1px solid var(--overview-border);
+  border-radius: 6px;
+  background: var(--overview-button);
+  color: var(--overview-text);
+  font: inherit;
+  font-size: 11px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.action svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.action:hover {
+  background: var(--overview-soft);
+  color: var(--overview-blue);
+  border-color: var(--overview-blue);
+}
+
+.action:focus-visible {
+  outline: 2px solid var(--overview-blue);
+  outline-offset: 2px;
+}
+
+.dialog {
+  width: min(540px, calc(100% - 24px));
+}
+
+.dialog dd {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.detailBlock {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--overview-border);
+}
+
+.detailBlock h3 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.detailBlock p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

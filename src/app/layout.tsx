@@ -140,20 +140,24 @@
 //   );
 // }
 import type { Metadata } from "next";
-import { Roboto_Flex } from "next/font/google";
+import localFont from "next/font/local";
 
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { brandConfig } from "@/config/brand.config";
 
 import "./globals.css";
 
-const robotoFlex = Roboto_Flex({
-  subsets: ["latin"],
+const googleSansFlex = localFont({
+  src: "./fonts/google-sans-flex.woff2",
+  weight: "1 1000",
+  style: "normal",
   display: "swap",
   preload: true,
-  axes: ["wdth"],
-  variable: "--font-roboto-flex",
-  fallback: ["Segoe UI", "Arial", "sans-serif"],
+  variable: "--font-google-sans-flex",
+  fallback: ["Arial", "sans-serif"],
+  declarations: [
+    { prop: "font-stretch", value: "25% 151%" },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -176,7 +180,7 @@ export default function RootLayout({
     <html
       lang="es"
       suppressHydrationWarning
-      className={robotoFlex.variable}
+      className={`${googleSansFlex.variable} ${googleSansFlex.className}`}
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>

@@ -774,7 +774,940 @@
 //   );
 // }
 
+// import Link from "next/link";
+// import {
+//   ArrowRight,
+//   CheckCircle2,
+//   Clock3,
+//   FileText,
+//   Plus,
+//   Search,
+//   ShieldCheck,
+//   SlidersHorizontal,
+//   UsersRound,
+// } from "lucide-react";
+
+// import { ClientesTable } from "@/components/tables/ClientesTable";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+// import { PageShell } from "@/components/ui/PageShell";
+// import { obtenerClientes } from "@/services/cliente.service";
+// import type { ClienteSafe } from "@/types/cliente.types";
+
+// export const metadata = {
+//   title: "Clientes",
+// };
+
+// type ClientesPageProps = {
+//   searchParams?: {
+//     q?: string;
+//     estado?: string;
+//     plan?: string;
+//   };
+// };
+
+// type ResumenItemProps = {
+//   label: string;
+//   value: string | number;
+//   tone?:
+//     | "neutral"
+//     | "success"
+//     | "danger"
+//     | "warning"
+//     | "primary";
+//   dotClass?: string;
+// };
+
+// const panelClass =
+//   "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+//   "dark:border-[#263451] dark:bg-[#111b31] " +
+//   "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
+
+// const inputClass =
+//   "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 " +
+//   "text-[12px] font-normal text-slate-950 outline-none transition " +
+//   "placeholder:text-slate-400 focus:border-blue-500 " +
+//   "focus:ring-2 focus:ring-blue-500/10 " +
+//   "dark:border-[#354462] dark:bg-[#0b1326] dark:text-white " +
+//   "dark:placeholder:text-slate-500 dark:focus:border-blue-500 " +
+//   "dark:focus:ring-blue-500/15";
+
+// const buttonBaseClass =
+//   "inline-flex h-8 items-center justify-center rounded-lg border px-3 " +
+//   "text-[12px] font-medium leading-none shadow-sm transition " +
+//   "active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60";
+
+// const primaryButtonClass =
+//   `${buttonBaseClass} gap-1.5 border-blue-600 bg-blue-600 !text-white ` +
+//   "hover:border-blue-700 hover:bg-blue-700 hover:!text-white " +
+//   "dark:border-blue-500 dark:bg-blue-500 dark:!text-white " +
+//   "dark:hover:border-blue-600 dark:hover:bg-blue-600 " +
+//   "dark:hover:!text-white";
+
+// const secondaryButtonClass =
+//   `${buttonBaseClass} border-slate-300 bg-white text-slate-700 ` +
+//   "hover:border-slate-400 hover:bg-slate-50 " +
+//   "dark:border-[#354462] dark:bg-[#111b31] dark:text-slate-200 " +
+//   "dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
+
+// function normalizarTexto(value: string) {
+//   return value
+//     .toLowerCase()
+//     .normalize("NFD")
+//     .replace(/\p{Diacritic}/gu, "")
+//     .trim();
+// }
+
+// function estadoLabel(value: string) {
+//   if (value === "activo") {
+//     return "Activos";
+//   }
+
+//   if (value === "suspendido") {
+//     return "Suspendidos";
+//   }
+
+//   if (value === "baja") {
+//     return "Baja";
+//   }
+
+//   return "Todos los estados";
+// }
+
+// function planLabel(value: string) {
+//   if (value === "con-plan") {
+//     return "Con plan";
+//   }
+
+//   if (value === "sin-plan") {
+//     return "Sin plan";
+//   }
+
+//   return "Todos";
+// }
+
+// function ordenarClientes(clientes: ClienteSafe[]) {
+//   return [...clientes].sort((a, b) => {
+//     const apellidoA = normalizarTexto(a.apellido || "");
+//     const apellidoB = normalizarTexto(b.apellido || "");
+
+//     if (apellidoA !== apellidoB) {
+//       return apellidoA.localeCompare(apellidoB);
+//     }
+
+//     const nombreA = normalizarTexto(a.nombre || "");
+//     const nombreB = normalizarTexto(b.nombre || "");
+
+//     if (nombreA !== nombreB) {
+//       return nombreA.localeCompare(nombreB);
+//     }
+
+//     return (
+//       Number(a.numeroCliente || 0) -
+//       Number(b.numeroCliente || 0)
+//     );
+//   });
+// }
+
+// function filtrarClientes({
+//   clientes,
+//   q,
+//   estado,
+//   plan,
+// }: {
+//   clientes: ClienteSafe[];
+//   q: string;
+//   estado: string;
+//   plan: string;
+// }) {
+//   const busqueda = normalizarTexto(q);
+
+//   return clientes.filter((cliente) => {
+//     const textoCliente = normalizarTexto(
+//       [
+//         cliente.numeroCliente,
+//         cliente.nombre,
+//         cliente.apellido,
+//         cliente.dni,
+//         cliente.direccion,
+//         cliente.localidad,
+//         cliente.provincia,
+//         cliente.telefono,
+//         cliente.email,
+//         cliente.estado,
+//         cliente.plan?.nombre,
+//         cliente.plan?.tipo,
+//         cliente.plan?.detalle,
+//         cliente.plan?.importe,
+//         cliente.fechaAlta,
+//       ]
+//         .filter(Boolean)
+//         .join(" "),
+//     );
+
+//     const coincideBusqueda =
+//       !busqueda || textoCliente.includes(busqueda);
+
+//     const coincideEstado =
+//       estado === "todos" ||
+//       cliente.estado === estado;
+
+//     const coincidePlan =
+//       plan === "todos" ||
+//       (plan === "con-plan" && Boolean(cliente.plan)) ||
+//       (plan === "sin-plan" && !cliente.plan);
+
+//     return (
+//       coincideBusqueda &&
+//       coincideEstado &&
+//       coincidePlan
+//     );
+//   });
+// }
+
+// const quickActions = [
+//   {
+//     label: "Nuevo cliente",
+//     description: "Registrar un cliente",
+//     href: "/clientes/nuevo",
+//     icon: Plus,
+//   },
+//   {
+//     label: "Clientes activos",
+//     description: "Servicio habilitado",
+//     href: "/clientes?estado=activo",
+//     icon: CheckCircle2,
+//   },
+//   {
+//     label: "Clientes suspendidos",
+//     description: "Servicio suspendido",
+//     href: "/clientes?estado=suspendido",
+//     icon: Clock3,
+//   },
+//   {
+//     label: "Facturación mensual",
+//     description: "Generar cargos mensuales",
+//     href: "/admin/configuracion/facturacion",
+//     icon: FileText,
+//   },
+// ];
+
+// function ResumenItem({
+//   label,
+//   value,
+//   tone = "neutral",
+//   dotClass,
+// }: ResumenItemProps) {
+//   const toneClass = {
+//     neutral: "text-slate-900 dark:text-slate-100",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     danger: "text-red-700 dark:text-red-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     primary: "text-blue-700 dark:text-blue-300",
+//   }[tone];
+
+//   return (
+//     <div
+//       className="
+//         flex items-center justify-between gap-3
+//         border-b border-slate-200 px-3 py-2.5
+//         last:border-b-0
+//         dark:border-[#263451]
+//       "
+//     >
+//       <span
+//         className="
+//           flex min-w-0 items-center gap-2
+//           text-[12px] text-slate-600
+//           dark:text-slate-300
+//         "
+//       >
+//         {dotClass ? (
+//           <span
+//             className={`
+//               h-1.5 w-1.5 shrink-0 rounded-full
+//               ${dotClass}
+//             `}
+//           />
+//         ) : null}
+
+//         <span className="truncate">
+//           {label}
+//         </span>
+//       </span>
+
+//       <span
+//         className={`
+//           shrink-0 text-[12px] font-medium
+//           tabular-nums
+//           ${toneClass}
+//         `}
+//       >
+//         {value}
+//       </span>
+//     </div>
+//   );
+// }
+
+// export default async function ClientesPage({
+//   searchParams,
+// }: ClientesPageProps) {
+//   const clientes = await obtenerClientes();
+
+//   const q = String(searchParams?.q || "");
+
+//   const estado = String(
+//     searchParams?.estado || "todos",
+//   );
+
+//   const plan = String(
+//     searchParams?.plan || "todos",
+//   );
+
+//   const clientesFiltrados = ordenarClientes(
+//     filtrarClientes({
+//       clientes,
+//       q,
+//       estado,
+//       plan,
+//     }),
+//   );
+
+//   const totalClientes = clientes.length;
+
+//   const totalActivos = clientes.filter(
+//     (cliente) => cliente.estado === "activo",
+//   ).length;
+
+//   const totalSuspendidos = clientes.filter(
+//     (cliente) => cliente.estado === "suspendido",
+//   ).length;
+
+//   const totalBaja = clientes.filter(
+//     (cliente) => cliente.estado === "baja",
+//   ).length;
+
+//   const clientesConPlan = clientes.filter(
+//     (cliente) => Boolean(cliente.plan),
+//   ).length;
+
+//   const clientesSinPlan =
+//     totalClientes - clientesConPlan;
+
+//   const filtroActivo =
+//     q.trim() !== "" ||
+//     estado !== "todos" ||
+//     plan !== "todos";
+
+//   return (
+//     <PageShell
+//       maxWidth="wide"
+//       className="pb-20 lg:pb-6"
+//     >
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <section className={panelClass}>
+//             <div
+//               className="
+//                 border-b border-slate-200
+//                 bg-slate-50/80 px-3 py-3
+//                 dark:border-[#263451]
+//                 dark:bg-[#0e172a]
+//                 sm:px-4
+//               "
+//             >
+//               <div
+//                 className="
+//                   flex min-h-12 items-center
+//                   justify-between gap-3
+//                 "
+//               >
+//                 <div className="min-w-0">
+//                   <div className="flex items-center gap-2.5">
+//                     <UsersRound
+//                       className="
+//                         h-5 w-5 shrink-0
+//                         text-blue-700
+//                         dark:text-blue-300
+//                       "
+//                     />
+
+//                     <h1
+//                       className="
+//                         truncate text-base font-medium
+//                         text-slate-950 dark:text-white
+//                       "
+//                     >
+//                       Gestión de clientes
+//                     </h1>
+//                   </div>
+
+//                   <p
+//                     className="
+//                       mt-1 hidden max-w-3xl
+//                       truncate text-[12px] leading-5
+//                       text-slate-600
+//                       dark:text-slate-400
+//                       sm:block
+//                     "
+//                   >
+//                     Administración de datos personales,
+//                     planes contratados, estado del servicio
+//                     y accesos al estado de cuenta.
+//                   </p>
+
+//                   <p
+//                     className="
+//                       mt-1 truncate text-[11px]
+//                       text-slate-500
+//                       dark:text-slate-400
+//                       sm:hidden
+//                     "
+//                   >
+//                     Datos, planes y estado del servicio
+//                   </p>
+//                 </div>
+
+//                 <div
+//                   className="
+//                     flex h-8 shrink-0
+//                     items-center gap-2
+//                   "
+//                 >
+//                   <div
+//                     className="
+//                       hidden h-8 shrink-0
+//                       items-center gap-2
+//                       rounded-lg border
+//                       border-slate-300 bg-white
+//                       px-3 text-[12px]
+//                       text-slate-600
+//                       dark:border-[#354462]
+//                       dark:bg-[#111b31]
+//                       dark:text-slate-300
+//                       sm:flex
+//                     "
+//                   >
+//                     <UsersRound
+//                       className="
+//                         h-4 w-4
+//                         text-blue-700
+//                         dark:text-blue-300
+//                       "
+//                     />
+
+//                     <span>
+//                       Mostrando{" "}
+//                       <strong
+//                         className="
+//                           font-medium tabular-nums
+//                           text-slate-950
+//                           dark:text-white
+//                         "
+//                       >
+//                         {clientesFiltrados.length}
+//                       </strong>{" "}
+//                       de{" "}
+//                       <strong
+//                         className="
+//                           font-medium tabular-nums
+//                           text-slate-950
+//                           dark:text-white
+//                         "
+//                       >
+//                         {totalClientes}
+//                       </strong>
+//                     </span>
+//                   </div>
+
+//                   <div
+//                     className="
+//                       inline-flex h-8 shrink-0
+//                       items-center rounded-lg
+//                       border border-slate-300
+//                       bg-white px-2
+//                       text-[11px] text-slate-600
+//                       dark:border-[#354462]
+//                       dark:bg-[#111b31]
+//                       dark:text-slate-300
+//                       sm:hidden
+//                     "
+//                   >
+//                     <strong
+//                       className="
+//                         font-medium tabular-nums
+//                         text-slate-950
+//                         dark:text-white
+//                       "
+//                     >
+//                       {clientesFiltrados.length}
+//                     </strong>
+
+//                     <span className="mx-0.5">/</span>
+
+//                     <span className="tabular-nums">
+//                       {totalClientes}
+//                     </span>
+//                   </div>
+
+//                   <Link
+//                     href="/clientes/nuevo"
+//                     className={primaryButtonClass}
+//                   >
+//                     <Plus
+//                       className="
+//                         h-3.5 w-3.5 shrink-0
+//                         !text-white
+//                       "
+//                     />
+
+//                     <span
+//                       className="
+//                         hidden text-[12px]
+//                         leading-none !text-white
+//                         sm:inline
+//                       "
+//                     >
+//                       Nuevo cliente
+//                     </span>
+
+//                     <span
+//                       className="
+//                         text-[12px] leading-none
+//                         !text-white sm:hidden
+//                       "
+//                     >
+//                       Nuevo
+//                     </span>
+//                   </Link>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="p-3">
+//               <form
+//                 action="/clientes"
+//                 className="
+//                   grid gap-2 rounded-lg
+//                   border border-slate-300
+//                   bg-slate-50 p-2.5
+//                   dark:border-[#354462]
+//                   dark:bg-[#0b1326]
+//                   lg:grid-cols-[minmax(260px,1fr)_150px_130px_auto]
+//                 "
+//               >
+//                 <div className="relative">
+//                   <Search
+//                     className="
+//                       pointer-events-none
+//                       absolute left-2.5 top-1/2
+//                       h-3.5 w-3.5
+//                       -translate-y-1/2
+//                       text-slate-400
+//                       dark:text-slate-500
+//                     "
+//                   />
+
+//                   <input
+//                     type="search"
+//                     name="q"
+//                     defaultValue={q}
+//                     placeholder="Buscar cliente"
+//                     className={`${inputClass} pl-8`}
+//                   />
+//                 </div>
+
+//                 <div
+//                   className="
+//                     grid grid-cols-2 gap-2
+//                     lg:contents
+//                   "
+//                 >
+//                   <select
+//                     name="estado"
+//                     defaultValue={estado}
+//                     className={inputClass}
+//                     aria-label="Filtrar por estado"
+//                   >
+//                     <option value="todos">
+//                       Todos los estados
+//                     </option>
+
+//                     <option value="activo">
+//                       Activos
+//                     </option>
+
+//                     <option value="suspendido">
+//                       Suspendidos
+//                     </option>
+
+//                     <option value="baja">
+//                       Baja
+//                     </option>
+//                   </select>
+
+//                   <select
+//                     name="plan"
+//                     defaultValue={plan}
+//                     className={inputClass}
+//                     aria-label="Filtrar por plan"
+//                   >
+//                     <option value="todos">
+//                       Todos los planes
+//                     </option>
+
+//                     <option value="con-plan">
+//                       Con plan
+//                     </option>
+
+//                     <option value="sin-plan">
+//                       Sin plan
+//                     </option>
+//                   </select>
+//                 </div>
+
+//                 <div
+//                   className="
+//                     grid grid-cols-2 gap-2
+//                     min-[430px]:flex
+//                   "
+//                 >
+//                   <button
+//                     type="submit"
+//                     className={primaryButtonClass}
+//                   >
+//                     <span
+//                       className="
+//                         text-[12px] leading-none
+//                         !text-white
+//                       "
+//                     >
+//                       Filtrar
+//                     </span>
+//                   </button>
+
+//                   <Link
+//                     href="/clientes"
+//                     className={secondaryButtonClass}
+//                   >
+//                     <span className="text-[12px] leading-none">
+//                       Limpiar
+//                     </span>
+//                   </Link>
+//                 </div>
+//               </form>
+
+//               {filtroActivo ? (
+//                 <div
+//                   className="
+//                     mt-2 flex items-center
+//                     justify-between gap-3
+//                     rounded-lg border
+//                     border-blue-200 bg-blue-50
+//                     px-3 py-2
+//                     text-[11px] text-blue-700
+//                     dark:border-blue-800/70
+//                     dark:bg-blue-950/25
+//                     dark:text-blue-300
+//                     lg:hidden
+//                   "
+//                 >
+//                   <span className="truncate">
+//                     Filtros aplicados
+//                   </span>
+
+//                   <span
+//                     className="
+//                       shrink-0 font-medium
+//                       tabular-nums
+//                     "
+//                   >
+//                     {clientesFiltrados.length} resultados
+//                   </span>
+//                 </div>
+//               ) : null}
+//             </div>
+//           </section>
+
+//           <ClientesTable
+//             clientes={clientesFiltrados}
+//             totalClientes={totalClientes}
+//           />
+//         </DashboardMain>
+
+//         <div className="hidden lg:block">
+//           <DashboardAside>
+//             <section className={`${panelClass} p-4`}>
+//               <div className="flex items-center gap-2">
+//                 <SlidersHorizontal
+//                   className="
+//                     h-4 w-4
+//                     text-slate-600
+//                     dark:text-slate-300
+//                   "
+//                 />
+
+//                 <h2
+//                   className="
+//                     text-sm font-medium
+//                     text-slate-950 dark:text-white
+//                   "
+//                 >
+//                   Filtro aplicado
+//                 </h2>
+//               </div>
+
+//               <div
+//                 className="
+//                   mt-3 overflow-hidden
+//                   rounded-lg border
+//                   border-slate-200 bg-slate-50
+//                   dark:border-[#2b3957]
+//                   dark:bg-[#0d172a]
+//                 "
+//               >
+//                 <ResumenItem
+//                   label="Búsqueda"
+//                   value={q.trim() || "Sin texto"}
+//                 />
+
+//                 <ResumenItem
+//                   label="Estado"
+//                   value={estadoLabel(estado)}
+//                 />
+
+//                 <ResumenItem
+//                   label="Plan"
+//                   value={planLabel(plan)}
+//                 />
+
+//                 <ResumenItem
+//                   label="Filtro activo"
+//                   value={filtroActivo ? "Sí" : "No"}
+//                   tone={
+//                     filtroActivo
+//                       ? "primary"
+//                       : "neutral"
+//                   }
+//                   dotClass={
+//                     filtroActivo
+//                       ? "bg-blue-500"
+//                       : "bg-slate-400"
+//                   }
+//                 />
+//               </div>
+//             </section>
+
+//             <section className={`${panelClass} p-4`}>
+//               <div className="flex items-center gap-2">
+//                 <UsersRound
+//                   className="
+//                     h-4 w-4
+//                     text-blue-700
+//                     dark:text-blue-300
+//                   "
+//                 />
+
+//                 <h2
+//                   className="
+//                     text-sm font-medium
+//                     text-slate-950 dark:text-white
+//                   "
+//                 >
+//                   Estado de clientes
+//                 </h2>
+//               </div>
+
+//               <div
+//                 className="
+//                   mt-3 overflow-hidden
+//                   rounded-lg border
+//                   border-slate-200 bg-slate-50
+//                   dark:border-[#2b3957]
+//                   dark:bg-[#0d172a]
+//                 "
+//               >
+//                 <ResumenItem
+//                   label="Total clientes"
+//                   value={totalClientes}
+//                   tone="primary"
+//                   dotClass="bg-blue-500"
+//                 />
+
+//                 <ResumenItem
+//                   label="Activos"
+//                   value={totalActivos}
+//                   tone="success"
+//                   dotClass="bg-emerald-500"
+//                 />
+
+//                 <ResumenItem
+//                   label="Suspendidos"
+//                   value={totalSuspendidos}
+//                   tone={
+//                     totalSuspendidos > 0
+//                       ? "warning"
+//                       : "neutral"
+//                   }
+//                   dotClass={
+//                     totalSuspendidos > 0
+//                       ? "bg-amber-500"
+//                       : "bg-slate-400"
+//                   }
+//                 />
+
+//                 <ResumenItem
+//                   label="Baja"
+//                   value={totalBaja}
+//                   tone={
+//                     totalBaja > 0
+//                       ? "danger"
+//                       : "neutral"
+//                   }
+//                   dotClass={
+//                     totalBaja > 0
+//                       ? "bg-red-500"
+//                       : "bg-slate-400"
+//                   }
+//                 />
+
+//                 <ResumenItem
+//                   label="Con plan contratado"
+//                   value={clientesConPlan}
+//                   tone="primary"
+//                   dotClass="bg-violet-500"
+//                 />
+
+//                 <ResumenItem
+//                   label="Sin plan"
+//                   value={clientesSinPlan}
+//                   tone={
+//                     clientesSinPlan > 0
+//                       ? "warning"
+//                       : "success"
+//                   }
+//                   dotClass={
+//                     clientesSinPlan > 0
+//                       ? "bg-amber-500"
+//                       : "bg-emerald-500"
+//                   }
+//                 />
+//               </div>
+//             </section>
+
+//             <section
+//               className={`${panelClass} hidden p-4 xl:block`}
+//             >
+//               <div className="flex items-center gap-2">
+//                 <ShieldCheck
+//                   className="
+//                     h-4 w-4
+//                     text-blue-700
+//                     dark:text-blue-300
+//                   "
+//                 />
+
+//                 <h2
+//                   className="
+//                     text-sm font-medium
+//                     text-slate-950 dark:text-white
+//                   "
+//                 >
+//                   Accesos rápidos
+//                 </h2>
+//               </div>
+
+//               <div className="mt-3 grid gap-2">
+//                 {quickActions.map((item) => {
+//                   const Icon = item.icon;
+
+//                   return (
+//                     <Link
+//                       key={`${item.href}-${item.label}`}
+//                       href={item.href}
+//                       className="
+//                         group flex items-center
+//                         justify-between gap-3
+//                         rounded-lg border
+//                         border-slate-200
+//                         bg-slate-50 px-3 py-2.5
+//                         transition
+//                         hover:border-blue-300
+//                         hover:bg-blue-50
+//                         dark:border-[#2b3957]
+//                         dark:bg-[#0d172a]
+//                         dark:hover:border-blue-500/60
+//                         dark:hover:bg-[#16223c]
+//                       "
+//                     >
+//                       <div
+//                         className="
+//                           flex min-w-0
+//                           items-center gap-2.5
+//                         "
+//                       >
+//                         <Icon
+//                           className="
+//                             h-4 w-4 shrink-0
+//                             text-slate-500
+//                             transition
+//                             group-hover:text-blue-700
+//                             dark:text-slate-400
+//                             dark:group-hover:text-blue-300
+//                           "
+//                         />
+
+//                         <div className="min-w-0">
+//                           <p
+//                             className="
+//                               truncate text-[12px]
+//                               font-medium
+//                               text-slate-900
+//                               dark:text-slate-100
+//                             "
+//                           >
+//                             {item.label}
+//                           </p>
+
+//                           <p
+//                             className="
+//                               truncate text-[10px]
+//                               text-slate-500
+//                               dark:text-slate-400
+//                             "
+//                           >
+//                             {item.description}
+//                           </p>
+//                         </div>
+//                       </div>
+
+//                       <ArrowRight
+//                         className="
+//                           h-3.5 w-3.5 shrink-0
+//                           text-slate-400
+//                           transition
+//                           group-hover:translate-x-0.5
+//                           group-hover:text-blue-700
+//                           dark:group-hover:text-blue-300
+//                         "
+//                       />
+//                     </Link>
+//                   );
+//                 })}
+//               </div>
+//             </section>
+//           </DashboardAside>
+//         </div>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
+
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowRight,
   CheckCircle2,
@@ -782,926 +1715,285 @@ import {
   FileText,
   Plus,
   Search,
-  ShieldCheck,
-  SlidersHorizontal,
   UsersRound,
 } from "lucide-react";
-
 import { ClientesTable } from "@/components/tables/ClientesTable";
-import {
-  DashboardAside,
-  DashboardGrid,
-  DashboardMain,
-} from "@/components/ui/DashboardGrid";
-import { PageShell } from "@/components/ui/PageShell";
+import { cajaStyles as styles } from "@/components/ui/dashboard-styles";
+import { getCurrentUser } from "@/lib/current-user";
 import { obtenerClientes } from "@/services/cliente.service";
 import type { ClienteSafe } from "@/types/cliente.types";
 
-export const metadata = {
-  title: "Clientes",
-};
-
-type ClientesPageProps = {
-  searchParams?: {
-    q?: string;
-    estado?: string;
-    plan?: string;
-  };
-};
-
-type ResumenItemProps = {
-  label: string;
-  value: string | number;
-  tone?:
-    | "neutral"
-    | "success"
-    | "danger"
-    | "warning"
-    | "primary";
-  dotClass?: string;
-};
-
-const panelClass =
-  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
-  "dark:border-[#263451] dark:bg-[#111b31] " +
-  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
-
-const inputClass =
-  "h-8 w-full rounded-lg border border-slate-300 bg-white px-2.5 " +
-  "text-[12px] font-normal text-slate-950 outline-none transition " +
-  "placeholder:text-slate-400 focus:border-blue-500 " +
-  "focus:ring-2 focus:ring-blue-500/10 " +
-  "dark:border-[#354462] dark:bg-[#0b1326] dark:text-white " +
-  "dark:placeholder:text-slate-500 dark:focus:border-blue-500 " +
-  "dark:focus:ring-blue-500/15";
-
-const buttonBaseClass =
-  "inline-flex h-8 items-center justify-center rounded-lg border px-3 " +
-  "text-[12px] font-medium leading-none shadow-sm transition " +
-  "active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60";
-
-const primaryButtonClass =
-  `${buttonBaseClass} gap-1.5 border-blue-600 bg-blue-600 !text-white ` +
-  "hover:border-blue-700 hover:bg-blue-700 hover:!text-white " +
-  "dark:border-blue-500 dark:bg-blue-500 dark:!text-white " +
-  "dark:hover:border-blue-600 dark:hover:bg-blue-600 " +
-  "dark:hover:!text-white";
-
-const secondaryButtonClass =
-  `${buttonBaseClass} border-slate-300 bg-white text-slate-700 ` +
-  "hover:border-slate-400 hover:bg-slate-50 " +
-  "dark:border-[#354462] dark:bg-[#111b31] dark:text-slate-200 " +
-  "dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
-
-function normalizarTexto(value: string) {
+export const metadata = { title: "Clientes" };
+export const dynamic = "force-dynamic";
+type Props = { searchParams?: { q?: string; estado?: string; plan?: string } };
+const input =
+  "h-9 w-full min-w-0 rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-bg)] px-[10px] text-[16px] text-[var(--overview-text)] outline-none placeholder:text-[var(--overview-muted)] focus-visible:outline-2 focus-visible:outline-[var(--overview-blue)] min-[700px]:text-[12px]";
+function normalize(value: string) {
   return value
     .toLowerCase()
     .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .trim();
 }
-
-function estadoLabel(value: string) {
-  if (value === "activo") {
-    return "Activos";
-  }
-
-  if (value === "suspendido") {
-    return "Suspendidos";
-  }
-
-  if (value === "baja") {
-    return "Baja";
-  }
-
-  return "Todos los estados";
+function fullName(c: ClienteSafe) {
+  return (
+    [c.apellido, c.nombre].filter(Boolean).join(", ") || "Cliente sin nombre"
+  );
 }
-
-function planLabel(value: string) {
-  if (value === "con-plan") {
-    return "Con plan";
-  }
-
-  if (value === "sin-plan") {
-    return "Sin plan";
-  }
-
-  return "Todos";
-}
-
-function ordenarClientes(clientes: ClienteSafe[]) {
-  return [...clientes].sort((a, b) => {
-    const apellidoA = normalizarTexto(a.apellido || "");
-    const apellidoB = normalizarTexto(b.apellido || "");
-
-    if (apellidoA !== apellidoB) {
-      return apellidoA.localeCompare(apellidoB);
-    }
-
-    const nombreA = normalizarTexto(a.nombre || "");
-    const nombreB = normalizarTexto(b.nombre || "");
-
-    if (nombreA !== nombreB) {
-      return nombreA.localeCompare(nombreB);
-    }
-
-    return (
-      Number(a.numeroCliente || 0) -
-      Number(b.numeroCliente || 0)
-    );
-  });
-}
-
-function filtrarClientes({
-  clientes,
-  q,
-  estado,
-  plan,
-}: {
-  clientes: ClienteSafe[];
-  q: string;
-  estado: string;
-  plan: string;
-}) {
-  const busqueda = normalizarTexto(q);
-
-  return clientes.filter((cliente) => {
-    const textoCliente = normalizarTexto(
-      [
-        cliente.numeroCliente,
-        cliente.nombre,
-        cliente.apellido,
-        cliente.dni,
-        cliente.direccion,
-        cliente.localidad,
-        cliente.provincia,
-        cliente.telefono,
-        cliente.email,
-        cliente.estado,
-        cliente.plan?.nombre,
-        cliente.plan?.tipo,
-        cliente.plan?.detalle,
-        cliente.plan?.importe,
-        cliente.fechaAlta,
-      ]
-        .filter(Boolean)
-        .join(" "),
-    );
-
-    const coincideBusqueda =
-      !busqueda || textoCliente.includes(busqueda);
-
-    const coincideEstado =
-      estado === "todos" ||
-      cliente.estado === estado;
-
-    const coincidePlan =
-      plan === "todos" ||
-      (plan === "con-plan" && Boolean(cliente.plan)) ||
-      (plan === "sin-plan" && !cliente.plan);
-
-    return (
-      coincideBusqueda &&
-      coincideEstado &&
-      coincidePlan
-    );
-  });
-}
-
 const quickActions = [
-  {
-    label: "Nuevo cliente",
-    description: "Registrar un cliente",
-    href: "/clientes/nuevo",
-    icon: Plus,
-  },
+  { label: "Nuevo cliente", href: "/clientes/nuevo", icon: Plus },
   {
     label: "Clientes activos",
-    description: "Servicio habilitado",
     href: "/clientes?estado=activo",
     icon: CheckCircle2,
   },
   {
     label: "Clientes suspendidos",
-    description: "Servicio suspendido",
     href: "/clientes?estado=suspendido",
     icon: Clock3,
   },
   {
     label: "Facturación mensual",
-    description: "Generar cargos mensuales",
     href: "/admin/configuracion/facturacion",
     icon: FileText,
   },
 ];
 
-function ResumenItem({
-  label,
-  value,
-  tone = "neutral",
-  dotClass,
-}: ResumenItemProps) {
-  const toneClass = {
-    neutral: "text-slate-900 dark:text-slate-100",
-    success: "text-emerald-700 dark:text-emerald-300",
-    danger: "text-red-700 dark:text-red-300",
-    warning: "text-amber-700 dark:text-amber-300",
-    primary: "text-blue-700 dark:text-blue-300",
-  }[tone];
-
-  return (
-    <div
-      className="
-        flex items-center justify-between gap-3
-        border-b border-slate-200 px-3 py-2.5
-        last:border-b-0
-        dark:border-[#263451]
-      "
-    >
-      <span
-        className="
-          flex min-w-0 items-center gap-2
-          text-[12px] text-slate-600
-          dark:text-slate-300
-        "
-      >
-        {dotClass ? (
-          <span
-            className={`
-              h-1.5 w-1.5 shrink-0 rounded-full
-              ${dotClass}
-            `}
-          />
-        ) : null}
-
-        <span className="truncate">
-          {label}
-        </span>
-      </span>
-
-      <span
-        className={`
-          shrink-0 text-[12px] font-medium
-          tabular-nums
-          ${toneClass}
-        `}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-export default async function ClientesPage({
-  searchParams,
-}: ClientesPageProps) {
+export default async function ClientesPage({ searchParams }: Props) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (user.rol !== "admin")
+    redirect(user.rol === "cobrador" ? "/cobrador" : "/cliente");
   const clientes = await obtenerClientes();
-
   const q = String(searchParams?.q || "");
-
-  const estado = String(
-    searchParams?.estado || "todos",
-  );
-
-  const plan = String(
-    searchParams?.plan || "todos",
-  );
-
-  const clientesFiltrados = ordenarClientes(
-    filtrarClientes({
-      clientes,
-      q,
-      estado,
-      plan,
-    }),
-  );
-
-  const totalClientes = clientes.length;
-
-  const totalActivos = clientes.filter(
-    (cliente) => cliente.estado === "activo",
-  ).length;
-
-  const totalSuspendidos = clientes.filter(
-    (cliente) => cliente.estado === "suspendido",
-  ).length;
-
-  const totalBaja = clientes.filter(
-    (cliente) => cliente.estado === "baja",
-  ).length;
-
-  const clientesConPlan = clientes.filter(
-    (cliente) => Boolean(cliente.plan),
-  ).length;
-
-  const clientesSinPlan =
-    totalClientes - clientesConPlan;
-
-  const filtroActivo =
-    q.trim() !== "" ||
-    estado !== "todos" ||
-    plan !== "todos";
+  const estado = ["activo", "suspendido", "baja"].includes(
+    searchParams?.estado || "",
+  )
+    ? searchParams!.estado!
+    : "todos";
+  const plan = ["con-plan", "sin-plan"].includes(searchParams?.plan || "")
+    ? searchParams!.plan!
+    : "todos";
+  const query = normalize(q);
+  const filtered = clientes
+    .filter((c) => {
+      const haystack = normalize(
+        [
+          c.numeroCliente,
+          c.nombre,
+          c.apellido,
+          c.dni,
+          c.direccion,
+          c.localidad,
+          c.provincia,
+          c.telefono,
+          c.email,
+          c.estado,
+          c.plan?.nombre,
+          c.plan?.tipo,
+          c.plan?.detalle,
+          c.plan?.importe,
+          c.fechaAlta,
+        ]
+          .filter((v) => v !== null && v !== undefined)
+          .join(" "),
+      );
+      return (
+        (!query || haystack.includes(query)) &&
+        (estado === "todos" || c.estado === estado) &&
+        (plan === "todos" || (plan === "con-plan" ? Boolean(c.plan) : !c.plan))
+      );
+    })
+    .sort(
+      (a, b) =>
+        normalize(a.apellido).localeCompare(normalize(b.apellido), "es-AR") ||
+        normalize(a.nombre).localeCompare(normalize(b.nombre), "es-AR") ||
+        a.numeroCliente - b.numeroCliente,
+    );
+  const active = clientes.filter((c) => c.estado === "activo").length;
+  const suspended = clientes.filter((c) => c.estado === "suspendido").length;
+  const cancelled = clientes.filter((c) => c.estado === "baja").length;
+  const withPlan = clientes.filter((c) => c.plan).length;
+  const hasFilters = Boolean(query) || estado !== "todos" || plan !== "todos";
 
   return (
-    <PageShell
-      maxWidth="wide"
-      className="pb-20 lg:pb-6"
-    >
-      <DashboardGrid>
-        <DashboardMain>
-          <section className={panelClass}>
-            <div
-              className="
-                border-b border-slate-200
-                bg-slate-50/80 px-3 py-3
-                dark:border-[#263451]
-                dark:bg-[#0e172a]
-                sm:px-4
-              "
-            >
-              <div
-                className="
-                  flex min-h-12 items-center
-                  justify-between gap-3
-                "
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2.5">
-                    <UsersRound
-                      className="
-                        h-5 w-5 shrink-0
-                        text-blue-700
-                        dark:text-blue-300
-                      "
-                    />
-
-                    <h1
-                      className="
-                        truncate text-base font-medium
-                        text-slate-950 dark:text-white
-                      "
-                    >
-                      Gestión de clientes
-                    </h1>
-                  </div>
-
-                  <p
-                    className="
-                      mt-1 hidden max-w-3xl
-                      truncate text-[12px] leading-5
-                      text-slate-600
-                      dark:text-slate-400
-                      sm:block
-                    "
-                  >
-                    Administración de datos personales,
-                    planes contratados, estado del servicio
-                    y accesos al estado de cuenta.
-                  </p>
-
-                  <p
-                    className="
-                      mt-1 truncate text-[11px]
-                      text-slate-500
-                      dark:text-slate-400
-                      sm:hidden
-                    "
-                  >
-                    Datos, planes y estado del servicio
-                  </p>
-                </div>
-
-                <div
-                  className="
-                    flex h-8 shrink-0
-                    items-center gap-2
-                  "
-                >
-                  <div
-                    className="
-                      hidden h-8 shrink-0
-                      items-center gap-2
-                      rounded-lg border
-                      border-slate-300 bg-white
-                      px-3 text-[12px]
-                      text-slate-600
-                      dark:border-[#354462]
-                      dark:bg-[#111b31]
-                      dark:text-slate-300
-                      sm:flex
-                    "
-                  >
-                    <UsersRound
-                      className="
-                        h-4 w-4
-                        text-blue-700
-                        dark:text-blue-300
-                      "
-                    />
-
-                    <span>
-                      Mostrando{" "}
-                      <strong
-                        className="
-                          font-medium tabular-nums
-                          text-slate-950
-                          dark:text-white
-                        "
-                      >
-                        {clientesFiltrados.length}
-                      </strong>{" "}
-                      de{" "}
-                      <strong
-                        className="
-                          font-medium tabular-nums
-                          text-slate-950
-                          dark:text-white
-                        "
-                      >
-                        {totalClientes}
-                      </strong>
-                    </span>
-                  </div>
-
-                  <div
-                    className="
-                      inline-flex h-8 shrink-0
-                      items-center rounded-lg
-                      border border-slate-300
-                      bg-white px-2
-                      text-[11px] text-slate-600
-                      dark:border-[#354462]
-                      dark:bg-[#111b31]
-                      dark:text-slate-300
-                      sm:hidden
-                    "
-                  >
-                    <strong
-                      className="
-                        font-medium tabular-nums
-                        text-slate-950
-                        dark:text-white
-                      "
-                    >
-                      {clientesFiltrados.length}
-                    </strong>
-
-                    <span className="mx-0.5">/</span>
-
-                    <span className="tabular-nums">
-                      {totalClientes}
-                    </span>
-                  </div>
-
-                  <Link
-                    href="/clientes/nuevo"
-                    className={primaryButtonClass}
-                  >
-                    <Plus
-                      className="
-                        h-3.5 w-3.5 shrink-0
-                        !text-white
-                      "
-                    />
-
-                    <span
-                      className="
-                        hidden text-[12px]
-                        leading-none !text-white
-                        sm:inline
-                      "
-                    >
-                      Nuevo cliente
-                    </span>
-
-                    <span
-                      className="
-                        text-[12px] leading-none
-                        !text-white sm:hidden
-                      "
-                    >
-                      Nuevo
-                    </span>
-                  </Link>
-                </div>
-              </div>
+    <div className={styles.page}>
+      <header className={`${styles.heading} flex-wrap`}>
+        <div>
+          <h1>Clientes</h1>
+          <p className={styles.description}>
+            Administrá datos, planes y estado del servicio de tus clientes.
+          </p>
+        </div>
+        <Link href="/clientes/nuevo" className={`${styles.button} shrink-0`}>
+          <Plus aria-hidden="true" /> Nuevo cliente
+        </Link>
+      </header>
+      <div className={styles.layout}>
+        <div className={styles.main}>
+          <section
+            className={styles.panel}
+            aria-labelledby="client-filters-title"
+          >
+            <div className={styles.panelHeader}>
+              <h2 id="client-filters-title" className={styles.panelTitle}>
+                Buscar y filtrar
+              </h2>
+              <span className={styles.count}>
+                {hasFilters ? "Filtros aplicados" : "Todos los clientes"}
+              </span>
             </div>
-
-            <div className="p-3">
-              <form
-                action="/clientes"
-                className="
-                  grid gap-2 rounded-lg
-                  border border-slate-300
-                  bg-slate-50 p-2.5
-                  dark:border-[#354462]
-                  dark:bg-[#0b1326]
-                  lg:grid-cols-[minmax(260px,1fr)_150px_130px_auto]
-                "
+            <form
+              action="/clientes"
+              method="get"
+              className="grid gap-2 p-[14px] min-[700px]:grid-cols-[minmax(0,1fr)_155px_140px]"
+            >
+              <div className="relative">
+                <Search
+                  className="pointer-events-none absolute left-[10px] top-[11px] !size-3.5 text-[var(--overview-muted)]"
+                  aria-hidden="true"
+                />
+                <input
+                  key={q}
+                  type="search"
+                  name="q"
+                  aria-label="Buscar clientes"
+                  defaultValue={q}
+                  placeholder="Nombre, DNI, número o contacto"
+                  className={`${input} !pl-8`}
+                />
+              </div>
+              <select
+                key={estado}
+                name="estado"
+                aria-label="Filtrar por estado"
+                defaultValue={estado}
+                className={input}
               >
-                <div className="relative">
-                  <Search
-                    className="
-                      pointer-events-none
-                      absolute left-2.5 top-1/2
-                      h-3.5 w-3.5
-                      -translate-y-1/2
-                      text-slate-400
-                      dark:text-slate-500
-                    "
-                  />
-
-                  <input
-                    type="search"
-                    name="q"
-                    defaultValue={q}
-                    placeholder="Buscar cliente"
-                    className={`${inputClass} pl-8`}
-                  />
-                </div>
-
-                <div
-                  className="
-                    grid grid-cols-2 gap-2
-                    lg:contents
-                  "
-                >
-                  <select
-                    name="estado"
-                    defaultValue={estado}
-                    className={inputClass}
-                    aria-label="Filtrar por estado"
-                  >
-                    <option value="todos">
-                      Todos los estados
-                    </option>
-
-                    <option value="activo">
-                      Activos
-                    </option>
-
-                    <option value="suspendido">
-                      Suspendidos
-                    </option>
-
-                    <option value="baja">
-                      Baja
-                    </option>
-                  </select>
-
-                  <select
-                    name="plan"
-                    defaultValue={plan}
-                    className={inputClass}
-                    aria-label="Filtrar por plan"
-                  >
-                    <option value="todos">
-                      Todos los planes
-                    </option>
-
-                    <option value="con-plan">
-                      Con plan
-                    </option>
-
-                    <option value="sin-plan">
-                      Sin plan
-                    </option>
-                  </select>
-                </div>
-
-                <div
-                  className="
-                    grid grid-cols-2 gap-2
-                    min-[430px]:flex
-                  "
-                >
+                <option value="todos">Todos los estados</option>
+                <option value="activo">Activos</option>
+                <option value="suspendido">Suspendidos</option>
+                <option value="baja">Baja</option>
+              </select>
+              <select
+                key={plan}
+                name="plan"
+                aria-label="Filtrar por plan"
+                defaultValue={plan}
+                className={input}
+              >
+                <option value="todos">Todos los planes</option>
+                <option value="con-plan">Con plan</option>
+                <option value="sin-plan">Sin plan</option>
+              </select>
+              <div className="flex flex-wrap items-center justify-between gap-2 min-[700px]:col-span-3">
+                <p className="text-[11px] text-[var(--overview-muted)]">
+                  {filtered.length} de {clientes.length} clientes
+                </p>
+                <div className="flex gap-2">
+                  <Link href="/clientes" className={styles.button}>
+                    Limpiar
+                  </Link>
                   <button
                     type="submit"
-                    className={primaryButtonClass}
+                    className={`${styles.button} !border-blue-600 !bg-blue-600 !text-white hover:!bg-blue-700`}
                   >
-                    <span
-                      className="
-                        text-[12px] leading-none
-                        !text-white
-                      "
-                    >
-                      Filtrar
-                    </span>
+                    Filtrar
                   </button>
-
-                  <Link
-                    href="/clientes"
-                    className={secondaryButtonClass}
-                  >
-                    <span className="text-[12px] leading-none">
-                      Limpiar
-                    </span>
-                  </Link>
                 </div>
-              </form>
-
-              {filtroActivo ? (
-                <div
-                  className="
-                    mt-2 flex items-center
-                    justify-between gap-3
-                    rounded-lg border
-                    border-blue-200 bg-blue-50
-                    px-3 py-2
-                    text-[11px] text-blue-700
-                    dark:border-blue-800/70
-                    dark:bg-blue-950/25
-                    dark:text-blue-300
-                    lg:hidden
-                  "
-                >
-                  <span className="truncate">
-                    Filtros aplicados
-                  </span>
-
-                  <span
-                    className="
-                      shrink-0 font-medium
-                      tabular-nums
-                    "
-                  >
-                    {clientesFiltrados.length} resultados
-                  </span>
+              </div>
+            </form>
+          </section>
+          <ClientesTable clientes={filtered} totalClientes={clientes.length} />
+        </div>
+        <aside className={styles.aside}>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <h2 className={styles.panelTitle}>
+                <UsersRound aria-hidden="true" /> Estado de clientes
+              </h2>
+            </div>
+            <div className={styles.sideBody}>
+              {[
+                {
+                  label: "Clientes registrados",
+                  value: clientes.length,
+                  tone: styles.blue,
+                },
+                { label: "Activos", value: active, tone: styles.green },
+                { label: "Suspendidos", value: suspended, tone: styles.amber },
+                {
+                  label: "Baja",
+                  value: cancelled,
+                  tone: "text-red-700 dark:text-red-300",
+                },
+                {
+                  label: "Sin plan",
+                  value: clientes.length - withPlan,
+                  tone: styles.amber,
+                },
+              ].map((item) => (
+                <div key={item.label} className={styles.sideRow}>
+                  <span>{item.label}</span>
+                  <strong className={item.tone}>{item.value}</strong>
                 </div>
-              ) : null}
+              ))}
             </div>
           </section>
-
-          <ClientesTable
-            clientes={clientesFiltrados}
-            totalClientes={totalClientes}
-          />
-        </DashboardMain>
-
-        <div className="hidden lg:block">
-          <DashboardAside>
-            <section className={`${panelClass} p-4`}>
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal
-                  className="
-                    h-4 w-4
-                    text-slate-600
-                    dark:text-slate-300
-                  "
-                />
-
-                <h2
-                  className="
-                    text-sm font-medium
-                    text-slate-950 dark:text-white
-                  "
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <h2 className={styles.panelTitle}>Accesos rápidos</h2>
+            </div>
+            <div className={`${styles.sideBody} ${styles.shortcuts}`}>
+              {quickActions.map(({ label, href, icon: Icon }) => (
+                <Link key={href} href={href} className={styles.button}>
+                  <Icon aria-hidden="true" />
+                  {label}
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <h2 className={styles.panelTitle}>Filtro aplicado</h2>
+            </div>
+            <div className={styles.sideBody}>
+              <div className={styles.sideRow}>
+                <span>Búsqueda</span>
+                <span
+                  className="max-w-[60%] truncate !text-[var(--overview-text)]"
+                  title={q}
                 >
-                  Filtro aplicado
-                </h2>
+                  {q.trim() || "Sin búsqueda"}
+                </span>
               </div>
-
-              <div
-                className="
-                  mt-3 overflow-hidden
-                  rounded-lg border
-                  border-slate-200 bg-slate-50
-                  dark:border-[#2b3957]
-                  dark:bg-[#0d172a]
-                "
-              >
-                <ResumenItem
-                  label="Búsqueda"
-                  value={q.trim() || "Sin texto"}
-                />
-
-                <ResumenItem
-                  label="Estado"
-                  value={estadoLabel(estado)}
-                />
-
-                <ResumenItem
-                  label="Plan"
-                  value={planLabel(plan)}
-                />
-
-                <ResumenItem
-                  label="Filtro activo"
-                  value={filtroActivo ? "Sí" : "No"}
-                  tone={
-                    filtroActivo
-                      ? "primary"
-                      : "neutral"
-                  }
-                  dotClass={
-                    filtroActivo
-                      ? "bg-blue-500"
-                      : "bg-slate-400"
-                  }
-                />
+              <div className={styles.sideRow}>
+                <span>Estado</span>
+                <span className="!text-[var(--overview-text)]">
+                  {estado === "todos"
+                    ? "Todos"
+                    : estado === "activo"
+                      ? "Activos"
+                      : estado === "suspendido"
+                        ? "Suspendidos"
+                        : "Baja"}
+                </span>
               </div>
-            </section>
-
-            <section className={`${panelClass} p-4`}>
-              <div className="flex items-center gap-2">
-                <UsersRound
-                  className="
-                    h-4 w-4
-                    text-blue-700
-                    dark:text-blue-300
-                  "
-                />
-
-                <h2
-                  className="
-                    text-sm font-medium
-                    text-slate-950 dark:text-white
-                  "
-                >
-                  Estado de clientes
-                </h2>
+              <div className={styles.sideRow}>
+                <span>Plan</span>
+                <span className="!text-[var(--overview-text)]">
+                  {plan === "todos"
+                    ? "Todos"
+                    : plan === "con-plan"
+                      ? "Con plan"
+                      : "Sin plan"}
+                </span>
               </div>
-
-              <div
-                className="
-                  mt-3 overflow-hidden
-                  rounded-lg border
-                  border-slate-200 bg-slate-50
-                  dark:border-[#2b3957]
-                  dark:bg-[#0d172a]
-                "
-              >
-                <ResumenItem
-                  label="Total clientes"
-                  value={totalClientes}
-                  tone="primary"
-                  dotClass="bg-blue-500"
-                />
-
-                <ResumenItem
-                  label="Activos"
-                  value={totalActivos}
-                  tone="success"
-                  dotClass="bg-emerald-500"
-                />
-
-                <ResumenItem
-                  label="Suspendidos"
-                  value={totalSuspendidos}
-                  tone={
-                    totalSuspendidos > 0
-                      ? "warning"
-                      : "neutral"
-                  }
-                  dotClass={
-                    totalSuspendidos > 0
-                      ? "bg-amber-500"
-                      : "bg-slate-400"
-                  }
-                />
-
-                <ResumenItem
-                  label="Baja"
-                  value={totalBaja}
-                  tone={
-                    totalBaja > 0
-                      ? "danger"
-                      : "neutral"
-                  }
-                  dotClass={
-                    totalBaja > 0
-                      ? "bg-red-500"
-                      : "bg-slate-400"
-                  }
-                />
-
-                <ResumenItem
-                  label="Con plan contratado"
-                  value={clientesConPlan}
-                  tone="primary"
-                  dotClass="bg-violet-500"
-                />
-
-                <ResumenItem
-                  label="Sin plan"
-                  value={clientesSinPlan}
-                  tone={
-                    clientesSinPlan > 0
-                      ? "warning"
-                      : "success"
-                  }
-                  dotClass={
-                    clientesSinPlan > 0
-                      ? "bg-amber-500"
-                      : "bg-emerald-500"
-                  }
-                />
-              </div>
-            </section>
-
-            <section
-              className={`${panelClass} hidden p-4 xl:block`}
-            >
-              <div className="flex items-center gap-2">
-                <ShieldCheck
-                  className="
-                    h-4 w-4
-                    text-blue-700
-                    dark:text-blue-300
-                  "
-                />
-
-                <h2
-                  className="
-                    text-sm font-medium
-                    text-slate-950 dark:text-white
-                  "
-                >
-                  Accesos rápidos
-                </h2>
-              </div>
-
-              <div className="mt-3 grid gap-2">
-                {quickActions.map((item) => {
-                  const Icon = item.icon;
-
-                  return (
-                    <Link
-                      key={`${item.href}-${item.label}`}
-                      href={item.href}
-                      className="
-                        group flex items-center
-                        justify-between gap-3
-                        rounded-lg border
-                        border-slate-200
-                        bg-slate-50 px-3 py-2.5
-                        transition
-                        hover:border-blue-300
-                        hover:bg-blue-50
-                        dark:border-[#2b3957]
-                        dark:bg-[#0d172a]
-                        dark:hover:border-blue-500/60
-                        dark:hover:bg-[#16223c]
-                      "
-                    >
-                      <div
-                        className="
-                          flex min-w-0
-                          items-center gap-2.5
-                        "
-                      >
-                        <Icon
-                          className="
-                            h-4 w-4 shrink-0
-                            text-slate-500
-                            transition
-                            group-hover:text-blue-700
-                            dark:text-slate-400
-                            dark:group-hover:text-blue-300
-                          "
-                        />
-
-                        <div className="min-w-0">
-                          <p
-                            className="
-                              truncate text-[12px]
-                              font-medium
-                              text-slate-900
-                              dark:text-slate-100
-                            "
-                          >
-                            {item.label}
-                          </p>
-
-                          <p
-                            className="
-                              truncate text-[10px]
-                              text-slate-500
-                              dark:text-slate-400
-                            "
-                          >
-                            {item.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      <ArrowRight
-                        className="
-                          h-3.5 w-3.5 shrink-0
-                          text-slate-400
-                          transition
-                          group-hover:translate-x-0.5
-                          group-hover:text-blue-700
-                          dark:group-hover:text-blue-300
-                        "
-                      />
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          </DashboardAside>
-        </div>
-      </DashboardGrid>
-    </PageShell>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
   );
 }

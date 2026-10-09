@@ -1842,702 +1842,940 @@
 //   );
 // }
 
+// import Link from "next/link";
+// import { notFound } from "next/navigation";
+// import type { ReactNode } from "react";
+// import {
+//   ArrowRight,
+//   CheckCircle2,
+//   FileText,
+//   MinusCircle,
+//   PlusCircle,
+//   ReceiptText,
+//   WalletCards,
+//   Wifi,
+// } from "lucide-react";
+// import { EstadoCuentaTable } from "@/components/tables/EstadoCuentaTable";
+// import { obtenerClientePorId } from "@/services/cliente.service";
+// import { obtenerEstadoCuentaCliente } from "@/services/movimiento-financiero.service";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+
+// type EstadoCuentaPageProps = {
+//   params: {
+//     id: string;
+//   };
+// };
+
+// export const metadata = {
+//   title: "Estado de cuenta",
+// };
+
+// const panelClass =
+//   "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+//   "dark:border-[#263451] dark:bg-[#111b31] " +
+//   "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
+
+// const innerPanelClass =
+//   "overflow-hidden rounded-lg border border-slate-200 bg-slate-50 " +
+//   "dark:border-[#2b3957] dark:bg-[#0d172a]";
+
+// const sectionTitleClass =
+//   "text-sm font-medium text-slate-950 dark:text-white";
+
+// const sectionSubtitleClass =
+//   "text-sm font-medium text-slate-950 dark:text-white";
+
+// const sectionDescriptionClass =
+//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// const buttonSecondaryClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
+//   "border-slate-300 bg-white px-3 text-[12px] font-medium leading-none " +
+//   "text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 " +
+//   "active:scale-[0.99] dark:border-[#354462] dark:bg-[#111b31] " +
+//   "dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
+
+// const debitButtonClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
+//   "border-amber-300 bg-amber-50 px-3 text-[12px] font-medium leading-none " +
+//   "text-amber-700 shadow-sm transition hover:bg-amber-100 active:scale-[0.99] " +
+//   "dark:border-amber-800/70 dark:bg-amber-950/30 dark:text-amber-300 " +
+//   "dark:hover:bg-amber-950/50";
+
+// const creditButtonClass =
+//   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
+//   "border-emerald-300 bg-emerald-50 px-3 text-[12px] font-medium leading-none " +
+//   "text-emerald-700 shadow-sm transition hover:bg-emerald-100 active:scale-[0.99] " +
+//   "dark:border-emerald-800/70 dark:bg-emerald-950/30 dark:text-emerald-300 " +
+//   "dark:hover:bg-emerald-950/50";
+
+// function formatMoney(value: number) {
+//   const amount = Number(value || 0);
+//   const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+//   const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+//   return `$ ${formattedInteger},${decimalPart}`;
+// }
+
+// function estadoClienteLabel(estado: string) {
+//   if (estado === "activo") return "Activo";
+//   if (estado === "suspendido") return "Suspendido";
+//   return "Baja";
+// }
+
+// function estadoClienteTone(estado: string): "success" | "warning" | "danger" {
+//   if (estado === "activo") return "success";
+//   if (estado === "suspendido") return "warning";
+//   return "danger";
+// }
+
+// function estadoCuentaLabel(saldo: number) {
+//   if (saldo > 0) return "Pendiente";
+//   if (saldo < 0) return "A favor";
+//   return "Al día";
+// }
+
+// function estadoCuentaTone(saldo: number): "success" | "warning" | "danger" {
+//   if (saldo > 0) return "danger";
+//   if (saldo < 0) return "warning";
+//   return "success";
+// }
+
+// function saldoTexto(saldo: number) {
+//   if (saldo > 0) {
+//     return "El cliente registra saldo pendiente de pago.";
+//   }
+
+//   if (saldo < 0) {
+//     return "El cliente tiene saldo a favor.";
+//   }
+
+//   return "El cliente no registra saldo pendiente.";
+// }
+
+// function getNombreCompleto(cliente: {
+//   apellido?: string | null;
+//   nombre?: string | null;
+// }) {
+//   const apellido = String(cliente.apellido || "").trim();
+//   const nombre = String(cliente.nombre || "").trim();
+
+//   const completo = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return completo || "Cliente sin nombre";
+// }
+
+// function BackButton() {
+//   return (
+//     <Link
+//       href="/clientes"
+//       className={`${buttonSecondaryClass} hidden sm:inline-flex`}
+//     >
+//       Volver
+//     </Link>
+//   );
+// }
+
+// function Badge({
+//   children,
+//   tone = "neutral",
+// }: {
+//   children: ReactNode;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral:
+//       "border-slate-300 bg-slate-50 text-slate-700 dark:border-[#263451] dark:bg-[#0d172a] dark:text-slate-300",
+//     primary:
+//       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+//     success:
+//       "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+//     warning:
+//       "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+//     danger:
+//       "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <span
+//       className={`inline-flex h-7 items-center rounded-md border px-2.5 text-[10px] font-medium leading-none ${toneClass}`}
+//     >
+//       {children}
+//     </span>
+//   );
+// }
+
+// function HeaderCuenta({
+//   cliente,
+//   nombreCompleto,
+//   saldo,
+// }: {
+//   cliente: {
+//     numeroCliente: number;
+//     dni?: string | null;
+//     estado: string;
+//     plan?: {
+//       nombre: string;
+//     } | null;
+//   };
+//   nombreCompleto: string;
+//   saldo: number;
+// }) {
+//   return (
+//     <section className={panelClass}>
+//       <div
+//         className="
+//           border-b border-slate-200
+//           bg-slate-50/80 px-3 py-3
+//           dark:border-[#263451]
+//           dark:bg-[#0e172a]
+//           sm:px-4
+//         "
+//       >
+//         <div className="flex min-h-12 items-center justify-between gap-3">
+//           <div className="min-w-0">
+//             <div className="flex items-center gap-2.5">
+//               <WalletCards className="h-5 w-5 shrink-0 text-blue-700 dark:text-blue-300" />
+
+//               <h1 className="truncate text-base font-medium text-slate-950 dark:text-white">
+//                 Estado de cuenta
+//               </h1>
+//             </div>
+
+//             <p className="mt-1 hidden max-w-3xl truncate text-[12px] leading-5 text-slate-600 dark:text-slate-400 sm:block">
+//               {nombreCompleto} · N° {cliente.numeroCliente} · DNI {cliente.dni || "-"}
+//             </p>
+
+//             <p className="mt-1 truncate text-[11px] text-slate-500 dark:text-slate-400 sm:hidden">
+//               N° {cliente.numeroCliente} · {nombreCompleto}
+//             </p>
+//           </div>
+
+//           <div className="flex h-8 shrink-0 items-center gap-2">
+//             <div className="hidden items-center gap-2 xl:flex">
+//               <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
+//               <Badge tone={estadoClienteTone(cliente.estado)}>
+//                 {estadoClienteLabel(cliente.estado)}
+//               </Badge>
+//               <Badge tone={estadoCuentaTone(saldo)}>
+//                 {estadoCuentaLabel(saldo)}
+//               </Badge>
+//               <Badge tone={cliente.plan ? "success" : "warning"}>
+//                 {cliente.plan?.nombre || "Sin plan"}
+//               </Badge>
+//             </div>
+
+//             <BackButton />
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ResumenItem({
+//   icon,
+//   label,
+//   value,
+//   tone = "neutral",
+// }: {
+//   icon?: ReactNode;
+//   label: string;
+//   value: string | number;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral: "text-slate-950 dark:text-white",
+//     primary: "text-blue-700 dark:text-blue-300",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     danger: "text-red-700 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-[#263451]">
+//       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+//         {icon ? (
+//           <span className="shrink-0 text-blue-700 dark:text-blue-300">
+//             {icon}
+//           </span>
+//         ) : null}
+
+//         <span className="truncate">{label}</span>
+//       </span>
+
+//       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+//         {value}
+//       </span>
+//     </div>
+//   );
+// }
+
+// function ResumenFinanciero({
+//   saldo,
+//   totalDebe,
+//   totalHaber,
+//   cantidadPeriodos,
+//   periodosPendientes,
+//   periodosCancelados,
+//   periodosAFavor,
+// }: {
+//   saldo: number;
+//   totalDebe: number;
+//   totalHaber: number;
+//   cantidadPeriodos: number;
+//   periodosPendientes: number;
+//   periodosCancelados: number;
+//   periodosAFavor: number;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3 flex items-start gap-3">
+//         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+//           <WalletCards className="h-4 w-4" />
+//         </div>
+
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Resumen financiero</p>
+
+//           <p className={sectionDescriptionClass}>{saldoTexto(saldo)}</p>
+//         </div>
+//       </div>
+
+//       <div className="md:hidden">
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Saldo final
+//           </p>
+
+//           <p
+//             className={`mt-1 truncate text-[22px] font-semibold ${
+//               saldo > 0
+//                 ? "text-red-700 dark:text-red-300"
+//                 : saldo < 0
+//                   ? "text-amber-700 dark:text-amber-300"
+//                   : "text-emerald-700 dark:text-emerald-300"
+//             }`}
+//           >
+//             {formatMoney(saldo)}
+//           </p>
+
+//           <div className="mt-3 grid grid-cols-2 gap-2">
+//             <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-[#263451] dark:bg-slate-950/60">
+//               <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//                 Pendientes
+//               </p>
+
+//               <p
+//                 className={`mt-1 text-[16px] font-semibold ${
+//                   periodosPendientes > 0
+//                     ? "text-red-700 dark:text-red-300"
+//                     : "text-emerald-700 dark:text-emerald-300"
+//                 }`}
+//               >
+//                 {periodosPendientes}
+//               </p>
+//             </div>
+
+//             <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-[#263451] dark:bg-slate-950/60">
+//               <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//                 Períodos
+//               </p>
+
+//               <p className="mt-1 text-[16px] font-semibold text-blue-700 dark:text-blue-300">
+//                 {cantidadPeriodos}
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="hidden gap-2 md:grid md:grid-cols-3 xl:grid-cols-6">
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Total debe
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-red-700 dark:text-red-300">
+//             {formatMoney(totalDebe)}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Total haber
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
+//             {formatMoney(totalHaber)}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Períodos
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-blue-700 dark:text-blue-300">
+//             {cantidadPeriodos}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Pendientes
+//           </p>
+
+//           <p
+//             className={`mt-1 truncate text-[18px] font-semibold ${
+//               periodosPendientes > 0
+//                 ? "text-red-700 dark:text-red-300"
+//                 : "text-emerald-700 dark:text-emerald-300"
+//             }`}
+//           >
+//             {periodosPendientes}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             Cancelados
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
+//             {periodosCancelados}
+//           </p>
+//         </div>
+
+//         <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
+//           <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+//             A favor
+//           </p>
+
+//           <p className="mt-1 truncate text-[18px] font-semibold text-amber-700 dark:text-amber-300">
+//             {periodosAFavor}
+//           </p>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function FacturacionHeader({ clienteId }: { clienteId: string }) {
+//   return (
+//     <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+//       <div className="min-w-0">
+//         <p className={sectionTitleClass}>Facturación</p>
+
+//         <h2 className={sectionSubtitleClass}>Resumen por período</h2>
+
+//         <p className={`${sectionDescriptionClass} max-w-3xl`}>
+//           Cada fila representa un período facturado. Entrá al detalle para ver
+//           pagos, notas y composición del saldo.
+//         </p>
+//       </div>
+
+//       <div className="flex shrink-0 flex-col gap-2 sm:flex-row lg:justify-end">
+//         <Link href={`/clientes/${clienteId}/nota-debito`} className={debitButtonClass}>
+//           <PlusCircle className="h-3.5 w-3.5" />
+//           Nota débito
+//         </Link>
+
+//         <Link
+//           href={`/clientes/${clienteId}/nota-credito`}
+//           className={creditButtonClass}
+//         >
+//           <MinusCircle className="h-3.5 w-3.5" />
+//           Nota crédito
+//         </Link>
+//       </div>
+//     </div>
+//   );
+// }
+
+// function FacturacionPanel({
+//   clienteId,
+//   periodos,
+// }: {
+//   clienteId: string;
+//   periodos: Parameters<typeof EstadoCuentaTable>[0]["periodos"];
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <FacturacionHeader clienteId={clienteId} />
+
+//       <EstadoCuentaTable clienteId={clienteId} periodos={periodos} />
+//     </section>
+//   );
+// }
+
+// function ResumenAside({
+//   cliente,
+//   saldo,
+//   cantidadPeriodos,
+//   periodosPendientes,
+//   periodosCancelados,
+//   periodosAFavor,
+// }: {
+//   cliente: {
+//     numeroCliente: number;
+//     estado: string;
+//     plan?: {
+//       nombre: string;
+//     } | null;
+//   };
+//   saldo: number;
+//   cantidadPeriodos: number;
+//   periodosPendientes: number;
+//   periodosCancelados: number;
+//   periodosAFavor: number;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Resumen</p>
+
+//         <h2 className={sectionSubtitleClass}>Información de cuenta</h2>
+//       </div>
+
+//       <div className={innerPanelClass}>
+//         <ResumenItem
+//           icon={<ReceiptText className="h-3.5 w-3.5" />}
+//           label="Cliente"
+//           value={`N° ${cliente.numeroCliente}`}
+//           tone="primary"
+//         />
+
+//         <ResumenItem
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Estado cliente"
+//           value={estadoClienteLabel(cliente.estado)}
+//           tone={estadoClienteTone(cliente.estado)}
+//         />
+
+//         <ResumenItem
+//           icon={<Wifi className="h-3.5 w-3.5" />}
+//           label="Plan"
+//           value={cliente.plan?.nombre || "Sin plan"}
+//           tone={cliente.plan ? "success" : "warning"}
+//         />
+
+//         <ResumenItem
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Períodos"
+//           value={cantidadPeriodos}
+//           tone="primary"
+//         />
+
+//         <ResumenItem
+//           icon={<PlusCircle className="h-3.5 w-3.5" />}
+//           label="Pendientes"
+//           value={periodosPendientes}
+//           tone={periodosPendientes > 0 ? "danger" : "success"}
+//         />
+
+//         <ResumenItem
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Cancelados"
+//           value={periodosCancelados}
+//           tone="success"
+//         />
+
+//         <ResumenItem
+//           icon={<MinusCircle className="h-3.5 w-3.5" />}
+//           label="A favor"
+//           value={periodosAFavor}
+//           tone={periodosAFavor > 0 ? "warning" : "neutral"}
+//         />
+
+//         <ResumenItem
+//           icon={<WalletCards className="h-3.5 w-3.5" />}
+//           label="Saldo final"
+//           value={formatMoney(saldo)}
+//           tone={estadoCuentaTone(saldo)}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function AccionesAside({ clienteId }: { clienteId: string }) {
+//   return (
+//     <section className={`${panelClass} hidden p-3.5 xl:block`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Acciones</p>
+
+//         <h2 className={sectionSubtitleClass}>Movimientos manuales</h2>
+//       </div>
+
+//       <div className="grid gap-2">
+//         <Link
+//           href={`/clientes/${clienteId}/nota-debito`}
+//           className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 dark:border-[#263451] dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-amber-900/70 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
+//         >
+//           <span className="flex min-w-0 items-center gap-2.5">
+//             <PlusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-amber-700 dark:text-slate-400 dark:group-hover:text-amber-300" />
+//             <span className="truncate">Nota débito</span>
+//           </span>
+
+//           <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//         </Link>
+
+//         <Link
+//           href={`/clientes/${clienteId}/nota-credito`}
+//           className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-[#263451] dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-emerald-900/70 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
+//         >
+//           <span className="flex min-w-0 items-center gap-2.5">
+//             <MinusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-emerald-700 dark:text-slate-400 dark:group-hover:text-emerald-300" />
+//             <span className="truncate">Nota crédito</span>
+//           </span>
+
+//           <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//         </Link>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function NotaLectura() {
+//   return (
+//     <section className={`${panelClass} hidden p-3.5 xl:block`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Lectura rápida</p>
+
+//         <h2 className={sectionSubtitleClass}>Detalle del saldo</h2>
+//       </div>
+
+//       <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[12px] leading-5 text-slate-600 dark:border-[#263451] dark:bg-[#0d172a] dark:text-slate-400">
+//         Esta vista muestra los períodos facturados. Para conocer cómo se formó
+//         el saldo de un período, abrí su detalle.
+//       </div>
+//     </section>
+//   );
+// }
+
+// export default async function EstadoCuentaPage({
+//   params,
+// }: EstadoCuentaPageProps) {
+//   const [cliente, estadoCuenta] = await Promise.all([
+//     obtenerClientePorId(params.id),
+//     obtenerEstadoCuentaCliente(params.id),
+//   ]);
+
+//   if (!cliente || !estadoCuenta) {
+//     notFound();
+//   }
+
+//   const nombreCompleto = getNombreCompleto(cliente);
+
+//   const cantidadPeriodos = estadoCuenta.periodos.length;
+//   const periodosPendientes = estadoCuenta.periodos.filter(
+//     (periodo) => periodo.estadoPeriodo === "pendiente",
+//   ).length;
+//   const periodosCancelados = estadoCuenta.periodos.filter(
+//     (periodo) => periodo.estadoPeriodo === "cancelado",
+//   ).length;
+//   const periodosAFavor = estadoCuenta.periodos.filter(
+//     (periodo) => periodo.estadoPeriodo === "a_favor",
+//   ).length;
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 lg:pb-6">
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <HeaderCuenta
+//             cliente={cliente}
+//             nombreCompleto={nombreCompleto}
+//             saldo={estadoCuenta.saldo}
+//           />
+
+//           <div className="mt-3">
+//             <ResumenFinanciero
+//               saldo={estadoCuenta.saldo}
+//               totalDebe={estadoCuenta.totalDebe}
+//               totalHaber={estadoCuenta.totalHaber}
+//               cantidadPeriodos={cantidadPeriodos}
+//               periodosPendientes={periodosPendientes}
+//               periodosCancelados={periodosCancelados}
+//               periodosAFavor={periodosAFavor}
+//             />
+//           </div>
+
+//           <div className="mt-3">
+//             <FacturacionPanel
+//               clienteId={cliente.id}
+//               periodos={estadoCuenta.periodos}
+//             />
+//           </div>
+//         </DashboardMain>
+
+//         <div className="hidden lg:block">
+//           <DashboardAside>
+//             <ResumenAside
+//             cliente={cliente}
+//             saldo={estadoCuenta.saldo}
+//             cantidadPeriodos={cantidadPeriodos}
+//             periodosPendientes={periodosPendientes}
+//             periodosCancelados={periodosCancelados}
+//             periodosAFavor={periodosAFavor}
+//           />
+
+//           <div className="mt-3">
+//             <AccionesAside clienteId={cliente.id} />
+//           </div>
+
+//             <div className="mt-3">
+//               <NotaLectura />
+//             </div>
+//           </DashboardAside>
+//         </div>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
-  CheckCircle2,
-  FileText,
-  MinusCircle,
   PlusCircle,
-  ReceiptText,
-  WalletCards,
-  Wifi,
+  MinusCircle,
+  Wallet,
+  CircleCheck,
+  ArrowDownLeft,
+  ArrowUpRight,
 } from "lucide-react";
-import { EstadoCuentaTable } from "@/components/tables/EstadoCuentaTable";
+import { EstadoCuentaCalendario } from "@/components/tables/EstadoCuentaCalendario";
+import { cajaStyles as styles } from "@/components/ui/dashboard-styles";
+import { getCurrentUser } from "@/lib/current-user";
 import { obtenerClientePorId } from "@/services/cliente.service";
 import { obtenerEstadoCuentaCliente } from "@/services/movimiento-financiero.service";
-import { PageShell } from "@/components/ui/PageShell";
-import {
-  DashboardAside,
-  DashboardGrid,
-  DashboardMain,
-} from "@/components/ui/DashboardGrid";
 
-type EstadoCuentaPageProps = {
-  params: {
-    id: string;
-  };
-};
+export const metadata = { title: "Estado de cuenta" };
+export const dynamic = "force-dynamic";
+type Props = { params: { id: string } };
 
-export const metadata = {
-  title: "Estado de cuenta",
-};
-
-const panelClass =
-  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
-  "dark:border-[#263451] dark:bg-[#111b31] " +
-  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
-
-const innerPanelClass =
-  "overflow-hidden rounded-lg border border-slate-200 bg-slate-50 " +
-  "dark:border-[#2b3957] dark:bg-[#0d172a]";
-
-const sectionTitleClass =
-  "text-sm font-medium text-slate-950 dark:text-white";
-
-const sectionSubtitleClass =
-  "text-sm font-medium text-slate-950 dark:text-white";
-
-const sectionDescriptionClass =
-  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
-
-const buttonSecondaryClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
-  "border-slate-300 bg-white px-3 text-[12px] font-medium leading-none " +
-  "text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 " +
-  "active:scale-[0.99] dark:border-[#354462] dark:bg-[#111b31] " +
-  "dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
-
-const debitButtonClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
-  "border-amber-300 bg-amber-50 px-3 text-[12px] font-medium leading-none " +
-  "text-amber-700 shadow-sm transition hover:bg-amber-100 active:scale-[0.99] " +
-  "dark:border-amber-800/70 dark:bg-amber-950/30 dark:text-amber-300 " +
-  "dark:hover:bg-amber-950/50";
-
-const creditButtonClass =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border " +
-  "border-emerald-300 bg-emerald-50 px-3 text-[12px] font-medium leading-none " +
-  "text-emerald-700 shadow-sm transition hover:bg-emerald-100 active:scale-[0.99] " +
-  "dark:border-emerald-800/70 dark:bg-emerald-950/30 dark:text-emerald-300 " +
-  "dark:hover:bg-emerald-950/50";
-
-function formatMoney(value: number) {
-  const amount = Number(value || 0);
-  const [integerPart, decimalPart] = amount.toFixed(2).split(".");
-  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  return `$ ${formattedInteger},${decimalPart}`;
+function money(value: number) {
+  const [integer, decimal] = (Number.isFinite(value) ? value : 0)
+    .toFixed(2)
+    .split(".");
+  return `$ ${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${decimal}`;
 }
-
-function estadoClienteLabel(estado: string) {
-  if (estado === "activo") return "Activo";
-  if (estado === "suspendido") return "Suspendido";
-  return "Baja";
-}
-
-function estadoClienteTone(estado: string): "success" | "warning" | "danger" {
-  if (estado === "activo") return "success";
-  if (estado === "suspendido") return "warning";
-  return "danger";
-}
-
-function estadoCuentaLabel(saldo: number) {
-  if (saldo > 0) return "Pendiente";
-  if (saldo < 0) return "A favor";
-  return "Al día";
-}
-
-function estadoCuentaTone(saldo: number): "success" | "warning" | "danger" {
-  if (saldo > 0) return "danger";
-  if (saldo < 0) return "warning";
-  return "success";
-}
-
-function saldoTexto(saldo: number) {
-  if (saldo > 0) {
-    return "El cliente registra saldo pendiente de pago.";
-  }
-
-  if (saldo < 0) {
-    return "El cliente tiene saldo a favor.";
-  }
-
-  return "El cliente no registra saldo pendiente.";
-}
-
-function getNombreCompleto(cliente: {
-  apellido?: string | null;
-  nombre?: string | null;
-}) {
-  const apellido = String(cliente.apellido || "").trim();
-  const nombre = String(cliente.nombre || "").trim();
-
-  const completo = `${apellido}, ${nombre}`
-    .replace(/^,\s*/, "")
-    .replace(/,\s*$/, "")
-    .trim();
-
-  return completo || "Cliente sin nombre";
-}
-
-function BackButton() {
+function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <Link
-      href="/clientes"
-      className={`${buttonSecondaryClass} hidden sm:inline-flex`}
-    >
-      Volver
-    </Link>
-  );
-}
-
-function Badge({
-  children,
-  tone = "neutral",
-}: {
-  children: ReactNode;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
-}) {
-  const toneClass = {
-    neutral:
-      "border-slate-300 bg-slate-50 text-slate-700 dark:border-[#263451] dark:bg-[#0d172a] dark:text-slate-300",
-    primary:
-      "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
-    success:
-      "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
-    warning:
-      "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
-    danger:
-      "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
-  }[tone];
-
-  return (
-    <span
-      className={`inline-flex h-7 items-center rounded-md border px-2.5 text-[10px] font-medium leading-none ${toneClass}`}
-    >
-      {children}
-    </span>
-  );
-}
-
-function HeaderCuenta({
-  cliente,
-  nombreCompleto,
-  saldo,
-}: {
-  cliente: {
-    numeroCliente: number;
-    dni?: string | null;
-    estado: string;
-    plan?: {
-      nombre: string;
-    } | null;
-  };
-  nombreCompleto: string;
-  saldo: number;
-}) {
-  return (
-    <section className={panelClass}>
-      <div
-        className="
-          border-b border-slate-200
-          bg-slate-50/80 px-3 py-3
-          dark:border-[#263451]
-          dark:bg-[#0e172a]
-          sm:px-4
-        "
-      >
-        <div className="flex min-h-12 items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2.5">
-              <WalletCards className="h-5 w-5 shrink-0 text-blue-700 dark:text-blue-300" />
-
-              <h1 className="truncate text-base font-medium text-slate-950 dark:text-white">
-                Estado de cuenta
-              </h1>
-            </div>
-
-            <p className="mt-1 hidden max-w-3xl truncate text-[12px] leading-5 text-slate-600 dark:text-slate-400 sm:block">
-              {nombreCompleto} · N° {cliente.numeroCliente} · DNI {cliente.dni || "-"}
-            </p>
-
-            <p className="mt-1 truncate text-[11px] text-slate-500 dark:text-slate-400 sm:hidden">
-              N° {cliente.numeroCliente} · {nombreCompleto}
-            </p>
-          </div>
-
-          <div className="flex h-8 shrink-0 items-center gap-2">
-            <div className="hidden items-center gap-2 xl:flex">
-              <Badge tone="primary">N° {cliente.numeroCliente}</Badge>
-              <Badge tone={estadoClienteTone(cliente.estado)}>
-                {estadoClienteLabel(cliente.estado)}
-              </Badge>
-              <Badge tone={estadoCuentaTone(saldo)}>
-                {estadoCuentaLabel(saldo)}
-              </Badge>
-              <Badge tone={cliente.plan ? "success" : "warning"}>
-                {cliente.plan?.nombre || "Sin plan"}
-              </Badge>
-            </div>
-
-            <BackButton />
-          </div>
-        </div>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <h2 className={styles.panelTitle}>{title}</h2>
       </div>
+      {children}
     </section>
   );
 }
-
-function ResumenItem({
-  icon,
+function Metric({
   label,
   value,
-  tone = "neutral",
+  note,
+  tone,
+  icon,
 }: {
-  icon?: ReactNode;
   label: string;
-  value: string | number;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
-}) {
-  const toneClass = {
-    neutral: "text-slate-950 dark:text-white",
-    primary: "text-blue-700 dark:text-blue-300",
-    success: "text-emerald-700 dark:text-emerald-300",
-    warning: "text-amber-700 dark:text-amber-300",
-    danger: "text-red-700 dark:text-red-300",
-  }[tone];
-
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-[#263451]">
-      <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-        {icon ? (
-          <span className="shrink-0 text-blue-700 dark:text-blue-300">
-            {icon}
-          </span>
-        ) : null}
-
-        <span className="truncate">{label}</span>
-      </span>
-
-      <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function ResumenFinanciero({
-  saldo,
-  totalDebe,
-  totalHaber,
-  cantidadPeriodos,
-  periodosPendientes,
-  periodosCancelados,
-  periodosAFavor,
-}: {
-  saldo: number;
-  totalDebe: number;
-  totalHaber: number;
-  cantidadPeriodos: number;
-  periodosPendientes: number;
-  periodosCancelados: number;
-  periodosAFavor: number;
+  value: number;
+  note: string;
+  tone: string;
+  icon: ReactNode;
 }) {
   return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3 flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
-          <WalletCards className="h-4 w-4" />
-        </div>
-
-        <div className="min-w-0">
-          <p className={sectionTitleClass}>Resumen financiero</p>
-
-          <p className={sectionDescriptionClass}>{saldoTexto(saldo)}</p>
-        </div>
-      </div>
-
-      <div className="md:hidden">
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-3 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            Saldo final
-          </p>
-
-          <p
-            className={`mt-1 truncate text-[22px] font-semibold ${
-              saldo > 0
-                ? "text-red-700 dark:text-red-300"
-                : saldo < 0
-                  ? "text-amber-700 dark:text-amber-300"
-                  : "text-emerald-700 dark:text-emerald-300"
-            }`}
-          >
-            {formatMoney(saldo)}
-          </p>
-
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-[#263451] dark:bg-slate-950/60">
-              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                Pendientes
-              </p>
-
-              <p
-                className={`mt-1 text-[16px] font-semibold ${
-                  periodosPendientes > 0
-                    ? "text-red-700 dark:text-red-300"
-                    : "text-emerald-700 dark:text-emerald-300"
-                }`}
-              >
-                {periodosPendientes}
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-slate-300 bg-white px-3 py-2 dark:border-[#263451] dark:bg-slate-950/60">
-              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                Períodos
-              </p>
-
-              <p className="mt-1 text-[16px] font-semibold text-blue-700 dark:text-blue-300">
-                {cantidadPeriodos}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="hidden gap-2 md:grid md:grid-cols-3 xl:grid-cols-6">
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            Total debe
-          </p>
-
-          <p className="mt-1 truncate text-[18px] font-semibold text-red-700 dark:text-red-300">
-            {formatMoney(totalDebe)}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            Total haber
-          </p>
-
-          <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
-            {formatMoney(totalHaber)}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            Períodos
-          </p>
-
-          <p className="mt-1 truncate text-[18px] font-semibold text-blue-700 dark:text-blue-300">
-            {cantidadPeriodos}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            Pendientes
-          </p>
-
-          <p
-            className={`mt-1 truncate text-[18px] font-semibold ${
-              periodosPendientes > 0
-                ? "text-red-700 dark:text-red-300"
-                : "text-emerald-700 dark:text-emerald-300"
-            }`}
-          >
-            {periodosPendientes}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            Cancelados
-          </p>
-
-          <p className="mt-1 truncate text-[18px] font-semibold text-emerald-700 dark:text-emerald-300">
-            {periodosCancelados}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 shadow-sm shadow-slate-300/30 dark:border-[#263451] dark:bg-[#0d172a] dark:shadow-black/10">
-          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            A favor
-          </p>
-
-          <p className="mt-1 truncate text-[18px] font-semibold text-amber-700 dark:text-amber-300">
-            {periodosAFavor}
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FacturacionHeader({ clienteId }: { clienteId: string }) {
-  return (
-    <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-      <div className="min-w-0">
-        <p className={sectionTitleClass}>Facturación</p>
-
-        <h2 className={sectionSubtitleClass}>Resumen por período</h2>
-
-        <p className={`${sectionDescriptionClass} max-w-3xl`}>
-          Cada fila representa un período facturado. Entrá al detalle para ver
-          pagos, notas y composición del saldo.
-        </p>
-      </div>
-
-      <div className="flex shrink-0 flex-col gap-2 sm:flex-row lg:justify-end">
-        <Link href={`/clientes/${clienteId}/nota-debito`} className={debitButtonClass}>
-          <PlusCircle className="h-3.5 w-3.5" />
-          Nota débito
-        </Link>
-
-        <Link
-          href={`/clientes/${clienteId}/nota-credito`}
-          className={creditButtonClass}
+    <section className={`${styles.panel} relative !overflow-visible p-[14px]`}>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-[11px] font-normal text-[var(--overview-muted)]">
+          {label}
+        </h2>
+        <span
+          className={`grid size-7 shrink-0 place-items-center rounded-[6px] bg-[var(--overview-bg)] ${tone} [&_svg]:!size-3.5`}
         >
-          <MinusCircle className="h-3.5 w-3.5" />
-          Nota crédito
-        </Link>
+          {icon}
+        </span>
       </div>
-    </div>
-  );
-}
-
-function FacturacionPanel({
-  clienteId,
-  periodos,
-}: {
-  clienteId: string;
-  periodos: Parameters<typeof EstadoCuentaTable>[0]["periodos"];
-}) {
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <FacturacionHeader clienteId={clienteId} />
-
-      <EstadoCuentaTable clienteId={clienteId} periodos={periodos} />
+      <p
+        className={`mt-2 text-[22px] leading-[1.35] tabular-nums [overflow-wrap:anywhere] ${tone}`}
+      >
+        {money(value)}
+      </p>
+      <p className="mt-1 text-[10px] leading-[1.6] text-[var(--overview-muted)]">
+        {note}
+      </p>
     </section>
   );
 }
 
-function ResumenAside({
-  cliente,
-  saldo,
-  cantidadPeriodos,
-  periodosPendientes,
-  periodosCancelados,
-  periodosAFavor,
-}: {
-  cliente: {
-    numeroCliente: number;
-    estado: string;
-    plan?: {
-      nombre: string;
-    } | null;
-  };
-  saldo: number;
-  cantidadPeriodos: number;
-  periodosPendientes: number;
-  periodosCancelados: number;
-  periodosAFavor: number;
-}) {
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Resumen</p>
-
-        <h2 className={sectionSubtitleClass}>Información de cuenta</h2>
-      </div>
-
-      <div className={innerPanelClass}>
-        <ResumenItem
-          icon={<ReceiptText className="h-3.5 w-3.5" />}
-          label="Cliente"
-          value={`N° ${cliente.numeroCliente}`}
-          tone="primary"
-        />
-
-        <ResumenItem
-          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
-          label="Estado cliente"
-          value={estadoClienteLabel(cliente.estado)}
-          tone={estadoClienteTone(cliente.estado)}
-        />
-
-        <ResumenItem
-          icon={<Wifi className="h-3.5 w-3.5" />}
-          label="Plan"
-          value={cliente.plan?.nombre || "Sin plan"}
-          tone={cliente.plan ? "success" : "warning"}
-        />
-
-        <ResumenItem
-          icon={<FileText className="h-3.5 w-3.5" />}
-          label="Períodos"
-          value={cantidadPeriodos}
-          tone="primary"
-        />
-
-        <ResumenItem
-          icon={<PlusCircle className="h-3.5 w-3.5" />}
-          label="Pendientes"
-          value={periodosPendientes}
-          tone={periodosPendientes > 0 ? "danger" : "success"}
-        />
-
-        <ResumenItem
-          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
-          label="Cancelados"
-          value={periodosCancelados}
-          tone="success"
-        />
-
-        <ResumenItem
-          icon={<MinusCircle className="h-3.5 w-3.5" />}
-          label="A favor"
-          value={periodosAFavor}
-          tone={periodosAFavor > 0 ? "warning" : "neutral"}
-        />
-
-        <ResumenItem
-          icon={<WalletCards className="h-3.5 w-3.5" />}
-          label="Saldo final"
-          value={formatMoney(saldo)}
-          tone={estadoCuentaTone(saldo)}
-        />
-      </div>
-    </section>
-  );
-}
-
-function AccionesAside({ clienteId }: { clienteId: string }) {
-  return (
-    <section className={`${panelClass} hidden p-3.5 xl:block`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Acciones</p>
-
-        <h2 className={sectionSubtitleClass}>Movimientos manuales</h2>
-      </div>
-
-      <div className="grid gap-2">
-        <Link
-          href={`/clientes/${clienteId}/nota-debito`}
-          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 dark:border-[#263451] dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-amber-900/70 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
-        >
-          <span className="flex min-w-0 items-center gap-2.5">
-            <PlusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-amber-700 dark:text-slate-400 dark:group-hover:text-amber-300" />
-            <span className="truncate">Nota débito</span>
-          </span>
-
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
-        </Link>
-
-        <Link
-          href={`/clientes/${clienteId}/nota-credito`}
-          className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-[#263451] dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-emerald-900/70 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
-        >
-          <span className="flex min-w-0 items-center gap-2.5">
-            <MinusCircle className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-emerald-700 dark:text-slate-400 dark:group-hover:text-emerald-300" />
-            <span className="truncate">Nota crédito</span>
-          </span>
-
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
-        </Link>
-      </div>
-    </section>
-  );
-}
-
-function NotaLectura() {
-  return (
-    <section className={`${panelClass} hidden p-3.5 xl:block`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Lectura rápida</p>
-
-        <h2 className={sectionSubtitleClass}>Detalle del saldo</h2>
-      </div>
-
-      <div className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[12px] leading-5 text-slate-600 dark:border-[#263451] dark:bg-[#0d172a] dark:text-slate-400">
-        Esta vista muestra los períodos facturados. Para conocer cómo se formó
-        el saldo de un período, abrí su detalle.
-      </div>
-    </section>
-  );
-}
-
-export default async function EstadoCuentaPage({
-  params,
-}: EstadoCuentaPageProps) {
-  const [cliente, estadoCuenta] = await Promise.all([
+export default async function EstadoCuentaPage({ params }: Props) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (user.rol !== "admin") redirect(`/${user.rol}`);
+  const [cliente, cuenta] = await Promise.all([
     obtenerClientePorId(params.id),
     obtenerEstadoCuentaCliente(params.id),
   ]);
-
-  if (!cliente || !estadoCuenta) {
-    notFound();
-  }
-
-  const nombreCompleto = getNombreCompleto(cliente);
-
-  const cantidadPeriodos = estadoCuenta.periodos.length;
-  const periodosPendientes = estadoCuenta.periodos.filter(
-    (periodo) => periodo.estadoPeriodo === "pendiente",
-  ).length;
-  const periodosCancelados = estadoCuenta.periodos.filter(
-    (periodo) => periodo.estadoPeriodo === "cancelado",
-  ).length;
-  const periodosAFavor = estadoCuenta.periodos.filter(
-    (periodo) => periodo.estadoPeriodo === "a_favor",
-  ).length;
-
+  if (!cliente || !cuenta) notFound();
+  const name =
+    [cliente.apellido, cliente.nombre]
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .join(", ") || "Cliente sin nombre";
+  const balanceLabel =
+    cuenta.saldo > 0
+      ? "Saldo pendiente"
+      : cuenta.saldo < 0
+        ? "Saldo a favor"
+        : "Al día";
+  const balanceTone =
+    cuenta.saldo > 0
+      ? "text-red-700 dark:text-red-300"
+      : cuenta.saldo < 0
+        ? styles.blue
+        : styles.green;
+  const balanceBadge =
+    cuenta.saldo > 0
+      ? "!bg-red-50 text-red-700 dark:!bg-red-950/50 dark:text-red-300"
+      : cuenta.saldo < 0
+        ? styles.blueBadge
+        : styles.greenBadge;
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    year: "numeric",
+    month: "numeric",
+  }).formatToParts(new Date());
+  const currentYear = Number(today.find((part) => part.type === "year")?.value);
+  const currentMonth = Number(
+    today.find((part) => part.type === "month")?.value,
+  );
+  const counts = [
+    { label: "Períodos facturados", value: cuenta.periodos.length, tone: "" },
+    {
+      label: "Pendientes",
+      value: cuenta.periodos.filter((p) => p.estadoPeriodo === "pendiente")
+        .length,
+      tone: "text-red-700 dark:text-red-300",
+    },
+    {
+      label: "Cancelados",
+      value: cuenta.periodos.filter((p) => p.estadoPeriodo === "cancelado")
+        .length,
+      tone: styles.green,
+    },
+    {
+      label: "A favor",
+      value: cuenta.periodos.filter((p) => p.estadoPeriodo === "a_favor")
+        .length,
+      tone: styles.blue,
+    },
+  ];
   return (
-    <PageShell maxWidth="wide" className="pb-20 lg:pb-6">
-      <DashboardGrid>
-        <DashboardMain>
-          <HeaderCuenta
-            cliente={cliente}
-            nombreCompleto={nombreCompleto}
-            saldo={estadoCuenta.saldo}
-          />
-
-          <div className="mt-3">
-            <ResumenFinanciero
-              saldo={estadoCuenta.saldo}
-              totalDebe={estadoCuenta.totalDebe}
-              totalHaber={estadoCuenta.totalHaber}
-              cantidadPeriodos={cantidadPeriodos}
-              periodosPendientes={periodosPendientes}
-              periodosCancelados={periodosCancelados}
-              periodosAFavor={periodosAFavor}
-            />
-          </div>
-
-          <div className="mt-3">
-            <FacturacionPanel
-              clienteId={cliente.id}
-              periodos={estadoCuenta.periodos}
-            />
-          </div>
-        </DashboardMain>
-
-        <div className="hidden lg:block">
-          <DashboardAside>
-            <ResumenAside
-            cliente={cliente}
-            saldo={estadoCuenta.saldo}
-            cantidadPeriodos={cantidadPeriodos}
-            periodosPendientes={periodosPendientes}
-            periodosCancelados={periodosCancelados}
-            periodosAFavor={periodosAFavor}
-          />
-
-          <div className="mt-3">
-            <AccionesAside clienteId={cliente.id} />
-          </div>
-
-            <div className="mt-3">
-              <NotaLectura />
-            </div>
-          </DashboardAside>
+    <div className={styles.page}>
+      <header className={`${styles.heading} flex-wrap`}>
+        <div className="min-w-0">
+          <h1>Estado de cuenta</h1>
+          <p className={`${styles.description} [overflow-wrap:anywhere]`}>
+            {name} · N° {cliente.numeroCliente}
+          </p>
         </div>
-      </DashboardGrid>
-    </PageShell>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`${styles.badge} ${balanceBadge}`}>
+            {balanceLabel}
+          </span>
+          <Link href={`/clientes/${cliente.id}`} className={styles.button}>
+            <ArrowLeft aria-hidden="true" /> Volver al cliente
+          </Link>
+        </div>
+      </header>
+      <div className={styles.layout}>
+        <div className={styles.main}>
+          <div className="grid min-w-0 gap-[10px] min-[700px]:grid-cols-3">
+            <Metric
+              label="Cargos acumulados"
+              value={cuenta.totalDebe}
+              note="Facturas y notas de débito"
+              tone={styles.amber}
+              icon={<ArrowUpRight aria-hidden="true" />}
+            />
+            <Metric
+              label="Pagos y créditos"
+              value={cuenta.totalHaber}
+              note="Pagos y notas de crédito"
+              tone={styles.green}
+              icon={<ArrowDownLeft aria-hidden="true" />}
+            />
+            <Metric
+              label="Saldo actual"
+              value={cuenta.saldo}
+              note={balanceLabel}
+              tone={balanceTone}
+              icon={
+                cuenta.saldo === 0 ? (
+                  <CircleCheck aria-hidden="true" />
+                ) : (
+                  <Wallet aria-hidden="true" />
+                )
+              }
+            />
+          </div>
+          <EstadoCuentaCalendario
+            clienteId={cliente.id}
+            periodos={cuenta.periodos}
+            currentYear={currentYear}
+            currentMonth={currentMonth}
+          />
+        </div>
+        <aside className="grid min-w-0 content-start gap-[14px] min-[700px]:grid-cols-2 min-[1500px]:grid-cols-1">
+          <Panel title="Accesos rápidos">
+            <div className={`${styles.sideBody} grid gap-2`}>
+              <Link
+                href={`/clientes/${cliente.id}/nota-debito`}
+                className={`${styles.button} !h-auto !justify-start !border-amber-200 !bg-amber-50 !py-[10px] !text-amber-800 hover:!bg-amber-100 dark:!border-amber-800 dark:!bg-amber-950/40 dark:!text-amber-300 dark:hover:!bg-amber-900/50`}
+              >
+                <PlusCircle aria-hidden="true" />
+                <span className="flex-1">Nota de débito</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link
+                href={`/clientes/${cliente.id}/nota-credito`}
+                className={`${styles.button} !h-auto !justify-start !border-emerald-200 !bg-emerald-50 !py-[10px] !text-emerald-700 hover:!bg-emerald-100 dark:!border-emerald-800 dark:!bg-emerald-950/40 dark:!text-emerald-300 dark:hover:!bg-emerald-900/50`}
+              >
+                <MinusCircle aria-hidden="true" />
+                <span className="flex-1">Nota de crédito</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </div>
+          </Panel>
+          <Panel title="Resumen histórico">
+            <div className={styles.sideBody}>
+              {counts.map((count) => (
+                <div key={count.label} className={styles.sideRow}>
+                  <span>{count.label}</span>
+                  <strong className={`tabular-nums ${count.tone}`}>
+                    {count.value}
+                  </strong>
+                </div>
+              ))}
+              <p className="mt-3 text-[11px] leading-[1.7] text-[var(--overview-muted)]">
+                El saldo actual incluye todos los movimientos de la cuenta. Los
+                ajustes sin factura asociada pueden hacer que difiera de la suma
+                de los períodos.
+              </p>
+            </div>
+          </Panel>
+        </aside>
+      </div>
+    </div>
   );
 }

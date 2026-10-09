@@ -147,7 +147,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/current-user";
 import { registrarAuditLog } from "@/services/audit.service";
-import { corregirPagoCobrador } from "@/services/cobro.service";
+import { corregirPagoCobrador, obtenerContextoCorreccionPago } from "@/services/cobro.service";
 
 export type CorreccionPagoActionState = {
   ok: boolean;
@@ -199,9 +199,10 @@ export async function corregirPagoCobradorAction(
   }
 
   const movimientoId = String(formData.get("movimientoId") || "");
-  const clienteId = String(formData.get("clienteId") || "");
-  const cobradorId = String(formData.get("cobradorId") || "");
-  const facturaAsociadaId = String(formData.get("facturaAsociadaId") || "");
+  const contexto = await obtenerContextoCorreccionPago(movimientoId);
+  const clienteId = contexto?.clienteId || "";
+  const cobradorId = contexto?.cobradorId || "";
+  const facturaAsociadaId = contexto?.facturaAsociadaId || "";
   const importeReal = String(formData.get("importeReal") || "").trim();
   const motivo = String(formData.get("motivo") || "");
 
@@ -258,6 +259,7 @@ export async function corregirPagoCobradorAction(
     revalidatePath(
       `/cobrador/clientes/${clienteId}/estado-cuenta/${facturaAsociadaId}`,
     );
+    revalidatePath(`/admin/caja-cobradores/${cobradorId}`);
     revalidatePath("/admin/caja-cobradores");
     revalidatePath("/cobrador/caja");
     revalidatePath("/admin");

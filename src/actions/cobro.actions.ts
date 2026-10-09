@@ -684,6 +684,7 @@ export async function registrarPagoCobradorAction(
     revalidatePath(`/clientes/${clienteId}/estado-cuenta`);
     revalidatePath("/cobrador");
     revalidatePath("/cobrador/caja");
+    revalidatePath(`/admin/caja-cobradores/${user.userId}`);
     revalidatePath("/admin/caja-cobradores");
     revalidatePath("/admin");
   }
@@ -726,6 +727,7 @@ export async function generarCodigoCierreCajaAction(
     request: requestMeta,
   });
 
+  revalidatePath(`/admin/caja-cobradores/${cobradorId}`);
   revalidatePath("/admin/caja-cobradores");
   revalidatePath("/admin");
 
@@ -773,6 +775,9 @@ export async function generarCodigoCierreCajaModalAction(
     request: requestMeta,
   });
 
+  revalidatePath(`/admin/caja-cobradores/${cobradorId}`);
+  revalidatePath("/admin/caja-cobradores");
+  revalidatePath("/admin");
   return {
     ok: result.ok,
     message: result.message,
@@ -860,6 +865,7 @@ export async function confirmarCierreCajaAction(
     revalidatePath("/cobrador");
     revalidatePath("/cobrador/caja");
     revalidatePath("/cobrador/caja/cierre");
+    revalidatePath(`/admin/caja-cobradores/${user.userId}`);
     revalidatePath("/admin/caja-cobradores");
     revalidatePath("/admin/caja-cobradores/cierres");
     revalidatePath("/admin");

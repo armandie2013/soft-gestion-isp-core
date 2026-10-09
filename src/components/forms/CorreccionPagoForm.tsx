@@ -609,6 +609,7 @@
 
 "use client";
 
+import Link from "next/link";
 import {
   useEffect,
   useMemo,
@@ -926,6 +927,8 @@ export function CorreccionPagoForm({ contexto }: CorreccionPagoFormProps) {
           {state.message}
         </AlertBox>
       ) : null}
+
+      {state.ok && <Link href={`/admin/caja-cobradores/${contexto.cobradorId}`} className="inline-flex min-h-9 items-center rounded-lg border border-[var(--app-border)] px-3 text-[var(--app-primary)] hover:underline">Volver a la caja del cobrador</Link>}
 
       <div className="grid gap-2 md:grid-cols-3">
         <MiniResumenItem

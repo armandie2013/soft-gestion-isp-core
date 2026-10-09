@@ -1246,358 +1246,433 @@
 //   );
 // }
 
-// src/app/(dashboard)/admin/caja-cobradores/page.tsx
+// // src/app/(dashboard)/admin/caja-cobradores/page.tsx
+
+// import Link from "next/link";
+// import type { ReactNode } from "react";
+// import { redirect } from "next/navigation";
+// import {
+//   ArrowRight,
+//   Banknote,
+//   CheckCircle2,
+//   History,
+//   KeyRound,
+//   ShieldAlert,
+//   UsersRound,
+//   WalletCards,
+// } from "lucide-react";
+// import { getCurrentUser } from "@/lib/current-user";
+// import { obtenerAdminCajaCobradoresResumen } from "@/services/cobro.service";
+// import { AdminCobradoresCajaTable } from "@/components/tables/AdminCobradoresCajaTable";
+// import { AdminCajaMovimientosRecientes } from "@/components/sections/AdminCajaMovimientosRecientes";
+// import { PageShell } from "@/components/ui/PageShell";
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+
+// export const metadata = {
+//   title: "Caja cobradores",
+// };
+
+// const panelClass =
+//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// const innerPanelClass =
+//   "overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none";
+
+// const sectionTitleClass =
+//   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+// const sectionSubtitleClass =
+//   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+// const sectionDescriptionClass =
+//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// function formatMoney(value: number) {
+//   return new Intl.NumberFormat("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//     maximumFractionDigits: 2,
+//   }).format(value || 0);
+// }
+
+// function ResumenItem({
+//   icon,
+//   label,
+//   value,
+//   tone = "neutral",
+// }: {
+//   icon?: ReactNode;
+//   label: string;
+//   value: string | number;
+//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// }) {
+//   const toneClass = {
+//     neutral: "text-slate-950 dark:text-white",
+//     primary: "text-blue-700 dark:text-blue-300",
+//     success: "text-emerald-700 dark:text-emerald-300",
+//     warning: "text-amber-700 dark:text-amber-300",
+//     danger: "text-red-700 dark:text-red-300",
+//   }[tone];
+
+//   return (
+//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+//       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+//         {icon ? (
+//           <span className="shrink-0 text-blue-700 dark:text-blue-300">
+//             {icon}
+//           </span>
+//         ) : null}
+
+//         <span className="truncate">{label}</span>
+//       </span>
+
+//       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+//         {value}
+//       </span>
+//     </div>
+//   );
+// }
+
+// function HeaderCajaCobradores() {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Caja cobradores</p>
+
+//           <h1 className={sectionSubtitleClass}>
+//             Gestión de caja de cobradores
+//           </h1>
+
+//           <p className={`${sectionDescriptionClass} max-w-3xl`}>
+//             Visualizá saldos, cierres confirmados, códigos pendientes y
+//             correcciones posteriores al cierre.
+//           </p>
+//         </div>
+
+//         <Link
+//           href="/admin/caja-cobradores/cierres"
+//           className="hidden h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+//         >
+//           Ver cierres
+//           <ArrowRight className="h-3.5 w-3.5" />
+//         </Link>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function AccionesRapidasAside() {
+//   const quickActions = [
+//     {
+//       label: "Ver cierres realizados",
+//       description: "Consultar historial de cierres",
+//       href: "/admin/caja-cobradores/cierres",
+//       icon: CheckCircle2,
+//     },
+//     {
+//       label: "Usuarios cobradores",
+//       description: "Filtrar usuarios cobradores",
+//       href: "/usuarios?rol=cobrador",
+//       icon: UsersRound,
+//     },
+//     {
+//       label: "Panel administrador",
+//       description: "Volver al dashboard",
+//       href: "/admin",
+//       icon: Banknote,
+//     },
+//   ];
+
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3">
+//         <p className={sectionTitleClass}>Accesos rápidos</p>
+
+//         <h2 className={sectionSubtitleClass}>Atajos del módulo</h2>
+//       </div>
+
+//       <div className="grid gap-2">
+//         {quickActions.map((item) => {
+//           const Icon = item.icon;
+
+//           return (
+//             <Link
+//               key={item.href + item.label}
+//               href={item.href}
+//               className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+//             >
+//               <span className="flex min-w-0 items-center gap-2.5">
+//                 <Icon className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
+
+//                 <span className="min-w-0">
+//                   <span className="block truncate">{item.label}</span>
+//                   <span className="block truncate text-[11px] font-normal text-slate-500 dark:text-slate-400">
+//                     {item.description}
+//                   </span>
+//                 </span>
+//               </span>
+
+//               <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
+//             </Link>
+//           );
+//         })}
+//       </div>
+//     </section>
+//   );
+// }
+
+// function EstadoCajaAside({
+//   totalSaldoCobradores,
+//   totalRecibidoAdmin,
+//   totalAjustesPostCierre,
+//   cantidadCobradoresConSaldo,
+//   cantidadCodigosPendientes,
+// }: {
+//   totalSaldoCobradores: number;
+//   totalRecibidoAdmin: number;
+//   totalAjustesPostCierre: number;
+//   cantidadCobradoresConSaldo: number;
+//   cantidadCodigosPendientes: number;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3 flex items-start justify-between gap-3">
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Estado de caja</p>
+
+//           <h2 className={sectionSubtitleClass}>Información general</h2>
+//         </div>
+
+//         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+//           <WalletCards className="h-4 w-4" />
+//         </div>
+//       </div>
+
+//       <div className={innerPanelClass}>
+//         <ResumenItem
+//           icon={<WalletCards className="h-3.5 w-3.5" />}
+//           label="Total en caja"
+//           value={formatMoney(totalSaldoCobradores)}
+//           tone={totalSaldoCobradores > 0 ? "danger" : "success"}
+//         />
+
+//         <ResumenItem
+//           icon={<Banknote className="h-3.5 w-3.5" />}
+//           label="Recibido admin"
+//           value={formatMoney(totalRecibidoAdmin)}
+//           tone="primary"
+//         />
+
+//         <ResumenItem
+//           icon={<History className="h-3.5 w-3.5" />}
+//           label="Ajustes post-cierre"
+//           value={formatMoney(totalAjustesPostCierre)}
+//           tone={totalAjustesPostCierre > 0 ? "warning" : "neutral"}
+//         />
+
+//         <ResumenItem
+//           icon={<ShieldAlert className="h-3.5 w-3.5" />}
+//           label="Cobradores con saldo"
+//           value={cantidadCobradoresConSaldo}
+//           tone={cantidadCobradoresConSaldo > 0 ? "warning" : "success"}
+//         />
+
+//         <ResumenItem
+//           icon={<KeyRound className="h-3.5 w-3.5" />}
+//           label="Códigos pendientes"
+//           value={cantidadCodigosPendientes}
+//           tone={cantidadCodigosPendientes > 0 ? "primary" : "neutral"}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function CodigosActivosAside({
+//   cobradoresConCodigo,
+// }: {
+//   cobradoresConCodigo: Awaited<
+//     ReturnType<typeof obtenerAdminCajaCobradoresResumen>
+//   >["cobradores"];
+// }) {
+//   return (
+//     <section className={`${panelClass} p-3.5`}>
+//       <div className="mb-3 flex items-start justify-between gap-3">
+//         <div className="min-w-0">
+//           <p className={sectionTitleClass}>Códigos activos</p>
+
+//           <h2 className={sectionSubtitleClass}>Pendientes de validación</h2>
+//         </div>
+
+//         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+//           <KeyRound className="h-4 w-4" />
+//         </div>
+//       </div>
+
+//       <div className="grid gap-2">
+//         {cobradoresConCodigo.length === 0 ? (
+//           <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-[12px] leading-5 text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400">
+//             No hay códigos activos.
+//           </div>
+//         ) : (
+//           cobradoresConCodigo.map((cobrador) => (
+//             <div
+//               key={cobrador.cobradorId}
+//               className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/55 dark:shadow-black/10"
+//             >
+//               <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
+//                 {cobrador.apellido}, {cobrador.nombre}
+//               </p>
+
+//               <div className="mt-1 flex items-center justify-between gap-2">
+//                 <span className="font-mono text-sm font-semibold tracking-[0.12em] text-amber-700 dark:text-amber-300">
+//                   {cobrador.codigoPendiente?.codigo}
+//                 </span>
+
+//                 <span className="text-[11px] text-slate-500 dark:text-slate-400">
+//                   {formatMoney(cobrador.codigoPendiente?.importe || 0)}
+//                 </span>
+//               </div>
+//             </div>
+//           ))
+//         )}
+//       </div>
+//     </section>
+//   );
+// }
+
+// export default async function AdminCajaCobradoresPage() {
+//   const user = await getCurrentUser();
+
+//   if (!user) {
+//     redirect("/login");
+//   }
+
+//   if (user.rol !== "admin") {
+//     redirect(`/${user.rol}`);
+//   }
+
+//   const resumen = await obtenerAdminCajaCobradoresResumen();
+
+//   const cobradoresConCodigo = resumen.cobradores.filter(
+//     (cobrador) => cobrador.codigoPendiente,
+//   );
+
+//   return (
+//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <HeaderCajaCobradores />
+
+//           <div className="mt-3">
+//             <AdminCobradoresCajaTable cobradores={resumen.cobradores} />
+//           </div>
+
+//           <div className="mt-3">
+//             <AdminCajaMovimientosRecientes cobradores={resumen.cobradores} />
+//           </div>
+//         </DashboardMain>
+
+//         <DashboardAside>
+//           <AccionesRapidasAside />
+
+//           <div className="mt-3">
+//             <EstadoCajaAside
+//               totalSaldoCobradores={resumen.totalSaldoCobradores}
+//               totalRecibidoAdmin={resumen.totalRecibidoAdmin}
+//               totalAjustesPostCierre={resumen.totalAjustesPostCierre}
+//               cantidadCobradoresConSaldo={
+//                 resumen.cantidadCobradoresConSaldo
+//               }
+//               cantidadCodigosPendientes={resumen.cantidadCodigosPendientes}
+//             />
+//           </div>
+
+//           <div className="mt-3">
+//             <CodigosActivosAside cobradoresConCodigo={cobradoresConCodigo} />
+//           </div>
+//         </DashboardAside>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
 
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import {
-  ArrowRight,
-  Banknote,
-  CheckCircle2,
-  History,
-  KeyRound,
-  ShieldAlert,
-  UsersRound,
-  WalletCards,
-} from "lucide-react";
+import { ArrowRight, CalendarCheck, KeyRound, UsersRound, WalletCards } from "lucide-react";
 import { getCurrentUser } from "@/lib/current-user";
 import { obtenerAdminCajaCobradoresResumen } from "@/services/cobro.service";
 import { AdminCobradoresCajaTable } from "@/components/tables/AdminCobradoresCajaTable";
 import { AdminCajaMovimientosRecientes } from "@/components/sections/AdminCajaMovimientosRecientes";
-import { PageShell } from "@/components/ui/PageShell";
-import {
-  DashboardAside,
-  DashboardGrid,
-  DashboardMain,
-} from "@/components/ui/DashboardGrid";
+import { cajaStyles as styles } from "@/components/ui/dashboard-styles";
 
-export const metadata = {
-  title: "Caja cobradores",
-};
+export const metadata = { title: "Caja cobradores" };
 
-const panelClass =
-  "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
-
-const innerPanelClass =
-  "overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none";
-
-const sectionTitleClass =
-  "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
-
-const sectionSubtitleClass =
-  "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
-
-const sectionDescriptionClass =
-  "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
-
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 2,
-  }).format(value || 0);
-}
-
-function ResumenItem({
-  icon,
-  label,
-  value,
-  tone = "neutral",
-}: {
-  icon?: ReactNode;
-  label: string;
-  value: string | number;
-  tone?: "neutral" | "primary" | "success" | "warning" | "danger";
-}) {
-  const toneClass = {
-    neutral: "text-slate-950 dark:text-white",
-    primary: "text-blue-700 dark:text-blue-300",
-    success: "text-emerald-700 dark:text-emerald-300",
-    warning: "text-amber-700 dark:text-amber-300",
-    danger: "text-red-700 dark:text-red-300",
-  }[tone];
-
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
-      <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-        {icon ? (
-          <span className="shrink-0 text-blue-700 dark:text-blue-300">
-            {icon}
-          </span>
-        ) : null}
-
-        <span className="truncate">{label}</span>
-      </span>
-
-      <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function HeaderCajaCobradores() {
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <p className={sectionTitleClass}>Caja cobradores</p>
-
-          <h1 className={sectionSubtitleClass}>
-            Gestión de caja de cobradores
-          </h1>
-
-          <p className={`${sectionDescriptionClass} max-w-3xl`}>
-            Visualizá saldos, cierres confirmados, códigos pendientes y
-            correcciones posteriores al cierre.
-          </p>
-        </div>
-
-        <Link
-          href="/admin/caja-cobradores/cierres"
-          className="hidden h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
-        >
-          Ver cierres
-          <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      </div>
-    </section>
-  );
-}
-
-function AccionesRapidasAside() {
-  const quickActions = [
-    {
-      label: "Ver cierres realizados",
-      description: "Consultar historial de cierres",
-      href: "/admin/caja-cobradores/cierres",
-      icon: CheckCircle2,
-    },
-    {
-      label: "Usuarios cobradores",
-      description: "Filtrar usuarios cobradores",
-      href: "/usuarios?rol=cobrador",
-      icon: UsersRound,
-    },
-    {
-      label: "Panel administrador",
-      description: "Volver al dashboard",
-      href: "/admin",
-      icon: Banknote,
-    },
-  ];
-
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3">
-        <p className={sectionTitleClass}>Accesos rápidos</p>
-
-        <h2 className={sectionSubtitleClass}>Atajos del módulo</h2>
-      </div>
-
-      <div className="grid gap-2">
-        {quickActions.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <Link
-              key={item.href + item.label}
-              href={item.href}
-              className="group flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 text-[13px] font-medium text-slate-700 shadow-sm shadow-slate-300/30 ring-1 ring-white/50 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:ring-slate-800/60 dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
-            >
-              <span className="flex min-w-0 items-center gap-2.5">
-                <Icon className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-blue-700 dark:text-slate-400 dark:group-hover:text-blue-300" />
-
-                <span className="min-w-0">
-                  <span className="block truncate">{item.label}</span>
-                  <span className="block truncate text-[11px] font-normal text-slate-500 dark:text-slate-400">
-                    {item.description}
-                  </span>
-                </span>
-              </span>
-
-              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-400 transition group-hover:translate-x-0.5" />
-            </Link>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function EstadoCajaAside({
-  totalSaldoCobradores,
-  totalRecibidoAdmin,
-  totalAjustesPostCierre,
-  cantidadCobradoresConSaldo,
-  cantidadCodigosPendientes,
-}: {
-  totalSaldoCobradores: number;
-  totalRecibidoAdmin: number;
-  totalAjustesPostCierre: number;
-  cantidadCobradoresConSaldo: number;
-  cantidadCodigosPendientes: number;
-}) {
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className={sectionTitleClass}>Estado de caja</p>
-
-          <h2 className={sectionSubtitleClass}>Información general</h2>
-        </div>
-
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
-          <WalletCards className="h-4 w-4" />
-        </div>
-      </div>
-
-      <div className={innerPanelClass}>
-        <ResumenItem
-          icon={<WalletCards className="h-3.5 w-3.5" />}
-          label="Total en caja"
-          value={formatMoney(totalSaldoCobradores)}
-          tone={totalSaldoCobradores > 0 ? "danger" : "success"}
-        />
-
-        <ResumenItem
-          icon={<Banknote className="h-3.5 w-3.5" />}
-          label="Recibido admin"
-          value={formatMoney(totalRecibidoAdmin)}
-          tone="primary"
-        />
-
-        <ResumenItem
-          icon={<History className="h-3.5 w-3.5" />}
-          label="Ajustes post-cierre"
-          value={formatMoney(totalAjustesPostCierre)}
-          tone={totalAjustesPostCierre > 0 ? "warning" : "neutral"}
-        />
-
-        <ResumenItem
-          icon={<ShieldAlert className="h-3.5 w-3.5" />}
-          label="Cobradores con saldo"
-          value={cantidadCobradoresConSaldo}
-          tone={cantidadCobradoresConSaldo > 0 ? "warning" : "success"}
-        />
-
-        <ResumenItem
-          icon={<KeyRound className="h-3.5 w-3.5" />}
-          label="Códigos pendientes"
-          value={cantidadCodigosPendientes}
-          tone={cantidadCodigosPendientes > 0 ? "primary" : "neutral"}
-        />
-      </div>
-    </section>
-  );
-}
-
-function CodigosActivosAside({
-  cobradoresConCodigo,
-}: {
-  cobradoresConCodigo: Awaited<
-    ReturnType<typeof obtenerAdminCajaCobradoresResumen>
-  >["cobradores"];
-}) {
-  return (
-    <section className={`${panelClass} p-3.5`}>
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className={sectionTitleClass}>Códigos activos</p>
-
-          <h2 className={sectionSubtitleClass}>Pendientes de validación</h2>
-        </div>
-
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
-          <KeyRound className="h-4 w-4" />
-        </div>
-      </div>
-
-      <div className="grid gap-2">
-        {cobradoresConCodigo.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-[12px] leading-5 text-slate-600 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-400">
-            No hay códigos activos.
-          </div>
-        ) : (
-          cobradoresConCodigo.map((cobrador) => (
-            <div
-              key={cobrador.cobradorId}
-              className="rounded-lg border border-slate-300 bg-slate-50 px-3 py-2.5 shadow-sm shadow-slate-300/30 dark:border-slate-700 dark:bg-slate-950/55 dark:shadow-black/10"
-            >
-              <p className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
-                {cobrador.apellido}, {cobrador.nombre}
-              </p>
-
-              <div className="mt-1 flex items-center justify-between gap-2">
-                <span className="font-mono text-sm font-semibold tracking-[0.12em] text-amber-700 dark:text-amber-300">
-                  {cobrador.codigoPendiente?.codigo}
-                </span>
-
-                <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {formatMoney(cobrador.codigoPendiente?.importe || 0)}
-                </span>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </section>
-  );
+function money(value: number) {
+  return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(value || 0);
 }
 
 export default async function AdminCajaCobradoresPage() {
   const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.rol !== "admin") {
-    redirect(`/${user.rol}`);
-  }
+  if (!user) redirect("/login");
+  if (user.rol !== "admin") redirect(`/${user.rol}`);
 
   const resumen = await obtenerAdminCajaCobradoresResumen();
-
-  const cobradoresConCodigo = resumen.cobradores.filter(
-    (cobrador) => cobrador.codigoPendiente,
-  );
+  const codigosActivos = resumen.cobradores.filter((cobrador) => cobrador.codigoPendiente);
 
   return (
-    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
-      <DashboardGrid>
-        <DashboardMain>
-          <HeaderCajaCobradores />
+    <div className={styles.page}>
+      <header className={styles.heading}>
+        <div>
+          <h1>Caja cobradores</h1>
+          <p className={styles.description}>Revisá los saldos, generá códigos de cierre y consultá los últimos cobros.</p>
+        </div>
+      </header>
 
-          <div className="mt-3">
-            <AdminCobradoresCajaTable cobradores={resumen.cobradores} />
-          </div>
-
-          <div className="mt-3">
-            <AdminCajaMovimientosRecientes cobradores={resumen.cobradores} />
-          </div>
-        </DashboardMain>
-
-        <DashboardAside>
-          <AccionesRapidasAside />
-
-          <div className="mt-3">
-            <EstadoCajaAside
-              totalSaldoCobradores={resumen.totalSaldoCobradores}
-              totalRecibidoAdmin={resumen.totalRecibidoAdmin}
-              totalAjustesPostCierre={resumen.totalAjustesPostCierre}
-              cantidadCobradoresConSaldo={
-                resumen.cantidadCobradoresConSaldo
-              }
-              cantidadCodigosPendientes={resumen.cantidadCodigosPendientes}
-            />
-          </div>
-
-          <div className="mt-3">
-            <CodigosActivosAside cobradoresConCodigo={cobradoresConCodigo} />
-          </div>
-        </DashboardAside>
-      </DashboardGrid>
-    </PageShell>
+      <div className={styles.layout}>
+        <div className={styles.main}>
+          <AdminCobradoresCajaTable cobradores={resumen.cobradores} />
+          <AdminCajaMovimientosRecientes cobradores={resumen.cobradores} />
+        </div>
+        <aside className={styles.aside} aria-label="Resumen y accesos de caja">
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}><h2 className={styles.panelTitle}><WalletCards aria-hidden="true" /> Estado de las cajas</h2></div>
+            <div className={styles.sideBody}>
+              <div className={styles.sideRow}><span>Cobradores</span><strong>{resumen.cantidadCobradores}</strong></div>
+              <div className={styles.sideRow}><span>Con saldo pendiente</span><strong className={styles.amber}>{resumen.cantidadCobradoresConSaldo}</strong></div>
+              <div className={styles.sideRow}><span>Códigos pendientes</span><strong className={styles.blue}>{resumen.cantidadCodigosPendientes}</strong></div>
+              <div className={styles.sideRow}><span>Cierres realizados</span><strong className={styles.green}>{resumen.cantidadCierresRealizados}</strong></div>
+            </div>
+          </section>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <h2 className={styles.panelTitle}><KeyRound aria-hidden="true" /> Códigos activos</h2>
+              <span className={styles.count}>{codigosActivos.length}</span>
+            </div>
+            <div className={styles.sideBody}>
+              {codigosActivos.length === 0 ? <p className={styles.muted}>No hay códigos pendientes.</p> : codigosActivos.map((cobrador) => (
+                <article className={styles.activeCode} key={cobrador.cobradorId}>
+                  <p>{[cobrador.apellido, cobrador.nombre].filter(Boolean).join(", ") || cobrador.email}</p>
+                  <div><code>{cobrador.codigoPendiente!.codigo}</code><span className={styles.money}>{money(cobrador.codigoPendiente!.importe)}</span></div>
+                </article>
+              ))}
+            </div>
+          </section>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}><h2 className={styles.panelTitle}>Accesos rápidos</h2></div>
+            <div className={`${styles.sideBody} ${styles.shortcuts}`}>
+              <Link href="/admin/caja-cobradores/cierres" className={styles.button}><CalendarCheck aria-hidden="true" /> Ver cierres <ArrowRight aria-hidden="true" /></Link>
+              <Link href="/usuarios?rol=cobrador" className={styles.button}><UsersRound aria-hidden="true" /> Gestionar cobradores <ArrowRight aria-hidden="true" /></Link>
+              <Link href="/admin" className={styles.button}><WalletCards aria-hidden="true" /> Panel general <ArrowRight aria-hidden="true" /></Link>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
   );
 }

@@ -499,6 +499,8 @@
 // }
 
 import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/current-user";
+import { puedeAccederComprobantePago } from "@/lib/comprobante-access";
 import puppeteer from "puppeteer";
 import QRCode from "qrcode";
 import { obtenerComprobantePagoCliente } from "@/services/comprobante.service";
@@ -987,12 +989,15 @@ function renderComprobantePagoHtml({
 }
 
 export async function GET(request: Request, { params }: RouteProps) {
+  const user = await getCurrentUser();
+  if (!user) return new NextResponse("Sesión requerida.", { status: 401 });
+  const download = new URL(request.url).searchParams.get("download") === "1";
   const pdfSize = getPdfSizeFromRequest(request);
   const config = getPageConfig(pdfSize);
 
   const comprobante = await obtenerComprobantePagoCliente(params.movimientoId);
 
-  if (!comprobante) {
+  if (!comprobante || !(await puedeAccederComprobantePago(user, comprobante))) {
     return new NextResponse("Comprobante no encontrado.", {
       status: 404,
     });
@@ -1036,7 +1041,7 @@ export async function GET(request: Request, { params }: RouteProps) {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="comprobante-pago-${comprobante.numeroComprobante}-${config.fileSuffix}.pdf"`,
+        "Content-Disposition": `${download ? "attachment" : "inline"}; filename="comprobante-pago-${comprobante.numeroComprobante}-${config.fileSuffix}.pdf"`,
         "Cache-Control": "no-store",
       },
     });

@@ -225,7 +225,7 @@
 //   );
 // }
 
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import QRCode from "qrcode";
 import { ArrowLeft, Download, ReceiptText, ShieldCheck } from "lucide-react";
 import Link from "next/link";
@@ -234,6 +234,7 @@ import { PageShell } from "@/components/ui/PageShell";
 import { SectionCard } from "@/components/ui/SectionCard";
 import { obtenerComprobantePagoCliente } from "@/services/comprobante.service";
 import { getCurrentUser } from "@/lib/current-user";
+import { puedeAccederComprobantePago } from "@/lib/comprobante-access";
 
 type ComprobantePagoPageProps = {
   params: {
@@ -288,14 +289,13 @@ function DataLine({
 export default async function ComprobantePagoPage({
   params,
 }: ComprobantePagoPageProps) {
-  const [comprobante, user] = await Promise.all([
-    obtenerComprobantePagoCliente(params.movimientoId),
-    getCurrentUser(),
-  ]);
-
-  if (!comprobante) {
-    notFound();
-  }
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  const comprobante = await obtenerComprobantePagoCliente(params.movimientoId);
+  if (!comprobante || !(await puedeAccederComprobantePago(user, comprobante))) notFound();
+  const volverHref = user.rol === "admin"
+    ? `/admin/caja-cobradores/${comprobante.cobradorId}`
+    : user.rol === "cobrador" ? "/cobrador/caja" : "/cliente";
 
   const qrDataUrl = await QRCode.toDataURL(comprobante.urlVerificacion, {
     width: 180,
@@ -306,7 +306,7 @@ export default async function ComprobantePagoPage({
     <PageShell maxWidth="md">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
         <Link
-          href="/cobrador/caja"
+          href={volverHref}
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--app-primary)] transition hover:text-[var(--app-primary-hover)]"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -323,7 +323,7 @@ export default async function ComprobantePagoPage({
         ) : null}
 
         <Link
-          href={`/api/comprobantes/pagos/${params.movimientoId}/pdf?size=a4`}
+          href={`/api/comprobantes/pagos/${params.movimientoId}/pdf?size=a4&download=1`}
           target="_blank"
           className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-cyan-200 bg-cyan-50 px-4 text-sm font-semibold text-cyan-800 shadow-sm transition hover:bg-cyan-100 active:scale-[0.99] dark:border-cyan-900/70 dark:bg-cyan-500 dark:text-slate-950 dark:hover:bg-cyan-400"
         >

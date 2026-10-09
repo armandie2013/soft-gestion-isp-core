@@ -1580,14 +1580,1014 @@
 //   );
 // }
 
+// import Link from "next/link";
+// import { notFound } from "next/navigation";
+// import type { ReactNode } from "react";
+// import {
+//   ArrowRight,
+//   CalendarDays,
+//   CheckCircle2,
+//   FileText,
+//   IdCard,
+//   Mail,
+//   MapPin,
+//   Pencil,
+//   Phone,
+//   ReceiptText,
+//   UserRound,
+//   Wifi,
+// } from "lucide-react";
+
+// import {
+//   DashboardAside,
+//   DashboardGrid,
+//   DashboardMain,
+// } from "@/components/ui/DashboardGrid";
+// import { PageShell } from "@/components/ui/PageShell";
+// import { obtenerClientePorId } from "@/services/cliente.service";
+// import type { ClienteSafe } from "@/types/cliente.types";
+
+// type VerClientePageProps = {
+//   params: {
+//     id: string;
+//   };
+// };
+
+// type Tone =
+//   | "neutral"
+//   | "primary"
+//   | "success"
+//   | "warning"
+//   | "danger";
+
+// export const metadata = {
+//   title: "Ver cliente",
+// };
+
+// const panelClass =
+//   "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+//   "dark:border-[#263451] dark:bg-[#111b31] " +
+//   "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
+
+// const innerPanelClass =
+//   "overflow-hidden rounded-lg border border-slate-200 bg-slate-50 " +
+//   "dark:border-[#2b3957] dark:bg-[#0d172a]";
+
+// const buttonBaseClass =
+//   "inline-flex h-8 items-center justify-center rounded-lg border px-3 " +
+//   "text-[12px] font-medium leading-none shadow-sm transition " +
+//   "active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60";
+
+// const primaryButtonClass =
+//   `${buttonBaseClass} gap-1.5 border-blue-600 bg-blue-600 !text-white ` +
+//   "hover:border-blue-700 hover:bg-blue-700 hover:!text-white " +
+//   "dark:border-blue-500 dark:bg-blue-500 dark:!text-white " +
+//   "dark:hover:border-blue-600 dark:hover:bg-blue-600 " +
+//   "dark:hover:!text-white";
+
+// const secondaryButtonClass =
+//   `${buttonBaseClass} gap-1.5 border-slate-300 bg-white text-slate-700 ` +
+//   "hover:border-slate-400 hover:bg-slate-50 " +
+//   "dark:border-[#354462] dark:bg-[#111b31] dark:text-slate-200 " +
+//   "dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
+
+// function formatMoney(value?: number | null) {
+//   return new Intl.NumberFormat("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   }).format(Number(value || 0));
+// }
+
+// function formatDate(value?: string | null) {
+//   if (!value) {
+//     return "-";
+//   }
+
+//   const dateOnly = String(value).split("T")[0];
+//   const [year, month, day] = dateOnly.split("-");
+
+//   if (!year || !month || !day) {
+//     return String(value);
+//   }
+
+//   return `${day}/${month}/${year}`;
+// }
+
+// function estadoLabel(estado: string) {
+//   if (estado === "activo") {
+//     return "Activo";
+//   }
+
+//   if (estado === "suspendido") {
+//     return "Suspendido";
+//   }
+
+//   return "Baja";
+// }
+
+// function estadoTone(estado: string): Tone {
+//   if (estado === "activo") {
+//     return "success";
+//   }
+
+//   if (estado === "suspendido") {
+//     return "warning";
+//   }
+
+//   return "danger";
+// }
+
+// function estadoDotClass(estado: string) {
+//   if (estado === "activo") {
+//     return "bg-emerald-500";
+//   }
+
+//   if (estado === "suspendido") {
+//     return "bg-amber-500";
+//   }
+
+//   return "bg-red-500";
+// }
+
+// function getNombreCompleto(cliente: ClienteSafe) {
+//   const apellido = String(cliente.apellido || "").trim();
+//   const nombre = String(cliente.nombre || "").trim();
+
+//   const nombreCompleto = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return nombreCompleto || "Cliente sin nombre";
+// }
+
+// function StatusBadge({
+//   children,
+//   tone = "neutral",
+//   dotClass,
+// }: {
+//   children: ReactNode;
+//   tone?: Tone;
+//   dotClass?: string;
+// }) {
+//   const toneClass: Record<Tone, string> = {
+//     neutral:
+//       "border-slate-200 bg-slate-50 text-slate-700 " +
+//       "dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300",
+
+//     primary:
+//       "border-blue-200 bg-blue-50 text-blue-700 " +
+//       "dark:border-blue-800/70 dark:bg-blue-950/25 dark:text-blue-300",
+
+//     success:
+//       "border-emerald-200 bg-emerald-50 text-emerald-700 " +
+//       "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
+
+//     warning:
+//       "border-amber-200 bg-amber-50 text-amber-700 " +
+//       "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
+
+//     danger:
+//       "border-red-200 bg-red-50 text-red-700 " +
+//       "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
+//   };
+
+//   return (
+//     <span
+//       className={`
+//         inline-flex h-7 items-center justify-center gap-1.5
+//         rounded-md border px-2.5
+//         text-[10px] font-medium
+//         ${toneClass[tone]}
+//       `}
+//     >
+//       {dotClass ? (
+//         <span
+//           className={`
+//             h-1.5 w-1.5 shrink-0 rounded-full
+//             ${dotClass}
+//           `}
+//         />
+//       ) : null}
+
+//       <span className="whitespace-nowrap leading-none">
+//         {children}
+//       </span>
+//     </span>
+//   );
+// }
+
+// function PageHeader({
+//   cliente,
+// }: {
+//   cliente: ClienteSafe;
+// }) {
+//   return (
+//     <section className={panelClass}>
+//       <div
+//         className="
+//           border-b border-slate-200
+//           bg-slate-50/80 px-3 py-3
+//           dark:border-[#263451]
+//           dark:bg-[#0e172a]
+//           sm:px-4
+//         "
+//       >
+//         <div
+//           className="
+//             flex min-h-12 items-center
+//             justify-between gap-3
+//           "
+//         >
+//           <div className="min-w-0">
+//             <div className="flex items-center gap-2.5">
+//               <UserRound
+//                 className="
+//                   h-5 w-5 shrink-0
+//                   text-blue-700
+//                   dark:text-blue-300
+//                 "
+//               />
+
+//               <h1
+//                 className="
+//                   truncate text-base font-medium
+//                   text-slate-950 dark:text-white
+//                 "
+//               >
+//                 Ver cliente
+//               </h1>
+//             </div>
+
+//             <p
+//               className="
+//                 mt-1 hidden max-w-3xl
+//                 truncate text-[12px] leading-5
+//                 text-slate-600
+//                 dark:text-slate-400
+//                 sm:block
+//               "
+//             >
+//               {getNombreCompleto(cliente)} · N°{" "}
+//               {cliente.numeroCliente} · DNI{" "}
+//               {cliente.dni || "-"}
+//             </p>
+
+//             <p
+//               className="
+//                 mt-1 truncate text-[11px]
+//                 text-slate-500
+//                 dark:text-slate-400
+//                 sm:hidden
+//               "
+//             >
+//               N° {cliente.numeroCliente} ·{" "}
+//               {getNombreCompleto(cliente)}
+//             </p>
+//           </div>
+
+//           <div
+//             className="
+//               flex h-8 shrink-0
+//               items-center gap-2
+//             "
+//           >
+//             <div className="hidden items-center gap-2 xl:flex">
+//               <StatusBadge
+//                 tone="primary"
+//                 dotClass="bg-blue-500"
+//               >
+//                 N° {cliente.numeroCliente}
+//               </StatusBadge>
+
+//               <StatusBadge
+//                 tone={estadoTone(cliente.estado)}
+//                 dotClass={estadoDotClass(cliente.estado)}
+//               >
+//                 {estadoLabel(cliente.estado)}
+//               </StatusBadge>
+
+//               <StatusBadge
+//                 tone={cliente.plan ? "success" : "warning"}
+//                 dotClass={
+//                   cliente.plan
+//                     ? "bg-emerald-500"
+//                     : "bg-amber-500"
+//                 }
+//               >
+//                 {cliente.plan ? "Con plan" : "Sin plan"}
+//               </StatusBadge>
+//             </div>
+
+//             <Link
+//               href="/clientes"
+//               className={`${secondaryButtonClass} hidden sm:inline-flex`}
+//             >
+//               <span className="text-[12px] leading-none">
+//                 Volver
+//               </span>
+//             </Link>
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function InfoRow({
+//   icon,
+//   label,
+//   value,
+//   tone = "neutral",
+//   dotClass,
+// }: {
+//   icon: ReactNode;
+//   label: string;
+//   value?: string | number | null;
+//   tone?: Tone;
+//   dotClass?: string;
+// }) {
+//   const toneClass: Record<Tone, string> = {
+//     neutral:
+//       "text-slate-900 dark:text-slate-100",
+//     primary:
+//       "text-blue-700 dark:text-blue-300",
+//     success:
+//       "text-emerald-700 dark:text-emerald-300",
+//     warning:
+//       "text-amber-700 dark:text-amber-300",
+//     danger:
+//       "text-red-700 dark:text-red-300",
+//   };
+
+//   const displayValue =
+//     value === null ||
+//     value === undefined ||
+//     value === ""
+//       ? "-"
+//       : String(value);
+
+//   return (
+//     <div
+//       className="
+//         flex min-h-10 items-center
+//         justify-between gap-3
+//         border-b border-slate-200
+//         px-3 py-2.5
+//         last:border-b-0
+//         dark:border-[#263451]
+//       "
+//     >
+//       <span
+//         className="
+//           flex min-w-0 items-center gap-2.5
+//           text-[12px] text-slate-600
+//           dark:text-slate-300
+//         "
+//       >
+//         <span
+//           className="
+//             shrink-0 text-blue-700
+//             dark:text-blue-300
+//           "
+//         >
+//           {icon}
+//         </span>
+
+//         <span className="truncate">
+//           {label}
+//         </span>
+//       </span>
+
+//       <span
+//         className={`
+//           flex min-w-0 items-center
+//           justify-end gap-1.5
+//           truncate text-right text-[12px]
+//           font-medium
+//           ${toneClass[tone]}
+//         `}
+//         title={displayValue}
+//       >
+//         {dotClass ? (
+//           <span
+//             className={`
+//               h-1.5 w-1.5 shrink-0 rounded-full
+//               ${dotClass}
+//             `}
+//           />
+//         ) : null}
+
+//         <span className="truncate">
+//           {displayValue}
+//         </span>
+//       </span>
+//     </div>
+//   );
+// }
+
+// function DetailSection({
+//   icon,
+//   title,
+//   description,
+//   children,
+//   className = "",
+// }: {
+//   icon: ReactNode;
+//   title: string;
+//   description: string;
+//   children: ReactNode;
+//   className?: string;
+// }) {
+//   return (
+//     <section
+//       className={`
+//         rounded-lg border border-slate-200
+//         bg-slate-50 p-3
+//         dark:border-[#2b3957]
+//         dark:bg-[#0d172a]
+//         ${className}
+//       `}
+//     >
+//       <div className="mb-3 flex items-start gap-2.5">
+//         <div
+//           className="
+//             flex h-8 w-8 shrink-0
+//             items-center justify-center
+//             rounded-lg border
+//             border-blue-200 bg-blue-50
+//             text-blue-700
+//             dark:border-blue-800/70
+//             dark:bg-blue-950/25
+//             dark:text-blue-300
+//           "
+//         >
+//           {icon}
+//         </div>
+
+//         <div className="min-w-0">
+//           <h2
+//             className="
+//               text-sm font-medium
+//               text-slate-950 dark:text-white
+//             "
+//           >
+//             {title}
+//           </h2>
+
+//           <p
+//             className="
+//               mt-0.5 text-[11px] leading-5
+//               text-slate-500
+//               dark:text-slate-400
+//               sm:text-[12px]
+//             "
+//           >
+//             {description}
+//           </p>
+//         </div>
+//       </div>
+
+//       <div className={innerPanelClass}>
+//         {children}
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ClienteDetails({
+//   cliente,
+// }: {
+//   cliente: ClienteSafe;
+// }) {
+//   const nombreCompleto = getNombreCompleto(cliente);
+
+//   return (
+//     <section className={panelClass}>
+//       <div
+//         className="
+//           border-b border-slate-200
+//           bg-slate-50/80 px-3 py-3
+//           dark:border-[#263451]
+//           dark:bg-[#0e172a]
+//           sm:px-4
+//         "
+//       >
+//         <div className="flex min-h-12 items-center">
+//           <div className="min-w-0">
+//             <div className="flex items-center gap-2.5">
+//               <FileText
+//                 className="
+//                   h-5 w-5 shrink-0
+//                   text-blue-700
+//                   dark:text-blue-300
+//                 "
+//               />
+
+//               <h2
+//                 className="
+//                   truncate text-base font-medium
+//                   text-slate-950 dark:text-white
+//                 "
+//               >
+//                 Datos del cliente
+//               </h2>
+//             </div>
+
+//             <p
+//               className="
+//                 mt-1 hidden max-w-3xl
+//                 truncate text-[12px] leading-5
+//                 text-slate-600
+//                 dark:text-slate-400
+//                 sm:block
+//               "
+//             >
+//               Información personal, ubicación y servicio
+//               contratado.
+//             </p>
+
+//             <p
+//               className="
+//                 mt-1 truncate text-[11px]
+//                 text-slate-500
+//                 dark:text-slate-400
+//                 sm:hidden
+//               "
+//             >
+//               Información personal y del servicio
+//             </p>
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="p-3 sm:p-4">
+//         <div className="grid gap-3">
+//           <div className="grid gap-3 xl:grid-cols-2">
+//             <DetailSection
+//               icon={<UserRound className="h-4 w-4" />}
+//               title="Datos personales"
+//               description="Información registrada del titular."
+//             >
+//               <InfoRow
+//                 icon={<UserRound className="h-3.5 w-3.5" />}
+//                 label="Nombre completo"
+//                 value={nombreCompleto}
+//                 tone="primary"
+//               />
+
+//               <InfoRow
+//                 icon={<IdCard className="h-3.5 w-3.5" />}
+//                 label="DNI"
+//                 value={cliente.dni}
+//               />
+
+//               <InfoRow
+//                 icon={<Phone className="h-3.5 w-3.5" />}
+//                 label="Teléfono"
+//                 value={cliente.telefono}
+//               />
+
+//               <InfoRow
+//                 icon={<Mail className="h-3.5 w-3.5" />}
+//                 label="Email"
+//                 value={cliente.email}
+//               />
+//             </DetailSection>
+
+//             <DetailSection
+//               icon={<MapPin className="h-4 w-4" />}
+//               title="Domicilio"
+//               description="Ubicación principal del servicio."
+//             >
+//               <InfoRow
+//                 icon={<MapPin className="h-3.5 w-3.5" />}
+//                 label="Dirección"
+//                 value={cliente.direccion}
+//                 tone="primary"
+//               />
+
+//               <InfoRow
+//                 icon={<MapPin className="h-3.5 w-3.5" />}
+//                 label="Localidad"
+//                 value={cliente.localidad}
+//               />
+
+//               <InfoRow
+//                 icon={<MapPin className="h-3.5 w-3.5" />}
+//                 label="Provincia"
+//                 value={cliente.provincia}
+//               />
+//             </DetailSection>
+//           </div>
+
+//           <DetailSection
+//             icon={<Wifi className="h-4 w-4" />}
+//             title="Servicio contratado"
+//             description="Plan, estado y fechas relacionadas con el servicio."
+//           >
+//             <div className="grid md:grid-cols-2">
+//               <div
+//                 className="
+//                   border-b border-slate-200
+//                   dark:border-[#263451]
+//                   md:border-b-0
+//                   md:border-r
+//                 "
+//               >
+//                 <InfoRow
+//                   icon={<Wifi className="h-3.5 w-3.5" />}
+//                   label="Plan"
+//                   value={
+//                     cliente.plan?.nombre ||
+//                     "Sin plan asignado"
+//                   }
+//                   tone={
+//                     cliente.plan
+//                       ? "primary"
+//                       : "warning"
+//                   }
+//                   dotClass={
+//                     cliente.plan
+//                       ? "bg-blue-500"
+//                       : "bg-amber-500"
+//                   }
+//                 />
+
+//                 <InfoRow
+//                   icon={<Wifi className="h-3.5 w-3.5" />}
+//                   label="Tipo"
+//                   value={cliente.plan?.tipo}
+//                 />
+
+//                 <InfoRow
+//                   icon={<FileText className="h-3.5 w-3.5" />}
+//                   label="Importe"
+//                   value={
+//                     cliente.plan
+//                       ? formatMoney(cliente.plan.importe)
+//                       : "-"
+//                   }
+//                   tone={
+//                     cliente.plan
+//                       ? "primary"
+//                       : "neutral"
+//                   }
+//                 />
+//               </div>
+
+//               <div>
+//                 <InfoRow
+//                   icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//                   label="Estado"
+//                   value={estadoLabel(cliente.estado)}
+//                   tone={estadoTone(cliente.estado)}
+//                   dotClass={estadoDotClass(cliente.estado)}
+//                 />
+
+//                 <InfoRow
+//                   icon={<CalendarDays className="h-3.5 w-3.5" />}
+//                   label="Fecha de alta"
+//                   value={formatDate(cliente.fechaAlta)}
+//                 />
+
+//                 <InfoRow
+//                   icon={<CalendarDays className="h-3.5 w-3.5" />}
+//                   label="Último cambio de plan"
+//                   value={
+//                     cliente.ultimoCambioPlan ||
+//                     "Sin cambios registrados"
+//                   }
+//                 />
+//               </div>
+//             </div>
+
+//             <div
+//               className="
+//                 border-t border-slate-200
+//                 px-3 py-2.5
+//                 dark:border-[#263451]
+//               "
+//             >
+//               <p
+//                 className="
+//                   text-[10px] font-medium
+//                   uppercase tracking-[0.08em]
+//                   text-slate-500
+//                   dark:text-slate-400
+//                 "
+//               >
+//                 Detalle del plan
+//               </p>
+
+//               <p
+//                 className="
+//                   mt-1 text-[12px] leading-5
+//                   text-slate-600
+//                   dark:text-slate-300
+//                 "
+//               >
+//                 {cliente.plan?.detalle ||
+//                   "Sin detalle disponible."}
+//               </p>
+//             </div>
+//           </DetailSection>
+//         </div>
+
+//         <div
+//           className="
+//             mt-3 grid grid-cols-2 gap-2
+//             sm:flex sm:justify-end
+//           "
+//         >
+//           <Link
+//             href={`/clientes/${cliente.id}/estado-cuenta`}
+//             className={secondaryButtonClass}
+//           >
+//             <ReceiptText className="h-3.5 w-3.5 shrink-0" />
+
+//             <span className="text-[12px] leading-none">
+//               Estado de cuenta
+//             </span>
+//           </Link>
+
+//           <Link
+//             href={`/clientes/${cliente.id}/editar`}
+//             className={primaryButtonClass}
+//           >
+//             <Pencil
+//               className="
+//                 h-3.5 w-3.5 shrink-0
+//                 !text-white
+//               "
+//             />
+
+//             <span
+//               className="
+//                 text-[12px] leading-none
+//                 !text-white
+//               "
+//             >
+//               Editar cliente
+//             </span>
+//           </Link>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
+// function ResumenCliente({
+//   cliente,
+// }: {
+//   cliente: ClienteSafe;
+// }) {
+//   return (
+//     <section className={`${panelClass} p-4`}>
+//       <div className="flex items-center gap-2">
+//         <UserRound
+//           className="
+//             h-4 w-4 text-blue-700
+//             dark:text-blue-300
+//           "
+//         />
+
+//         <h2
+//           className="
+//             text-sm font-medium
+//             text-slate-950 dark:text-white
+//           "
+//         >
+//           Resumen del cliente
+//         </h2>
+//       </div>
+
+//       <div className={`mt-3 ${innerPanelClass}`}>
+//         <InfoRow
+//           icon={<FileText className="h-3.5 w-3.5" />}
+//           label="Número"
+//           value={cliente.numeroCliente}
+//           tone="primary"
+//           dotClass="bg-blue-500"
+//         />
+
+//         <InfoRow
+//           icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+//           label="Estado"
+//           value={estadoLabel(cliente.estado)}
+//           tone={estadoTone(cliente.estado)}
+//           dotClass={estadoDotClass(cliente.estado)}
+//         />
+
+//         <InfoRow
+//           icon={<Wifi className="h-3.5 w-3.5" />}
+//           label="Plan"
+//           value={cliente.plan?.nombre || "Sin plan"}
+//           tone={cliente.plan ? "success" : "warning"}
+//           dotClass={
+//             cliente.plan
+//               ? "bg-emerald-500"
+//               : "bg-amber-500"
+//           }
+//         />
+
+//         <InfoRow
+//           icon={<ReceiptText className="h-3.5 w-3.5" />}
+//           label="Importe"
+//           value={
+//             cliente.plan
+//               ? formatMoney(cliente.plan.importe)
+//               : "-"
+//           }
+//           tone={cliente.plan ? "primary" : "neutral"}
+//         />
+
+//         <InfoRow
+//           icon={<Phone className="h-3.5 w-3.5" />}
+//           label="Teléfono"
+//           value={cliente.telefono}
+//         />
+
+//         <InfoRow
+//           icon={<MapPin className="h-3.5 w-3.5" />}
+//           label="Ubicación"
+//           value={`${cliente.localidad || "-"}, ${
+//             cliente.provincia || "-"
+//           }`}
+//         />
+//       </div>
+//     </section>
+//   );
+// }
+
+// function AccionesCliente({
+//   cliente,
+// }: {
+//   cliente: ClienteSafe;
+// }) {
+//   const actions = [
+//     {
+//       label: "Estado de cuenta",
+//       description: "Facturas y movimientos",
+//       href: `/clientes/${cliente.id}/estado-cuenta`,
+//       icon: ReceiptText,
+//     },
+//     {
+//       label: "Editar cliente",
+//       description: "Modificar datos y servicio",
+//       href: `/clientes/${cliente.id}/editar`,
+//       icon: Pencil,
+//     },
+//   ];
+
+//   return (
+//     <section className={`${panelClass} hidden p-4 xl:block`}>
+//       <div className="flex items-center gap-2">
+//         <CheckCircle2
+//           className="
+//             h-4 w-4 text-blue-700
+//             dark:text-blue-300
+//           "
+//         />
+
+//         <h2
+//           className="
+//             text-sm font-medium
+//             text-slate-950 dark:text-white
+//           "
+//         >
+//           Acciones del cliente
+//         </h2>
+//       </div>
+
+//       <div className="mt-3 grid gap-2">
+//         {actions.map((item) => {
+//           const Icon = item.icon;
+
+//           return (
+//             <Link
+//               key={item.href}
+//               href={item.href}
+//               className="
+//                 group flex items-center
+//                 justify-between gap-3
+//                 rounded-lg border
+//                 border-slate-200
+//                 bg-slate-50 px-3 py-2.5
+//                 transition
+//                 hover:border-blue-300
+//                 hover:bg-blue-50
+//                 dark:border-[#2b3957]
+//                 dark:bg-[#0d172a]
+//                 dark:hover:border-blue-500/60
+//                 dark:hover:bg-[#16223c]
+//               "
+//             >
+//               <div
+//                 className="
+//                   flex min-w-0
+//                   items-center gap-2.5
+//                 "
+//               >
+//                 <Icon
+//                   className="
+//                     h-4 w-4 shrink-0
+//                     text-slate-500
+//                     transition
+//                     group-hover:text-blue-700
+//                     dark:text-slate-400
+//                     dark:group-hover:text-blue-300
+//                   "
+//                 />
+
+//                 <div className="min-w-0">
+//                   <p
+//                     className="
+//                       truncate text-[12px]
+//                       font-medium
+//                       text-slate-900
+//                       dark:text-slate-100
+//                     "
+//                   >
+//                     {item.label}
+//                   </p>
+
+//                   <p
+//                     className="
+//                       truncate text-[10px]
+//                       text-slate-500
+//                       dark:text-slate-400
+//                     "
+//                   >
+//                     {item.description}
+//                   </p>
+//                 </div>
+//               </div>
+
+//               <ArrowRight
+//                 className="
+//                   h-3.5 w-3.5 shrink-0
+//                   text-slate-400
+//                   transition
+//                   group-hover:translate-x-0.5
+//                   group-hover:text-blue-700
+//                   dark:group-hover:text-blue-300
+//                 "
+//               />
+//             </Link>
+//           );
+//         })}
+//       </div>
+//     </section>
+//   );
+// }
+
+// export default async function VerClientePage({
+//   params,
+// }: VerClientePageProps) {
+//   const cliente = await obtenerClientePorId(params.id);
+
+//   if (!cliente) {
+//     notFound();
+//   }
+
+//   return (
+//     <PageShell
+//       maxWidth="wide"
+//       className="pb-20 lg:pb-6"
+//     >
+//       <DashboardGrid>
+//         <DashboardMain>
+//           <PageHeader cliente={cliente} />
+
+//           <div className="mt-3">
+//             <ClienteDetails cliente={cliente} />
+//           </div>
+//         </DashboardMain>
+
+//         <div className="hidden lg:block">
+//           <DashboardAside>
+//             <ResumenCliente cliente={cliente} />
+
+//             <div className="mt-3">
+//               <AccionesCliente cliente={cliente} />
+//             </div>
+//           </DashboardAside>
+//         </div>
+//       </DashboardGrid>
+//     </PageShell>
+//   );
+// }
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
   CalendarDays,
-  CheckCircle2,
-  FileText,
   IdCard,
   Mail,
   MapPin,
@@ -1597,986 +2597,278 @@ import {
   UserRound,
   Wifi,
 } from "lucide-react";
-
-import {
-  DashboardAside,
-  DashboardGrid,
-  DashboardMain,
-} from "@/components/ui/DashboardGrid";
-import { PageShell } from "@/components/ui/PageShell";
+import { cajaStyles as styles } from "@/components/ui/dashboard-styles";
+import { getCurrentUser } from "@/lib/current-user";
 import { obtenerClientePorId } from "@/services/cliente.service";
 import type { ClienteSafe } from "@/types/cliente.types";
 
-type VerClientePageProps = {
-  params: {
-    id: string;
-  };
-};
+export const metadata = { title: "Ver cliente" };
+export const dynamic = "force-dynamic";
+type Props = { params: { id: string } };
 
-type Tone =
-  | "neutral"
-  | "primary"
-  | "success"
-  | "warning"
-  | "danger";
-
-export const metadata = {
-  title: "Ver cliente",
-};
-
-const panelClass =
-  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
-  "dark:border-[#263451] dark:bg-[#111b31] " +
-  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
-
-const innerPanelClass =
-  "overflow-hidden rounded-lg border border-slate-200 bg-slate-50 " +
-  "dark:border-[#2b3957] dark:bg-[#0d172a]";
-
-const buttonBaseClass =
-  "inline-flex h-8 items-center justify-center rounded-lg border px-3 " +
-  "text-[12px] font-medium leading-none shadow-sm transition " +
-  "active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60";
-
-const primaryButtonClass =
-  `${buttonBaseClass} gap-1.5 border-blue-600 bg-blue-600 !text-white ` +
-  "hover:border-blue-700 hover:bg-blue-700 hover:!text-white " +
-  "dark:border-blue-500 dark:bg-blue-500 dark:!text-white " +
-  "dark:hover:border-blue-600 dark:hover:bg-blue-600 " +
-  "dark:hover:!text-white";
-
-const secondaryButtonClass =
-  `${buttonBaseClass} gap-1.5 border-slate-300 bg-white text-slate-700 ` +
-  "hover:border-slate-400 hover:bg-slate-50 " +
-  "dark:border-[#354462] dark:bg-[#111b31] dark:text-slate-200 " +
-  "dark:hover:border-slate-500 dark:hover:bg-[#16223c]";
-
-function formatMoney(value?: number | null) {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(value || 0));
-}
-
-function formatDate(value?: string | null) {
-  if (!value) {
-    return "-";
-  }
-
-  const dateOnly = String(value).split("T")[0];
-  const [year, month, day] = dateOnly.split("-");
-
-  if (!year || !month || !day) {
-    return String(value);
-  }
-
-  return `${day}/${month}/${year}`;
-}
-
-function estadoLabel(estado: string) {
-  if (estado === "activo") {
-    return "Activo";
-  }
-
-  if (estado === "suspendido") {
-    return "Suspendido";
-  }
-
-  return "Baja";
-}
-
-function estadoTone(estado: string): Tone {
-  if (estado === "activo") {
-    return "success";
-  }
-
-  if (estado === "suspendido") {
-    return "warning";
-  }
-
-  return "danger";
-}
-
-function estadoDotClass(estado: string) {
-  if (estado === "activo") {
-    return "bg-emerald-500";
-  }
-
-  if (estado === "suspendido") {
-    return "bg-amber-500";
-  }
-
-  return "bg-red-500";
-}
-
-function getNombreCompleto(cliente: ClienteSafe) {
-  const apellido = String(cliente.apellido || "").trim();
-  const nombre = String(cliente.nombre || "").trim();
-
-  const nombreCompleto = `${apellido}, ${nombre}`
-    .replace(/^,\s*/, "")
-    .replace(/,\s*$/, "")
-    .trim();
-
-  return nombreCompleto || "Cliente sin nombre";
-}
-
-function StatusBadge({
-  children,
-  tone = "neutral",
-  dotClass,
-}: {
-  children: ReactNode;
-  tone?: Tone;
-  dotClass?: string;
-}) {
-  const toneClass: Record<Tone, string> = {
-    neutral:
-      "border-slate-200 bg-slate-50 text-slate-700 " +
-      "dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300",
-
-    primary:
-      "border-blue-200 bg-blue-50 text-blue-700 " +
-      "dark:border-blue-800/70 dark:bg-blue-950/25 dark:text-blue-300",
-
-    success:
-      "border-emerald-200 bg-emerald-50 text-emerald-700 " +
-      "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
-
-    warning:
-      "border-amber-200 bg-amber-50 text-amber-700 " +
-      "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
-
-    danger:
-      "border-red-200 bg-red-50 text-red-700 " +
-      "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
-  };
-
+function fullName(c: ClienteSafe) {
   return (
-    <span
-      className={`
-        inline-flex h-7 items-center justify-center gap-1.5
-        rounded-md border px-2.5
-        text-[10px] font-medium
-        ${toneClass[tone]}
-      `}
-    >
-      {dotClass ? (
-        <span
-          className={`
-            h-1.5 w-1.5 shrink-0 rounded-full
-            ${dotClass}
-          `}
-        />
-      ) : null}
-
-      <span className="whitespace-nowrap leading-none">
-        {children}
-      </span>
-    </span>
+    [c.apellido, c.nombre]
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .join(", ") || "Cliente sin nombre"
   );
 }
-
-function PageHeader({
-  cliente,
-}: {
-  cliente: ClienteSafe;
-}) {
-  return (
-    <section className={panelClass}>
-      <div
-        className="
-          border-b border-slate-200
-          bg-slate-50/80 px-3 py-3
-          dark:border-[#263451]
-          dark:bg-[#0e172a]
-          sm:px-4
-        "
-      >
-        <div
-          className="
-            flex min-h-12 items-center
-            justify-between gap-3
-          "
-        >
-          <div className="min-w-0">
-            <div className="flex items-center gap-2.5">
-              <UserRound
-                className="
-                  h-5 w-5 shrink-0
-                  text-blue-700
-                  dark:text-blue-300
-                "
-              />
-
-              <h1
-                className="
-                  truncate text-base font-medium
-                  text-slate-950 dark:text-white
-                "
-              >
-                Ver cliente
-              </h1>
-            </div>
-
-            <p
-              className="
-                mt-1 hidden max-w-3xl
-                truncate text-[12px] leading-5
-                text-slate-600
-                dark:text-slate-400
-                sm:block
-              "
-            >
-              {getNombreCompleto(cliente)} · N°{" "}
-              {cliente.numeroCliente} · DNI{" "}
-              {cliente.dni || "-"}
-            </p>
-
-            <p
-              className="
-                mt-1 truncate text-[11px]
-                text-slate-500
-                dark:text-slate-400
-                sm:hidden
-              "
-            >
-              N° {cliente.numeroCliente} ·{" "}
-              {getNombreCompleto(cliente)}
-            </p>
-          </div>
-
-          <div
-            className="
-              flex h-8 shrink-0
-              items-center gap-2
-            "
-          >
-            <div className="hidden items-center gap-2 xl:flex">
-              <StatusBadge
-                tone="primary"
-                dotClass="bg-blue-500"
-              >
-                N° {cliente.numeroCliente}
-              </StatusBadge>
-
-              <StatusBadge
-                tone={estadoTone(cliente.estado)}
-                dotClass={estadoDotClass(cliente.estado)}
-              >
-                {estadoLabel(cliente.estado)}
-              </StatusBadge>
-
-              <StatusBadge
-                tone={cliente.plan ? "success" : "warning"}
-                dotClass={
-                  cliente.plan
-                    ? "bg-emerald-500"
-                    : "bg-amber-500"
-                }
-              >
-                {cliente.plan ? "Con plan" : "Sin plan"}
-              </StatusBadge>
-            </div>
-
-            <Link
-              href="/clientes"
-              className={`${secondaryButtonClass} hidden sm:inline-flex`}
-            >
-              <span className="text-[12px] leading-none">
-                Volver
-              </span>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+function date(value?: string | null) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value || "");
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : "—";
 }
-
-function InfoRow({
+function money(value: number) {
+  const [integer, decimal] = (Number.isFinite(value) ? value : 0)
+    .toFixed(2)
+    .split(".");
+  return `$ ${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${decimal}`;
+}
+function status(estado: ClienteSafe["estado"]) {
+  if (estado === "activo") return { label: "Activo", tone: styles.greenBadge };
+  if (estado === "suspendido")
+    return { label: "Suspendido", tone: styles.amberBadge };
+  return {
+    label: "Baja",
+    tone: "!bg-red-50 text-red-700 dark:!bg-red-950/50 dark:text-red-300",
+  };
+}
+function Info({
   icon,
   label,
   value,
-  tone = "neutral",
-  dotClass,
 }: {
   icon: ReactNode;
   label: string;
   value?: string | number | null;
-  tone?: Tone;
-  dotClass?: string;
 }) {
-  const toneClass: Record<Tone, string> = {
-    neutral:
-      "text-slate-900 dark:text-slate-100",
-    primary:
-      "text-blue-700 dark:text-blue-300",
-    success:
-      "text-emerald-700 dark:text-emerald-300",
-    warning:
-      "text-amber-700 dark:text-amber-300",
-    danger:
-      "text-red-700 dark:text-red-300",
-  };
-
-  const displayValue =
-    value === null ||
-    value === undefined ||
-    value === ""
-      ? "-"
-      : String(value);
-
+  const text =
+    value === null || value === undefined || value === "" ? "—" : String(value);
   return (
-    <div
-      className="
-        flex min-h-10 items-center
-        justify-between gap-3
-        border-b border-slate-200
-        px-3 py-2.5
-        last:border-b-0
-        dark:border-[#263451]
-      "
-    >
-      <span
-        className="
-          flex min-w-0 items-center gap-2.5
-          text-[12px] text-slate-600
-          dark:text-slate-300
-        "
-      >
-        <span
-          className="
-            shrink-0 text-blue-700
-            dark:text-blue-300
-          "
-        >
-          {icon}
-        </span>
-
-        <span className="truncate">
-          {label}
-        </span>
-      </span>
-
-      <span
-        className={`
-          flex min-w-0 items-center
-          justify-end gap-1.5
-          truncate text-right text-[12px]
-          font-medium
-          ${toneClass[tone]}
-        `}
-        title={displayValue}
-      >
-        {dotClass ? (
-          <span
-            className={`
-              h-1.5 w-1.5 shrink-0 rounded-full
-              ${dotClass}
-            `}
-          />
-        ) : null}
-
-        <span className="truncate">
-          {displayValue}
-        </span>
-      </span>
+    <div className="grid min-w-0 grid-cols-[minmax(0,100px)_minmax(0,1fr)] items-start gap-3 border-b border-[var(--overview-border)] py-[10px] last:border-b-0 min-[700px]:grid-cols-[minmax(0,150px)_minmax(0,1fr)]">
+      <dt className="flex items-center gap-2 text-[11px] text-[var(--overview-muted)] [&_svg]:!size-3.5 [&_svg]:shrink-0">
+        {icon}
+        <span>{label}</span>
+      </dt>
+      <dd className="m-0 min-w-0 text-right text-[12px] leading-[1.6] [overflow-wrap:anywhere]">
+        {text}
+      </dd>
     </div>
   );
 }
-
-function DetailSection({
-  icon,
+function Panel({
   title,
-  description,
+  icon,
   children,
-  className = "",
 }: {
-  icon: ReactNode;
   title: string;
-  description: string;
+  icon: ReactNode;
   children: ReactNode;
-  className?: string;
 }) {
   return (
-    <section
-      className={`
-        rounded-lg border border-slate-200
-        bg-slate-50 p-3
-        dark:border-[#2b3957]
-        dark:bg-[#0d172a]
-        ${className}
-      `}
-    >
-      <div className="mb-3 flex items-start gap-2.5">
-        <div
-          className="
-            flex h-8 w-8 shrink-0
-            items-center justify-center
-            rounded-lg border
-            border-blue-200 bg-blue-50
-            text-blue-700
-            dark:border-blue-800/70
-            dark:bg-blue-950/25
-            dark:text-blue-300
-          "
-        >
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <h2 className={styles.panelTitle}>
           {icon}
-        </div>
+          {title}
+        </h2>
+      </div>
+      {children}
+    </section>
+  );
+}
 
+export default async function VerClientePage({ params }: Props) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (user.rol !== "admin") redirect(`/${user.rol}`);
+  const cliente = await obtenerClientePorId(params.id);
+  if (!cliente) notFound();
+  const estado = status(cliente.estado);
+  const planTypes: Record<string, string> = {
+    residencial: "Residencial",
+    comercial: "Comercial",
+    corporativo: "Corporativo",
+    dedicado: "Dedicado",
+    otro: "Otro",
+  };
+
+  return (
+    <div className={styles.page}>
+      <header className={`${styles.heading} flex-wrap`}>
         <div className="min-w-0">
-          <h2
-            className="
-              text-sm font-medium
-              text-slate-950 dark:text-white
-            "
-          >
-            {title}
-          </h2>
-
-          <p
-            className="
-              mt-0.5 text-[11px] leading-5
-              text-slate-500
-              dark:text-slate-400
-              sm:text-[12px]
-            "
-          >
-            {description}
+          <h1>Ver cliente</h1>
+          <p className={`${styles.description} [overflow-wrap:anywhere]`}>
+            {fullName(cliente)} · N° {cliente.numeroCliente}
           </p>
         </div>
-      </div>
-
-      <div className={innerPanelClass}>
-        {children}
-      </div>
-    </section>
-  );
-}
-
-function ClienteDetails({
-  cliente,
-}: {
-  cliente: ClienteSafe;
-}) {
-  const nombreCompleto = getNombreCompleto(cliente);
-
-  return (
-    <section className={panelClass}>
-      <div
-        className="
-          border-b border-slate-200
-          bg-slate-50/80 px-3 py-3
-          dark:border-[#263451]
-          dark:bg-[#0e172a]
-          sm:px-4
-        "
-      >
-        <div className="flex min-h-12 items-center">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2.5">
-              <FileText
-                className="
-                  h-5 w-5 shrink-0
-                  text-blue-700
-                  dark:text-blue-300
-                "
-              />
-
-              <h2
-                className="
-                  truncate text-base font-medium
-                  text-slate-950 dark:text-white
-                "
-              >
-                Datos del cliente
-              </h2>
-            </div>
-
-            <p
-              className="
-                mt-1 hidden max-w-3xl
-                truncate text-[12px] leading-5
-                text-slate-600
-                dark:text-slate-400
-                sm:block
-              "
-            >
-              Información personal, ubicación y servicio
-              contratado.
-            </p>
-
-            <p
-              className="
-                mt-1 truncate text-[11px]
-                text-slate-500
-                dark:text-slate-400
-                sm:hidden
-              "
-            >
-              Información personal y del servicio
-            </p>
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={`${styles.badge} ${estado.tone}`}>
+            {estado.label}
+          </span>
+          <Link href="/clientes" className={styles.button}>
+            <ArrowLeft aria-hidden="true" /> Volver a clientes
+          </Link>
         </div>
-      </div>
-
-      <div className="p-3 sm:p-4">
-        <div className="grid gap-3">
-          <div className="grid gap-3 xl:grid-cols-2">
-            <DetailSection
-              icon={<UserRound className="h-4 w-4" />}
+      </header>
+      <div className={styles.layout}>
+        <div className={styles.main}>
+          <div className="grid min-w-0 gap-[14px] min-[1000px]:grid-cols-2">
+            <Panel
               title="Datos personales"
-              description="Información registrada del titular."
+              icon={
+                <UserRound
+                  className="!inline-block !size-3.5 text-[var(--overview-blue)]"
+                  aria-hidden="true"
+                />
+              }
             >
-              <InfoRow
-                icon={<UserRound className="h-3.5 w-3.5" />}
-                label="Nombre completo"
-                value={nombreCompleto}
-                tone="primary"
-              />
-
-              <InfoRow
-                icon={<IdCard className="h-3.5 w-3.5" />}
-                label="DNI"
-                value={cliente.dni}
-              />
-
-              <InfoRow
-                icon={<Phone className="h-3.5 w-3.5" />}
-                label="Teléfono"
-                value={cliente.telefono}
-              />
-
-              <InfoRow
-                icon={<Mail className="h-3.5 w-3.5" />}
-                label="Email"
-                value={cliente.email}
-              />
-            </DetailSection>
-
-            <DetailSection
-              icon={<MapPin className="h-4 w-4" />}
+              <dl className="m-0 px-[14px] py-1">
+                <Info
+                  icon={<UserRound aria-hidden="true" />}
+                  label="Nombre completo"
+                  value={fullName(cliente)}
+                />
+                <Info
+                  icon={<IdCard aria-hidden="true" />}
+                  label="DNI"
+                  value={cliente.dni}
+                />
+                <Info
+                  icon={<Phone aria-hidden="true" />}
+                  label="Teléfono"
+                  value={cliente.telefono}
+                />
+                <Info
+                  icon={<Mail aria-hidden="true" />}
+                  label="Email"
+                  value={cliente.email}
+                />
+              </dl>
+            </Panel>
+            <Panel
               title="Domicilio"
-              description="Ubicación principal del servicio."
+              icon={
+                <MapPin
+                  className="!inline-block !size-3.5 text-violet-700 dark:text-violet-300"
+                  aria-hidden="true"
+                />
+              }
             >
-              <InfoRow
-                icon={<MapPin className="h-3.5 w-3.5" />}
-                label="Dirección"
-                value={cliente.direccion}
-                tone="primary"
-              />
-
-              <InfoRow
-                icon={<MapPin className="h-3.5 w-3.5" />}
-                label="Localidad"
-                value={cliente.localidad}
-              />
-
-              <InfoRow
-                icon={<MapPin className="h-3.5 w-3.5" />}
-                label="Provincia"
-                value={cliente.provincia}
-              />
-            </DetailSection>
+              <dl className="m-0 px-[14px] py-1">
+                <Info
+                  icon={<MapPin aria-hidden="true" />}
+                  label="Dirección"
+                  value={cliente.direccion}
+                />
+                <Info
+                  icon={<MapPin aria-hidden="true" />}
+                  label="Localidad"
+                  value={cliente.localidad}
+                />
+                <Info
+                  icon={<MapPin aria-hidden="true" />}
+                  label="Provincia"
+                  value={cliente.provincia}
+                />
+              </dl>
+            </Panel>
           </div>
-
-          <DetailSection
-            icon={<Wifi className="h-4 w-4" />}
+          <Panel
             title="Servicio contratado"
-            description="Plan, estado y fechas relacionadas con el servicio."
+            icon={
+              <Wifi
+                className="!inline-block !size-3.5 text-[var(--overview-green)]"
+                aria-hidden="true"
+              />
+            }
           >
-            <div className="grid md:grid-cols-2">
-              <div
-                className="
-                  border-b border-slate-200
-                  dark:border-[#263451]
-                  md:border-b-0
-                  md:border-r
-                "
-              >
-                <InfoRow
-                  icon={<Wifi className="h-3.5 w-3.5" />}
+            <div className="grid min-w-0 gap-[14px] p-[14px] min-[1000px]:grid-cols-[minmax(0,1fr)_220px]">
+              <dl className="m-0 grid min-w-0 gap-x-6 min-[700px]:grid-cols-2 min-[700px]:[&>div:nth-last-child(-n+2)]:border-b-0">
+                <Info
+                  icon={<Wifi aria-hidden="true" />}
                   label="Plan"
-                  value={
-                    cliente.plan?.nombre ||
-                    "Sin plan asignado"
-                  }
-                  tone={
-                    cliente.plan
-                      ? "primary"
-                      : "warning"
-                  }
-                  dotClass={
-                    cliente.plan
-                      ? "bg-blue-500"
-                      : "bg-amber-500"
-                  }
+                  value={cliente.plan?.nombre || "Sin plan asignado"}
                 />
-
-                <InfoRow
-                  icon={<Wifi className="h-3.5 w-3.5" />}
+                <Info
+                  icon={<Wifi aria-hidden="true" />}
                   label="Tipo"
-                  value={cliente.plan?.tipo}
-                />
-
-                <InfoRow
-                  icon={<FileText className="h-3.5 w-3.5" />}
-                  label="Importe"
                   value={
                     cliente.plan
-                      ? formatMoney(cliente.plan.importe)
-                      : "-"
-                  }
-                  tone={
-                    cliente.plan
-                      ? "primary"
-                      : "neutral"
+                      ? planTypes[cliente.plan.tipo] || cliente.plan.tipo
+                      : null
                   }
                 />
-              </div>
-
-              <div>
-                <InfoRow
-                  icon={<CheckCircle2 className="h-3.5 w-3.5" />}
-                  label="Estado"
-                  value={estadoLabel(cliente.estado)}
-                  tone={estadoTone(cliente.estado)}
-                  dotClass={estadoDotClass(cliente.estado)}
-                />
-
-                <InfoRow
-                  icon={<CalendarDays className="h-3.5 w-3.5" />}
+                <Info
+                  icon={<CalendarDays aria-hidden="true" />}
                   label="Fecha de alta"
-                  value={formatDate(cliente.fechaAlta)}
+                  value={date(cliente.fechaAlta)}
                 />
-
-                <InfoRow
-                  icon={<CalendarDays className="h-3.5 w-3.5" />}
+                <Info
+                  icon={<CalendarDays aria-hidden="true" />}
                   label="Último cambio de plan"
                   value={
-                    cliente.ultimoCambioPlan ||
-                    "Sin cambios registrados"
+                    cliente.ultimoCambioPlan
+                      ? date(cliente.ultimoCambioPlan)
+                      : "Sin cambios registrados"
                   }
                 />
+              </dl>
+              <div className="flex min-w-0 flex-col justify-center gap-2 rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-green-tint)] p-[14px]">
+                <p className="text-[11px] text-[var(--overview-muted)]">
+                  Importe del plan
+                </p>
+                <p className="text-[22px] leading-[1.3] tabular-nums text-[var(--overview-green)] [overflow-wrap:anywhere]">
+                  {cliente.plan ? money(cliente.plan.importe) : "—"}
+                </p>
+                {cliente.plan && (
+                  <span className="text-[10px] text-[var(--overview-muted)]">
+                    {cliente.plan.estado === "activo"
+                      ? "Plan activo"
+                      : "Plan inactivo"}
+                  </span>
+                )}
               </div>
             </div>
-
-            <div
-              className="
-                border-t border-slate-200
-                px-3 py-2.5
-                dark:border-[#263451]
-              "
-            >
-              <p
-                className="
-                  text-[10px] font-medium
-                  uppercase tracking-[0.08em]
-                  text-slate-500
-                  dark:text-slate-400
-                "
-              >
+            <div className="border-t border-[var(--overview-border)] px-[14px] py-3">
+              <h3 className="text-[11px] font-normal text-[var(--overview-muted)]">
                 Detalle del plan
-              </p>
-
-              <p
-                className="
-                  mt-1 text-[12px] leading-5
-                  text-slate-600
-                  dark:text-slate-300
-                "
-              >
+              </h3>
+              <p className="mt-1 whitespace-pre-wrap text-[12px] leading-[1.7] [overflow-wrap:anywhere]">
                 {cliente.plan?.detalle ||
-                  "Sin detalle disponible."}
+                  (cliente.plan
+                    ? "Sin descripción adicional."
+                    : "El cliente no tiene un plan asignado.")}
               </p>
             </div>
-          </DetailSection>
+          </Panel>
         </div>
-
-        <div
-          className="
-            mt-3 grid grid-cols-2 gap-2
-            sm:flex sm:justify-end
-          "
-        >
-          <Link
-            href={`/clientes/${cliente.id}/estado-cuenta`}
-            className={secondaryButtonClass}
+        <aside className="grid min-w-0 content-start gap-[14px]">
+          <Panel
+            title="Accesos rápidos"
+            icon={<ArrowRight aria-hidden="true" />}
           >
-            <ReceiptText className="h-3.5 w-3.5 shrink-0" />
-
-            <span className="text-[12px] leading-none">
-              Estado de cuenta
-            </span>
-          </Link>
-
-          <Link
-            href={`/clientes/${cliente.id}/editar`}
-            className={primaryButtonClass}
-          >
-            <Pencil
-              className="
-                h-3.5 w-3.5 shrink-0
-                !text-white
-              "
-            />
-
-            <span
-              className="
-                text-[12px] leading-none
-                !text-white
-              "
-            >
-              Editar cliente
-            </span>
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ResumenCliente({
-  cliente,
-}: {
-  cliente: ClienteSafe;
-}) {
-  return (
-    <section className={`${panelClass} p-4`}>
-      <div className="flex items-center gap-2">
-        <UserRound
-          className="
-            h-4 w-4 text-blue-700
-            dark:text-blue-300
-          "
-        />
-
-        <h2
-          className="
-            text-sm font-medium
-            text-slate-950 dark:text-white
-          "
-        >
-          Resumen del cliente
-        </h2>
-      </div>
-
-      <div className={`mt-3 ${innerPanelClass}`}>
-        <InfoRow
-          icon={<FileText className="h-3.5 w-3.5" />}
-          label="Número"
-          value={cliente.numeroCliente}
-          tone="primary"
-          dotClass="bg-blue-500"
-        />
-
-        <InfoRow
-          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
-          label="Estado"
-          value={estadoLabel(cliente.estado)}
-          tone={estadoTone(cliente.estado)}
-          dotClass={estadoDotClass(cliente.estado)}
-        />
-
-        <InfoRow
-          icon={<Wifi className="h-3.5 w-3.5" />}
-          label="Plan"
-          value={cliente.plan?.nombre || "Sin plan"}
-          tone={cliente.plan ? "success" : "warning"}
-          dotClass={
-            cliente.plan
-              ? "bg-emerald-500"
-              : "bg-amber-500"
-          }
-        />
-
-        <InfoRow
-          icon={<ReceiptText className="h-3.5 w-3.5" />}
-          label="Importe"
-          value={
-            cliente.plan
-              ? formatMoney(cliente.plan.importe)
-              : "-"
-          }
-          tone={cliente.plan ? "primary" : "neutral"}
-        />
-
-        <InfoRow
-          icon={<Phone className="h-3.5 w-3.5" />}
-          label="Teléfono"
-          value={cliente.telefono}
-        />
-
-        <InfoRow
-          icon={<MapPin className="h-3.5 w-3.5" />}
-          label="Ubicación"
-          value={`${cliente.localidad || "-"}, ${
-            cliente.provincia || "-"
-          }`}
-        />
-      </div>
-    </section>
-  );
-}
-
-function AccionesCliente({
-  cliente,
-}: {
-  cliente: ClienteSafe;
-}) {
-  const actions = [
-    {
-      label: "Estado de cuenta",
-      description: "Facturas y movimientos",
-      href: `/clientes/${cliente.id}/estado-cuenta`,
-      icon: ReceiptText,
-    },
-    {
-      label: "Editar cliente",
-      description: "Modificar datos y servicio",
-      href: `/clientes/${cliente.id}/editar`,
-      icon: Pencil,
-    },
-  ];
-
-  return (
-    <section className={`${panelClass} hidden p-4 xl:block`}>
-      <div className="flex items-center gap-2">
-        <CheckCircle2
-          className="
-            h-4 w-4 text-blue-700
-            dark:text-blue-300
-          "
-        />
-
-        <h2
-          className="
-            text-sm font-medium
-            text-slate-950 dark:text-white
-          "
-        >
-          Acciones del cliente
-        </h2>
-      </div>
-
-      <div className="mt-3 grid gap-2">
-        {actions.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="
-                group flex items-center
-                justify-between gap-3
-                rounded-lg border
-                border-slate-200
-                bg-slate-50 px-3 py-2.5
-                transition
-                hover:border-blue-300
-                hover:bg-blue-50
-                dark:border-[#2b3957]
-                dark:bg-[#0d172a]
-                dark:hover:border-blue-500/60
-                dark:hover:bg-[#16223c]
-              "
-            >
-              <div
-                className="
-                  flex min-w-0
-                  items-center gap-2.5
-                "
+            <div className={`${styles.sideBody} grid gap-2`}>
+              <Link
+                href={`/clientes/${cliente.id}/estado-cuenta`}
+                className={`${styles.button} !h-auto !justify-start !border-violet-200 !bg-violet-50 !py-[10px] !text-violet-700 hover:!bg-violet-100 dark:!border-violet-800 dark:!bg-violet-950/40 dark:!text-violet-300 dark:hover:!bg-violet-900/50`}
               >
-                <Icon
-                  className="
-                    h-4 w-4 shrink-0
-                    text-slate-500
-                    transition
-                    group-hover:text-blue-700
-                    dark:text-slate-400
-                    dark:group-hover:text-blue-300
-                  "
-                />
-
-                <div className="min-w-0">
-                  <p
-                    className="
-                      truncate text-[12px]
-                      font-medium
-                      text-slate-900
-                      dark:text-slate-100
-                    "
-                  >
-                    {item.label}
-                  </p>
-
-                  <p
-                    className="
-                      truncate text-[10px]
-                      text-slate-500
-                      dark:text-slate-400
-                    "
-                  >
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-
-              <ArrowRight
-                className="
-                  h-3.5 w-3.5 shrink-0
-                  text-slate-400
-                  transition
-                  group-hover:translate-x-0.5
-                  group-hover:text-blue-700
-                  dark:group-hover:text-blue-300
-                "
-              />
-            </Link>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-export default async function VerClientePage({
-  params,
-}: VerClientePageProps) {
-  const cliente = await obtenerClientePorId(params.id);
-
-  if (!cliente) {
-    notFound();
-  }
-
-  return (
-    <PageShell
-      maxWidth="wide"
-      className="pb-20 lg:pb-6"
-    >
-      <DashboardGrid>
-        <DashboardMain>
-          <PageHeader cliente={cliente} />
-
-          <div className="mt-3">
-            <ClienteDetails cliente={cliente} />
-          </div>
-        </DashboardMain>
-
-        <div className="hidden lg:block">
-          <DashboardAside>
-            <ResumenCliente cliente={cliente} />
-
-            <div className="mt-3">
-              <AccionesCliente cliente={cliente} />
+                <ReceiptText aria-hidden="true" />
+                <span className="flex-1">Estado de cuenta</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link
+                href={`/clientes/${cliente.id}/editar`}
+                className={`${styles.button} !h-auto !justify-start !border-amber-200 !bg-amber-50 !py-[10px] !text-amber-800 hover:!bg-amber-100 dark:!border-amber-800 dark:!bg-amber-950/40 dark:!text-amber-300 dark:hover:!bg-amber-900/50`}
+              >
+                <Pencil aria-hidden="true" />
+                <span className="flex-1">Editar cliente</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
             </div>
-          </DashboardAside>
-        </div>
-      </DashboardGrid>
-    </PageShell>
+          </Panel>
+        </aside>
+      </div>
+    </div>
   );
 }

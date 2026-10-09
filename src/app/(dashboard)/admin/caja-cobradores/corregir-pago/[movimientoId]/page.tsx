@@ -409,11 +409,11 @@ function DataLine({
 }
 
 function HeaderCorreccionPago({
-  movimientoId,
+  cobradorId,
   numeroComprobante,
   importeRegistrado,
 }: {
-  movimientoId: string;
+  cobradorId: string;
   numeroComprobante: string | number;
   importeRegistrado: number;
 }) {
@@ -441,10 +441,10 @@ function HeaderCorreccionPago({
         </div>
 
         <Link
-          href={`/comprobantes/pagos/${movimientoId}`}
-          className="hidden h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+          href={`/admin/caja-cobradores/${cobradorId}`}
+          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900"
         >
-          Volver
+          Volver a la caja
           <ArrowRight className="h-3.5 w-3.5 rotate-180" />
         </Link>
       </div>
@@ -673,7 +673,7 @@ export default async function CorregirPagoPage({
       <DashboardGrid>
         <DashboardMain>
           <HeaderCorreccionPago
-            movimientoId={contexto.movimientoId}
+            cobradorId={contexto.cobradorId}
             numeroComprobante={contexto.numeroComprobante}
             importeRegistrado={contexto.importeRegistrado}
           />

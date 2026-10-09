@@ -2,11 +2,50 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Tailwind y las vistas comparten la misma familia tipográfica. */
+@theme inline {
+  --font-sans: var(--font-google-sans-flex, Arial), sans-serif;
+}
+
+/* Pesos globales, sin ajustes por pantalla. */
+@theme {
+  --font-weight-thin: 200;
+  --font-weight-extralight: 250;
+  --font-weight-light: 350;
+  --font-weight-normal: 400;
+  --font-weight-medium: 475;
+  --font-weight-semibold: 575;
+  --font-weight-bold: 650;
+  --font-weight-extrabold: 725;
+  --font-weight-black: 800;
+}
+
+/* Los estilos globales quedan debajo de las utilidades de Tailwind. */
+@layer base {
 :root {
+  /* Colores compartidos del dashboard. */
+  --overview-bg: #f2f4f7;
+  --overview-panel: #ffffff;
+  --overview-text: #263244;
+  --overview-muted: #586779;
+  --overview-border: #d4dce5;
+  --overview-blue: #2254b8;
+  --overview-soft: #eaf0fb;
+  --overview-green: #176744;
+  --overview-green-bg: #eaf6ef;
+  --overview-amber: #86530d;
+  --overview-amber-bg: #fff4df;
+  --overview-header: #f3f7fd;
+  --overview-button: #f4f7fb;
+  --overview-green-accent: #168060;
+  --overview-green-tint: #edf8f2;
+  --overview-amber-accent: #b77712;
+  --overview-amber-tint: #fff7e8;
+  --overview-blue-accent: #3571d4;
+  --overview-blue-tint: #eef4ff;
+
   --font-app:
-    var(--font-roboto-flex),
-    "Segoe UI",
-    Arial,
+    var(--font-google-sans-flex, Arial),
     sans-serif;
 
   --background: #f3f4f6;
@@ -65,6 +104,26 @@
 }
 
 .dark {
+  --overview-bg: #101722;
+  --overview-panel: #182230;
+  --overview-text: #e5ecf5;
+  --overview-muted: #a6b5c8;
+  --overview-border: #344256;
+  --overview-blue: #8db6ff;
+  --overview-soft: #243957;
+  --overview-green: #89d3ad;
+  --overview-green-bg: #203c30;
+  --overview-amber: #efd08c;
+  --overview-amber-bg: #413522;
+  --overview-header: #1b293b;
+  --overview-button: #1d2b3d;
+  --overview-green-accent: #49c99a;
+  --overview-green-tint: #19342f;
+  --overview-amber-accent: #e4b45b;
+  --overview-amber-tint: #353022;
+  --overview-blue-accent: #78a9fa;
+  --overview-blue-tint: #1c3050;
+
   --background: #111827;
   --foreground: #e5e7eb;
 
@@ -137,12 +196,9 @@ html {
 
   font-family: var(--font-app);
 
-  /*
-    Roboto Flex se utiliza levemente condensada
-    para mejorar la densidad y evitar una apariencia
-    demasiado ancha en tablas y paneles.
-  */
-  font-stretch: 92%;
+  /* Ancho natural y tamaño óptico adaptado al texto. */
+  font-stretch: normal;
+  font-optical-sizing: auto;
 
   /*
     Se mantiene el renderizado nativo del navegador
@@ -184,7 +240,6 @@ body {
   font-family: var(--font-app);
   font-size: 14px;
   font-weight: 400;
-  font-stretch: 92%;
   line-height: 1.5;
 }
 
@@ -209,7 +264,6 @@ select,
 textarea {
   font: inherit;
   font-family: inherit;
-  font-stretch: inherit;
   letter-spacing: 0;
 }
 
@@ -307,7 +361,6 @@ b {
   font-family: var(--font-app);
   font-size: 0.875rem;
   font-weight: 400;
-  font-stretch: 94%;
 
   color:
     var(--app-text-strong);
@@ -357,7 +410,6 @@ b {
   font-family: var(--font-app);
   font-size: 0.875rem;
   font-weight: 400;
-  font-stretch: 94%;
 
   color:
     var(--app-text-strong);
@@ -392,7 +444,6 @@ b {
 .app-label {
   font-size: 0.8125rem;
   font-weight: 575;
-  font-stretch: 93%;
 
   color:
     var(--app-text);
@@ -453,11 +504,7 @@ b {
   }
 }
 
-/*
-  Roboto Flex admite valores intermedios.
-  Se bajan ligeramente los pesos para evitar
-  que los textos parezcan gruesos o con sombra.
-*/
+/* Compatibilidad con los pesos que utilizan las vistas existentes. */
 .font-thin {
   font-weight: 200;
 }
@@ -494,49 +541,10 @@ b {
   font-weight: 800;
 }
 
-/*
-  Los textos pequeños se condensan ligeramente más
-  para mejorar encabezados, menús y datos secundarios.
-*/
-.text-\[9px\],
-.text-\[10px\],
-.text-\[11px\],
-.text-xs {
-  font-stretch: 90%;
-  text-rendering: auto;
-  font-synthesis: none;
-}
-
-/*
-  Títulos y textos de tamaño medio.
-*/
-.text-sm,
-.text-base,
-.text-lg {
-  font-stretch: 92%;
-}
-
-/*
-  Los números conservan un ancho un poco mayor
-  para que importes y métricas sigan siendo claros.
-*/
+/* Alineación de cifras en importes y métricas. */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1;
-  font-stretch: 95%;
-}
-
-/*
-  Valores grandes y métricas.
-*/
-.text-\[20px\],
-.text-\[21px\],
-.text-\[22px\],
-.text-\[23px\],
-.text-\[24px\],
-.text-xl,
-.text-2xl {
-  font-stretch: 94%;
 }
 
 .rounded-\[1\.45rem\],
@@ -807,4 +815,5 @@ textarea::placeholder {
     box-shadow:
       none !important;
   }
+}
 }
