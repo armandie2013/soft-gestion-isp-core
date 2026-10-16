@@ -2556,6 +2556,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { EstadoCuentaCalendario } from "@/components/tables/EstadoCuentaCalendario";
+import { MovimientosCuentaAgrupados } from "@/components/tables/MovimientosCuentaAgrupados";
 import { cajaStyles as styles } from "@/components/ui/dashboard-styles";
 import { getCurrentUser } from "@/lib/current-user";
 import { obtenerClientePorId } from "@/services/cliente.service";
@@ -2580,6 +2581,25 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
       {children}
     </section>
   );
+}
+function labelMovimiento(tipo: string) {
+  const labels: Record<string, string> = {
+    factura: "Factura",
+    nota_debito: "Nota de débito",
+    nota_credito: "Nota de crédito",
+    pago: "Pago",
+    ajuste: "Ajuste",
+  };
+  return labels[tipo] || tipo;
+}
+function formatMovementDate(value: string) {
+  if (!value) return "—";
+  return new Intl.DateTimeFormat("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(value));
 }
 function Metric({
   label,
@@ -2680,6 +2700,84 @@ export default async function EstadoCuentaPage({ params }: Props) {
       tone: styles.blue,
     },
   ];
+  const movimientos = [...cuenta.movimientos].sort(
+    (a, b) =>
+      new Date(b.fecha).getTime() - new Date(a.fecha).getTime() ||
+      b.numeroComprobante - a.numeroComprobante,
+  );
+  const instalacion = cliente.instalacion;
+  const cuotasInstalacion = (() => {
+    if (
+      !instalacion?.habilitada ||
+      !/^\d{4}-(0[1-9]|1[0-2])$/.test(instalacion.periodoInicio)
+    ) {
+      return [];
+    }
+    const [startYear, startMonth] = instalacion.periodoInicio
+      .split("-")
+      .map(Number);
+    const count = Math.min(36, Math.max(1, Number(instalacion.cantidadCuotas) || 1));
+    const totalCents = Math.round(Number(instalacion.importeTotal || 0) * 100);
+    const baseCents = Math.floor(totalCents / count);
+    const remainderCents = totalCents % count;
+    return Array.from({ length: count }, (_, index) => {
+      const date = new Date(startYear, startMonth - 1 + index, 15);
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const movimiento = movimientos.find(
+        (item) =>
+          item.tipoCargo === "instalacion" &&
+          item.referenciaMes === month &&
+          item.referenciaAnio === year,
+      );
+      const periodoCuenta = movimiento
+        ? cuenta.periodos.find(
+            (periodo) => periodo.facturaId === movimiento.facturaAsociadaId,
+          )
+        : null;
+      const periodLabel = new Intl.DateTimeFormat("es-AR", {
+        timeZone: "America/Argentina/Buenos_Aires",
+        month: "long",
+        year: "numeric",
+      }).format(date);
+      const due = year < currentYear || (year === currentYear && month <= currentMonth);
+      const status = movimiento
+        ? periodoCuenta?.estadoPeriodo === "cancelado"
+          ? "Emitida · período saldado"
+          : periodoCuenta?.estadoPeriodo === "a_favor"
+            ? "Emitida · período con saldo a favor"
+            : periodoCuenta
+              ? "Emitida · período con saldo pendiente"
+              : "Cargo emitido"
+        : due
+          ? "Pendiente de facturar"
+          : "Programada";
+      return {
+        index,
+        month,
+        year,
+        periodLabel: periodLabel.charAt(0).toLocaleUpperCase("es-AR") + periodLabel.slice(1),
+        amount: movimiento?.debe ??
+          (baseCents + (index < remainderCents ? 1 : 0)) / 100,
+        movement: movimiento,
+        status,
+        tone: movimiento
+          ? periodoCuenta?.estadoPeriodo === "cancelado"
+            ? styles.green
+            : periodoCuenta?.estadoPeriodo === "a_favor"
+              ? styles.blue
+              : "text-red-700 dark:text-red-300"
+          : due
+            ? "text-amber-700 dark:text-amber-300"
+            : styles.blue,
+      };
+    });
+  })();
+  const cuotasPendientesInstalacion = cuotasInstalacion.filter((cuota) => {
+    const estado = cuota.status.toLocaleLowerCase("es-AR");
+    return !estado.includes("período saldado") && !estado.includes("período con saldo a favor");
+  });
+
   return (
     <div className={styles.page}>
       <header className={`${styles.heading} flex-wrap`}>
@@ -2734,6 +2832,45 @@ export default async function EstadoCuentaPage({ params }: Props) {
             periodos={cuenta.periodos}
             currentYear={currentYear}
             currentMonth={currentMonth}
+            planInstalacion={cuotasPendientesInstalacion.length ? (
+              <Panel title="Plan de cuotas de instalación">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[460px] text-left text-[11px]">
+                    <thead className="border-b border-[var(--overview-border)] text-[var(--overview-muted)]">
+                      <tr>
+                        <th className="px-3 py-2 font-normal">Cuota</th>
+                        <th className="px-3 py-2 font-normal">Período</th>
+                        <th className="px-3 py-2 text-right font-normal">Importe</th>
+                        <th className="px-3 py-2 font-normal">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cuotasPendientesInstalacion.map((cuota) => (
+                        <tr key={`${cuota.year}-${cuota.month}`} className="border-b border-[var(--overview-border)] last:border-b-0">
+                          <td className="whitespace-nowrap px-3 py-2.5">{cuota.index + 1}/{cuotasInstalacion.length}</td>
+                          <td className="whitespace-nowrap px-3 py-2.5">{cuota.periodLabel}</td>
+                          <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums">{money(cuota.amount)}</td>
+                          <td className="px-3 py-2.5">
+                            <span className={cuota.tone}>
+                              {cuota.status}
+                              {cuota.movement ? ` · Comp. ${cuota.movement.numeroComprobante}` : ""}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="px-3 py-2 text-[10px] leading-[1.6] text-[var(--overview-muted)]">
+                    {instalacion?.concepto || "Instalación"} · Total acordado: {money(instalacion?.importeTotal || 0)}. Las cuotas pagadas se retiran automáticamente de este plan.
+                  </p>
+                </div>
+              </Panel>
+            ) : null}
+            movimientos={(
+              <Panel title="Movimientos de la cuenta">
+                <MovimientosCuentaAgrupados movimientos={movimientos} />
+              </Panel>
+            )}
           />
         </div>
         <aside className="grid min-w-0 content-start gap-[14px] min-[700px]:grid-cols-2 min-[1500px]:grid-cols-1">

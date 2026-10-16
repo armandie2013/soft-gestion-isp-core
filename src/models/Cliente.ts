@@ -199,6 +199,20 @@ const ClienteSchema = new Schema(
       index: true,
     },
 
+    instalacion: {
+      type: new Schema(
+        {
+          habilitada: { type: Boolean, default: false },
+          concepto: { type: String, trim: true, default: "Instalación" },
+          importeTotal: { type: Number, min: 0, default: 0 },
+          cantidadCuotas: { type: Number, min: 1, max: 36, default: 1 },
+          periodoInicio: { type: String, trim: true, default: "" },
+        },
+        { _id: false },
+      ),
+      default: () => ({}),
+    },
+
     fechaAlta: {
       type: Date,
       required: true,

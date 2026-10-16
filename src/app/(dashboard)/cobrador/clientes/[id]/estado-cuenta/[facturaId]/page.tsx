@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   ArrowDownLeft,
   ArrowUpRight,
+  ChevronDown,
   FileText,
   ReceiptText,
   UserRound,
@@ -73,7 +74,7 @@ function getEstadoPeriodoBadge(estado: string) {
 function getImpacto(movimiento: MovimientoFinancieroSafe) {
   if (movimiento.debe > 0) {
     return {
-      label: "Suma",
+      label: "Debe",
       value: movimiento.debe,
       sign: "+",
       className: "text-red-700 dark:text-red-300",
@@ -83,9 +84,9 @@ function getImpacto(movimiento: MovimientoFinancieroSafe) {
 
   if (movimiento.haber > 0) {
     return {
-      label: "Resta",
+      label: "Haber",
       value: movimiento.haber,
-      sign: "-",
+      sign: "−",
       className: "text-emerald-700 dark:text-emerald-300",
       icon: <ArrowDownLeft className="h-4 w-4" />,
     };
@@ -95,7 +96,7 @@ function getImpacto(movimiento: MovimientoFinancieroSafe) {
     label: "Sin impacto",
     value: 0,
     sign: "",
-    className: "text-slate-500 dark:text-slate-400",
+    className: "text-[var(--overview-muted)]",
     icon: <FileText className="h-4 w-4" />,
   };
 }
@@ -112,23 +113,21 @@ function ResumenItem({
   variant?: "default" | "success" | "danger";
 }) {
   const valueClass = {
-    default: "text-slate-950 dark:text-white",
+    default: "text-[var(--overview-text)]",
     success: "text-emerald-700 dark:text-emerald-300",
     danger: "text-red-700 dark:text-red-300",
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/60">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+    <div className="min-w-0 rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-panel)] px-3 py-2.5">
+      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--overview-muted)]">
         {label}
       </p>
-
-      <p className={`mt-1 text-lg font-semibold ${valueClass[variant]}`}>
+      <p className={`mt-1 truncate text-[14px] font-semibold tabular-nums ${valueClass[variant]}`}>
         {value}
       </p>
-
       {helper ? (
-        <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+        <p className="mt-0.5 text-[10px] leading-4 text-[var(--overview-muted)]">
           {helper}
         </p>
       ) : null}
@@ -148,209 +147,222 @@ export default async function DetallePeriodoCobradorPage({
     notFound();
   }
 
-  const saldoPendiente = detalle.periodo.saldoPeriodo > 0;
+  const saldo = Number(detalle.periodo.saldoPeriodo || 0);
+  const saldoPendiente = saldo > 0;
 
   return (
-    <section className="mx-auto w-full max-w-7xl space-y-4">
-      <div className="rounded-[1.6rem] border border-slate-200 bg-white/85 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/75 sm:p-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-800 dark:border-cyan-900/70 dark:bg-cyan-950/40 dark:text-cyan-200">
-              <FileText className="h-3.5 w-3.5" />
-              Factura N° {detalle.periodo.numeroComprobante}
+    <section className="mx-auto w-full max-w-7xl space-y-3 text-[var(--overview-text)]">
+      <div className="overflow-hidden rounded-[10px] border border-[var(--overview-border)] bg-[var(--overview-panel)] shadow-sm">
+        <header className="flex flex-col gap-3 border-b border-[var(--overview-border)] bg-[var(--overview-header)] px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4">
+          <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[9px] border border-[var(--overview-border)] bg-[var(--overview-blue-tint)] text-[var(--overview-blue)] shadow-sm">
+              <UserRound className="h-5 w-5" />
             </div>
-
-            <div className="mt-4 flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white dark:bg-cyan-500 dark:text-slate-950">
-                <UserRound className="h-5 w-5" />
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                  Detalle del período
-                </p>
-
-                <h1 className="mt-1 truncate text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-                  {detalle.periodo.periodoLabel}
-                </h1>
-
-                <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  {cliente.apellido}, {cliente.nombre} · DNI {cliente.dni}
-                </p>
-              </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--overview-blue-accent)]">
+                Estado de cuenta · Comprobante N° {detalle.periodo.numeroComprobante}
+              </p>
+              <h1 className="mt-1 text-[19px] font-semibold tracking-tight text-[var(--overview-text)] sm:text-[22px]">
+                Detalle del período
+              </h1>
+              <p className="mt-1 text-[12px] leading-5 text-[var(--overview-muted)]">
+                {detalle.periodo.periodoLabel} · {cliente.apellido}, {cliente.nombre} · DNI {cliente.dni}
+              </p>
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/60 sm:min-w-72">
+          <div className="flex items-center justify-between gap-4 border-t border-[var(--overview-border)] pt-3 sm:min-w-64 sm:justify-end sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+              <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[var(--overview-muted)]">
                 Saldo del período
               </p>
-
-              <p
-                className={`mt-1 text-2xl font-semibold tracking-tight ${
-                  saldoPendiente
-                    ? "text-red-700 dark:text-red-300"
-                    : "text-slate-950 dark:text-white"
-                }`}
-              >
-                {formatMoney(detalle.periodo.saldoPeriodo)}
+              <p className={`mt-0.5 text-xl font-semibold tabular-nums ${saldoPendiente ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
+                {formatMoney(saldo)}
               </p>
             </div>
+            {getEstadoPeriodoBadge(detalle.periodo.estadoPeriodo)}
+          </div>
+        </header>
 
-            <div className="flex flex-wrap gap-2">
-              {getEstadoPeriodoBadge(detalle.periodo.estadoPeriodo)}
-              <Badge variant="info">{detalle.periodo.periodoLabel}</Badge>
+        <section className="px-3 py-3 sm:px-4">
+          <div className="mb-2.5 flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-blue-tint)] text-[var(--overview-blue)]">
+              <WalletCards className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="text-[13px] font-semibold text-[var(--overview-text)]">
+                Composición del período
+              </h2>
+              <p className="text-[11px] text-[var(--overview-muted)]">
+                Factura, notas y pagos aplicados.
+              </p>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
-        <div className="mb-4 flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-            <WalletCards className="h-5 w-5" />
+          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+            <ResumenItem
+              label="Original"
+              value={formatMoney(detalle.periodo.importeOriginal)}
+              helper="Importe de la factura"
+            />
+            <ResumenItem
+              label="Créditos / pagos"
+              value={`− ${formatMoney(detalle.periodo.totalNotasCredito + detalle.periodo.totalPagos)}`}
+              helper="Importes descontados"
+              variant="success"
+            />
+            <ResumenItem
+              label="Notas débito"
+              value={`+ ${formatMoney(detalle.periodo.totalNotasDebito)}`}
+              helper="Importes agregados"
+              variant="danger"
+            />
+            <ResumenItem
+              label="Saldo período"
+              value={formatMoney(saldo)}
+              helper="Saldo final"
+              variant={saldoPendiente ? "danger" : "default"}
+            />
+          </div>
+        </section>
+
+        <section className="border-t border-[var(--overview-border)]">
+          <div className="flex items-center gap-2.5 border-b border-[var(--overview-border)] bg-[var(--overview-header)] px-3 py-3 sm:px-4">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-blue-tint)] text-[var(--overview-blue)]">
+              <FileText className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-[13px] font-semibold text-[var(--overview-text)]">
+                Detalle de movimientos
+              </h2>
+              <p className="mt-0.5 text-[11px] leading-4 text-[var(--overview-muted)]">
+                Factura base, notas asociadas y pagos aplicados a este período.
+              </p>
+            </div>
           </div>
 
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-              Resumen
-            </p>
+          <div className="p-2.5 md:hidden">
+            <div className="overflow-hidden rounded-[8px] border border-[var(--overview-border)] bg-[var(--overview-panel)]">
+              {detalle.movimientos.map((movimiento, index) => {
+                const impacto = getImpacto(movimiento);
 
-            <h2 className="mt-1 text-base font-semibold text-slate-950 dark:text-white">
-              Composición del período
-            </h2>
-
-            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Factura base, créditos, débitos, pagos y saldo final.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <ResumenItem
-            label="Original"
-            value={formatMoney(detalle.periodo.importeOriginal)}
-            helper="Importe de la factura"
-          />
-
-          <ResumenItem
-            label="Créditos / pagos"
-            value={`- ${formatMoney(
-              detalle.periodo.totalNotasCredito + detalle.periodo.totalPagos,
-            )}`}
-            helper="Descuentos aplicados"
-            variant="success"
-          />
-
-          <ResumenItem
-            label="Notas débito"
-            value={`+ ${formatMoney(detalle.periodo.totalNotasDebito)}`}
-            helper="Importes sumados"
-            variant="danger"
-          />
-
-          <ResumenItem
-            label="Saldo período"
-            value={formatMoney(detalle.periodo.saldoPeriodo)}
-            helper="Saldo final"
-            variant={saldoPendiente ? "danger" : "default"}
-          />
-        </div>
-      </div>
-
-      <div className="rounded-[1.6rem] border border-slate-200 bg-white/80 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-5">
-        <div className="mb-4 flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-            <FileText className="h-5 w-5" />
-          </div>
-
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-              Movimientos
-            </p>
-
-            <h2 className="mt-1 text-base font-semibold text-slate-950 dark:text-white">
-              Detalle de movimientos
-            </h2>
-
-            <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Factura base, notas asociadas y pagos aplicados a este período.
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          {detalle.movimientos.map((movimiento) => {
-            const impacto = getImpacto(movimiento);
-
-            return (
-              <div
-                key={movimiento.id}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950/60"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge
-                        variant={
-                          getTipoVariant(movimiento.tipoMovimiento) as any
-                        }
-                      >
-                        {getTipoLabel(movimiento.tipoMovimiento)}
-                      </Badge>
-
-                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                        {formatDate(movimiento.fecha)} · Comp. N°{" "}
-                        {movimiento.numeroComprobante}
-                      </span>
+                return (
+                  <article
+                    key={movimiento.id}
+                    className={`grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-2 border-b border-[var(--overview-border)] px-3 py-3 last:border-b-0 ${index % 2 ? "bg-[var(--overview-bg)]/70" : "bg-[var(--overview-panel)]"}`}
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Badge variant={getTipoVariant(movimiento.tipoMovimiento) as any}>
+                          {getTipoLabel(movimiento.tipoMovimiento)}
+                        </Badge>
+                        <span className="text-[10px] text-[var(--overview-muted)]">
+                          {formatDate(movimiento.fecha)} · N° {movimiento.numeroComprobante}
+                        </span>
+                      </div>
+                      <p className="mt-1.5 text-[12px] font-medium leading-5 text-[var(--overview-text)]">
+                        {movimiento.concepto}
+                      </p>
+                      {movimiento.observacion ? (
+                        <p className="mt-0.5 text-[10px] leading-4 text-[var(--overview-muted)]">
+                          {movimiento.observacion}
+                        </p>
+                      ) : null}
                     </div>
 
-                    <p className="mt-2 text-sm font-semibold text-slate-950 dark:text-white">
-                      {movimiento.concepto}
-                    </p>
-
-                    {movimiento.observacion ? (
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                        {movimiento.observacion}
+                    <div className={`self-center text-right ${impacto.className}`}>
+                      <p className="text-[9px] uppercase tracking-[0.08em] text-[var(--overview-muted)]">
+                        {impacto.label}
                       </p>
-                    ) : null}
-                  </div>
-
-                  <div className="flex shrink-0 flex-col gap-2 sm:min-w-44">
-                    <div
-                      className={`flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80 ${impacto.className}`}
-                    >
-                      <div className="shrink-0">{impacto.icon}</div>
-
-                      <div className="text-right">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                          {impacto.label}
-                        </p>
-
-                        <p className="text-sm font-semibold">
-                          {impacto.value > 0
-                            ? `${impacto.sign} ${formatMoney(impacto.value)}`
-                            : "-"}
-                        </p>
-                      </div>
+                      <p className="mt-0.5 whitespace-nowrap text-[12px] font-semibold tabular-nums">
+                        {impacto.value > 0 ? `${impacto.sign} ${formatMoney(impacto.value)}` : "—"}
+                      </p>
                     </div>
 
                     {movimiento.tipoMovimiento === "pago" ? (
                       <Link
                         href={`/comprobantes/pagos/${movimiento.id}`}
-                        className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800 transition hover:bg-cyan-50 active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800"
+                        className="col-span-2 inline-flex h-8 items-center justify-center gap-1.5 rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-button)] px-3 text-[11px] font-medium text-[var(--overview-text)] transition hover:bg-[var(--overview-soft)]"
+                      >
+                        <ReceiptText className="h-3.5 w-3.5" />
+                        Ver comprobante
+                      </Link>
+                    ) : null}
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="hidden md:block">
+            <div className="grid grid-cols-[110px_minmax(180px,1fr)_120px_120px_150px_24px] items-center gap-3 border-b border-[var(--overview-border)] bg-[var(--overview-bg)] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--overview-muted)] lg:px-4">
+              <span>Fecha</span>
+              <span>Concepto</span>
+              <span>Tipo</span>
+              <span>Comprobante</span>
+              <span className="text-right">Impacto</span>
+              <span />
+            </div>
+
+            {detalle.movimientos.map((movimiento, index) => {
+              const impacto = getImpacto(movimiento);
+
+              return (
+                <details
+                  key={movimiento.id}
+                  className={`group border-b border-[var(--overview-border)] last:border-b-0 ${index % 2 ? "bg-[var(--overview-bg)]/65" : "bg-[var(--overview-panel)]"} open:bg-[var(--overview-soft)] hover:bg-[var(--overview-soft)]`}
+                >
+                  <summary className="grid min-h-[48px] cursor-pointer list-none grid-cols-[110px_minmax(180px,1fr)_120px_120px_150px_24px] items-center gap-3 px-3 py-2 [&::-webkit-details-marker]:hidden lg:px-4">
+                    <span className="text-[11px] tabular-nums text-[var(--overview-muted)]">
+                      {formatDate(movimiento.fecha)}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-[12px] font-medium text-[var(--overview-text)]">
+                        {movimiento.concepto}
+                      </span>
+                      {movimiento.observacion ? (
+                        <span className="mt-0.5 block truncate text-[10px] text-[var(--overview-muted)]">
+                          {movimiento.observacion}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span>
+                      <Badge variant={getTipoVariant(movimiento.tipoMovimiento) as any}>
+                        {getTipoLabel(movimiento.tipoMovimiento)}
+                      </Badge>
+                    </span>
+                    <span className="text-[11px] tabular-nums text-[var(--overview-muted)]">
+                      N° {movimiento.numeroComprobante}
+                    </span>
+                    <span className={`text-right text-[12px] font-semibold tabular-nums ${impacto.className}`}>
+                      {impacto.value > 0 ? `${impacto.sign} ${formatMoney(impacto.value)}` : "—"}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-[var(--overview-muted)] transition-transform group-open:rotate-180" />
+                  </summary>
+
+                  <div className="flex items-center justify-between gap-4 border-t border-[var(--overview-border)] bg-[var(--overview-panel)] px-4 py-2.5">
+                    <div className={`flex items-center gap-2 text-[11px] ${impacto.className}`}>
+                      {impacto.icon}
+                      <span>{impacto.label}</span>
+                      <span className="font-semibold tabular-nums">
+                        {impacto.value > 0 ? `${impacto.sign} ${formatMoney(impacto.value)}` : "Sin importe asociado"}
+                      </span>
+                    </div>
+                    {movimiento.tipoMovimiento === "pago" ? (
+                      <Link
+                        href={`/comprobantes/pagos/${movimiento.id}`}
+                        className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-button)] px-3 text-[11px] font-medium text-[var(--overview-text)] transition hover:bg-[var(--overview-soft)]"
                       >
                         <ReceiptText className="h-3.5 w-3.5" />
                         Ver comprobante
                       </Link>
                     ) : null}
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                </details>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </section>
   );

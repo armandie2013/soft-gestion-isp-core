@@ -1,24 +1,2199 @@
-// // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
+// // // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
 
-// import { notFound } from "next/navigation";
+// // import { notFound } from "next/navigation";
+// // import {
+// //   CalendarClock,
+// //   CheckCircle2,
+// //   IdCard,
+// //   KeyRound,
+// //   Mail,
+// //   ShieldCheck,
+// //   UserRound,
+// // } from "lucide-react";
+// // import { PageShell } from "@/components/ui/PageShell";
+// // import {
+// //   DashboardAside,
+// //   DashboardGrid,
+// //   DashboardMain,
+// // } from "@/components/ui/DashboardGrid";
+// // import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+// // import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+// // import { obtenerUsuarioPorId } from "@/services/usuario.service";
+
+// // type EditarUsuarioPageProps = {
+// //   params: {
+// //     id: string;
+// //   };
+// // };
+
+// // export const metadata = {
+// //   title: "Editar usuario",
+// // };
+
+// // type StatCardProps = {
+// //   title: string;
+// //   shortTitle?: string;
+// //   value: string;
+// //   description: string;
+// //   icon: typeof UserRound;
+// //   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
+// // };
+
+// // const toneClasses = {
+// //   cyan: "bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300",
+// //   emerald:
+// //     "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+// //   amber:
+// //     "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
+// //   red: "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300",
+// //   violet:
+// //     "bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
+// // };
+
+// // function StatCard({
+// //   title,
+// //   shortTitle,
+// //   value,
+// //   description,
+// //   icon: Icon,
+// //   tone,
+// // }: StatCardProps) {
+// //   return (
+// //     <div className="flex h-full min-h-[78px] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-2.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/75 sm:min-h-[104px] sm:rounded-[1.35rem] sm:p-3">
+// //       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
+// //         <div
+// //           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10 sm:rounded-2xl ${toneClasses[tone]}`}
+// //         >
+// //           <Icon className="h-4 w-4" />
+// //         </div>
+
+// //         <div className="min-w-0">
+// //           <p className="truncate text-[9px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400 sm:text-[10px] sm:tracking-[0.15em]">
+// //             <span className="sm:hidden">{shortTitle || title}</span>
+// //             <span className="hidden sm:inline">{title}</span>
+// //           </p>
+
+// //           <p className="mt-0.5 truncate text-[15px] font-medium leading-none tracking-tight text-slate-950 dark:text-white sm:mt-1 sm:text-lg">
+// //             {value}
+// //           </p>
+
+// //           <p className="mt-1 hidden text-xs leading-5 text-slate-600 dark:text-slate-400 sm:block">
+// //             {description}
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function rolLabel(rol: string) {
+// //   if (rol === "admin") return "Admin";
+// //   if (rol === "cobrador") return "Cobrador";
+// //   return "Cliente";
+// // }
+
+// // function estadoLabel(estado: string) {
+// //   if (estado === "activo") return "Activo";
+// //   return "Suspendido";
+// // }
+
+// // function formatDate(value?: string | null) {
+// //   if (!value) return "Sin fecha";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) {
+// //     return "Sin fecha";
+// //   }
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+
+// //   return `${day}/${month}/${year}`;
+// // }
+
+// // function formatDateTime(value?: string | null) {
+// //   if (!value) return "Nunca";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) {
+// //     return "Nunca";
+// //   }
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+
+// //   let hours = date.getHours();
+// //   const minutes = String(date.getMinutes()).padStart(2, "0");
+// //   const period = hours >= 12 ? "p. m." : "a. m.";
+
+// //   hours = hours % 12;
+// //   hours = hours === 0 ? 12 : hours;
+
+// //   return `${day}/${month}/${year}, ${String(hours).padStart(
+// //     2,
+// //     "0",
+// //   )}:${minutes} ${period}`;
+// // }
+
+// // export default async function EditarUsuarioPage({
+// //   params,
+// // }: EditarUsuarioPageProps) {
+// //   const usuario = await obtenerUsuarioPorId(params.id);
+
+// //   if (!usuario) {
+// //     notFound();
+// //   }
+
+// //   return (
+// //     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+// //       <div className="grid grid-cols-4 items-stretch gap-2 sm:grid-cols-2 sm:gap-3 xl:grid-cols-5">
+// //         <StatCard
+// //           title="Usuario"
+// //           value={rolLabel(usuario.rol)}
+// //           description="Rol actual del usuario."
+// //           icon={UserRound}
+// //           tone="cyan"
+// //         />
+
+// //         <StatCard
+// //           title="Estado"
+// //           value={estadoLabel(usuario.estado)}
+// //           description="Estado de acceso al sistema."
+// //           icon={CheckCircle2}
+// //           tone={usuario.estado === "activo" ? "emerald" : "red"}
+// //         />
+
+// //         <StatCard
+// //           title="Seguridad"
+// //           shortTitle="Clave"
+// //           value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
+// //           description="Estado de la contraseña."
+// //           icon={KeyRound}
+// //           tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
+// //         />
+
+// //         <StatCard
+// //           title="DNI"
+// //           value={usuario.dni || "-"}
+// //           description="Documento registrado."
+// //           icon={IdCard}
+// //           tone="violet"
+// //         />
+
+// //         <div className="hidden xl:block">
+// //           <StatCard
+// //             title="Creado"
+// //             value={formatDate(usuario.creadoEn)}
+// //             description="Fecha de alta del usuario."
+// //             icon={CalendarClock}
+// //             tone="amber"
+// //           />
+// //         </div>
+// //       </div>
+
+// //       <DashboardGrid>
+// //         <DashboardMain>
+// //           <div className="rounded-[1.45rem] border border-slate-200 bg-white/80 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+// //             <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+// //               Usuarios
+// //             </p>
+
+// //             <h1 className="mt-0.5 text-base font-medium tracking-tight text-slate-950 dark:text-white">
+// //               Editar usuario
+// //             </h1>
+
+// //             <p className="mt-1 hidden max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400 sm:block">
+// //               Modificá datos básicos, rol, estado de acceso, seguridad y
+// //               configuración operativa del usuario registrado.
+// //             </p>
+// //           </div>
+
+// //           <EditarUsuarioForm usuario={usuario} />
+
+// //           <div className="rounded-[1.45rem] border border-slate-200 bg-white/80 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-3.5">
+// //             <div className="mb-3 flex items-start gap-3">
+// //               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+// //                 <KeyRound className="h-4 w-4" />
+// //               </div>
+
+// //               <div className="min-w-0">
+// //                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
+// //                   Reset de contraseña
+// //                 </p>
+
+// //                 <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
+// //                   Generar contraseña temporal
+// //                 </h2>
+
+// //                 <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //                   Usá esta opción si el usuario olvidó su clave. El sistema
+// //                   generará una contraseña temporal y obligará el cambio al
+// //                   iniciar sesión.
+// //                 </p>
+// //               </div>
+// //             </div>
+
+// //             <ResetPasswordForm usuarioId={usuario.id} />
+// //           </div>
+// //         </DashboardMain>
+
+// //         <DashboardAside>
+// //           <div className="rounded-[1.45rem] border border-slate-200 bg-white/80 p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+// //             <div className="mb-3">
+// //               <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+// //                 Resumen
+// //               </p>
+
+// //               <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+// //                 Información del usuario
+// //               </h2>
+// //             </div>
+
+// //             <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
+// //               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //                   <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //                   Rol
+// //                 </span>
+
+// //                 <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+// //                   {rolLabel(usuario.rol)}
+// //                 </span>
+// //               </div>
+
+// //               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //                   <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //                   Estado
+// //                 </span>
+
+// //                 <span
+// //                   className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //                     usuario.estado === "activo"
+// //                       ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //                       : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
+// //                   }`}
+// //                 >
+// //                   {estadoLabel(usuario.estado)}
+// //                 </span>
+// //               </div>
+
+// //               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //                   <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //                   Contraseña
+// //                 </span>
+
+// //                 <span
+// //                   className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //                     usuario.debeCambiarPassword
+// //                       ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+// //                       : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //                   }`}
+// //                 >
+// //                   {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
+// //                 </span>
+// //               </div>
+
+// //               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //                   <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //                   Email
+// //                 </span>
+
+// //                 <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //                   {usuario.email}
+// //                 </span>
+// //               </div>
+
+// //               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //                   <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //                   Último acceso
+// //                 </span>
+
+// //                 <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //                   {formatDateTime(usuario.ultimoAcceso)}
+// //                 </span>
+// //               </div>
+
+// //               <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+// //                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //                   <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //                   Creado
+// //                 </span>
+
+// //                 <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //                   {formatDate(usuario.creadoEn)}
+// //                 </span>
+// //               </div>
+// //             </div>
+// //           </div>
+
+// //           <div className="hidden rounded-[1.45rem] border border-amber-200 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 xl:block">
+// //             <p className="font-medium">Importante</p>
+
+// //             <p className="mt-1">
+// //               El reset de contraseña mostrará la clave temporal una sola vez.
+// //               Copiala antes de salir de esta pantalla.
+// //             </p>
+// //           </div>
+// //         </DashboardAside>
+// //       </DashboardGrid>
+// //     </PageShell>
+// //   );
+// // }
+
+// // // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
+
+// // import { notFound } from "next/navigation";
+// // import {
+// //   CalendarClock,
+// //   CheckCircle2,
+// //   IdCard,
+// //   KeyRound,
+// //   Mail,
+// //   ShieldCheck,
+// //   UserRound,
+// // } from "lucide-react";
+// // import { PageShell } from "@/components/ui/PageShell";
+// // import {
+// //   DashboardAside,
+// //   DashboardGrid,
+// //   DashboardMain,
+// // } from "@/components/ui/DashboardGrid";
+// // import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+// // import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+// // import { obtenerUsuarioPorId } from "@/services/usuario.service";
+// // import type { UsuarioSafe } from "@/types/usuario.types";
+
+// // type EditarUsuarioPageProps = {
+// //   params: {
+// //     id: string;
+// //   };
+// // };
+
+// // export const metadata = {
+// //   title: "Editar usuario",
+// // };
+
+// // type StatCardProps = {
+// //   title: string;
+// //   value: string;
+// //   description: string;
+// //   icon: typeof UserRound;
+// //   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
+// // };
+
+// // const cardBase =
+// //   "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
+
+// // const innerCardBase =
+// //   "rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-200/70 dark:border-slate-800 dark:bg-slate-950/55 dark:shadow-none";
+
+// // const statToneClasses = {
+// //   cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
+// //   emerald:
+// //     "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
+// //   amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
+// //   red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
+// //   violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
+// // };
+
+// // function rolLabel(rol: string) {
+// //   if (rol === "admin") return "Admin";
+// //   if (rol === "cobrador") return "Cobrador";
+// //   return "Cliente";
+// // }
+
+// // function estadoLabel(estado: string) {
+// //   if (estado === "activo") return "Activo";
+// //   return "Suspendido";
+// // }
+
+// // function getNombreCompleto(usuario: UsuarioSafe) {
+// //   const apellido = String(usuario.apellido || "").trim();
+// //   const nombre = String(usuario.nombre || "").trim();
+
+// //   const completo = `${apellido}, ${nombre}`
+// //     .replace(/^,\s*/, "")
+// //     .replace(/,\s*$/, "")
+// //     .trim();
+
+// //   return completo || "Usuario";
+// // }
+
+// // function formatDate(value?: string | null) {
+// //   if (!value) return "Sin fecha";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+
+// //   return `${day}/${month}/${year}`;
+// // }
+
+// // function formatDateTime(value?: string | null) {
+// //   if (!value) return "Nunca";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Nunca";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+// //   const hours = String(date.getHours()).padStart(2, "0");
+// //   const minutes = String(date.getMinutes()).padStart(2, "0");
+
+// //   return `${day}/${month}/${year} ${hours}:${minutes}`;
+// // }
+
+// // function getUltimoAcceso(usuario: UsuarioSafe) {
+// //   const usuarioConAcceso = usuario as UsuarioSafe & {
+// //     ultimoAcceso?: string | null;
+// //   };
+
+// //   return usuarioConAcceso.ultimoAcceso || null;
+// // }
+
+// // function StatCard({
+// //   title,
+// //   value,
+// //   description,
+// //   icon: Icon,
+// //   tone,
+// // }: StatCardProps) {
+// //   return (
+// //     <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
+// //       <div className="flex items-start gap-3">
+// //         <div
+// //           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${statToneClasses[tone]}`}
+// //         >
+// //           <Icon className="h-4 w-4" />
+// //         </div>
+
+// //         <div className="min-w-0">
+// //           <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+// //             {title}
+// //           </p>
+
+// //           <p
+// //             className={`mt-1 truncate text-xl font-semibold tracking-tight ${
+// //               tone === "red"
+// //                 ? "text-red-700 dark:text-red-300"
+// //                 : "text-slate-950 dark:text-white"
+// //             }`}
+// //           >
+// //             {value}
+// //           </p>
+
+// //           <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
+// //             {description}
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function MobileHeader({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <section className={`${cardBase} p-3`}>
+// //       <div className="flex items-start gap-3">
+// //         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
+// //           <UserRound className="h-5 w-5" />
+// //         </div>
+
+// //         <div className="min-w-0 flex-1">
+// //           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
+// //             Editar usuario
+// //           </p>
+
+// //           <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
+// //             {getNombreCompleto(usuario)}
+// //           </h1>
+
+// //           <div className="mt-2 flex flex-wrap gap-2">
+// //             <span className="inline-flex rounded-full border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-[10px] font-medium text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/35 dark:text-cyan-300">
+// //               {rolLabel(usuario.rol)}
+// //             </span>
+
+// //             <span
+// //               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+// //                 usuario.estado === "activo"
+// //                   ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+// //                   : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
+// //               }`}
+// //             >
+// //               {estadoLabel(usuario.estado)}
+// //             </span>
+
+// //             <span
+// //               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+// //                 usuario.debeCambiarPassword
+// //                   ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
+// //                   : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+// //               }`}
+// //             >
+// //               {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
+// //             </span>
+// //           </div>
+
+// //           <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //             DNI {usuario.dni || "-"} · {usuario.email}
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </section>
+// //   );
+// // }
+
+// // function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <div className={`${cardBase} p-3.5`}>
+// //       <div className="mb-3">
+// //         <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+// //           Resumen
+// //         </p>
+
+// //         <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+// //           Información del usuario
+// //         </h2>
+// //       </div>
+
+// //       <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none">
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Rol
+// //           </span>
+
+// //           <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+// //             {rolLabel(usuario.rol)}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Estado
+// //           </span>
+
+// //           <span
+// //             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //               usuario.estado === "activo"
+// //                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //                 : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
+// //             }`}
+// //           >
+// //             {estadoLabel(usuario.estado)}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Contraseña
+// //           </span>
+
+// //           <span
+// //             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //               usuario.debeCambiarPassword
+// //                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+// //                 : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //             }`}
+// //           >
+// //             {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Email
+// //           </span>
+
+// //           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {usuario.email}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Último acceso
+// //           </span>
+
+// //           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {formatDateTime(getUltimoAcceso(usuario))}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Creado
+// //           </span>
+
+// //           <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {formatDate(usuario.creadoEn)}
+// //           </span>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function ResetPasswordPanel({ usuarioId }: { usuarioId: string }) {
+// //   return (
+// //     <div className={`${cardBase} p-3 sm:p-3.5`}>
+// //       <div className="mb-3 flex items-start gap-3">
+// //         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900/70">
+// //           <KeyRound className="h-4 w-4" />
+// //         </div>
+
+// //         <div className="min-w-0">
+// //           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
+// //             Reset de contraseña
+// //           </p>
+
+// //           <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
+// //             Generar contraseña temporal
+// //           </h2>
+
+// //           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //             Usá esta opción si el usuario olvidó su clave. La clave temporal se
+// //             mostrará una sola vez.
+// //           </p>
+// //         </div>
+// //       </div>
+
+// //       <ResetPasswordForm usuarioId={usuarioId} />
+// //     </div>
+// //   );
+// // }
+
+// // export default async function EditarUsuarioPage({
+// //   params,
+// // }: EditarUsuarioPageProps) {
+// //   const usuario = await obtenerUsuarioPorId(params.id);
+
+// //   if (!usuario) {
+// //     notFound();
+// //   }
+
+// //   return (
+// //     <PageShell maxWidth="wide">
+// //       <div className="space-y-3 lg:hidden">
+// //         <MobileHeader usuario={usuario} />
+
+// //         <EditarUsuarioForm usuario={usuario} />
+
+// //         <ResetPasswordPanel usuarioId={usuario.id} />
+// //       </div>
+
+// //       <div className="hidden lg:block">
+// //         <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
+// //           <StatCard
+// //             title="Usuario"
+// //             value={rolLabel(usuario.rol)}
+// //             description="Rol actual del usuario."
+// //             icon={UserRound}
+// //             tone="cyan"
+// //           />
+
+// //           <StatCard
+// //             title="Estado"
+// //             value={estadoLabel(usuario.estado)}
+// //             description="Estado de acceso."
+// //             icon={CheckCircle2}
+// //             tone={usuario.estado === "activo" ? "emerald" : "red"}
+// //           />
+
+// //           <StatCard
+// //             title="Seguridad"
+// //             value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
+// //             description="Estado de la clave."
+// //             icon={KeyRound}
+// //             tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
+// //           />
+
+// //           <StatCard
+// //             title="DNI"
+// //             value={usuario.dni || "-"}
+// //             description="Documento registrado."
+// //             icon={IdCard}
+// //             tone="violet"
+// //           />
+
+// //           <StatCard
+// //             title="Creado"
+// //             value={formatDate(usuario.creadoEn)}
+// //             description="Fecha de alta."
+// //             icon={CalendarClock}
+// //             tone="amber"
+// //           />
+// //         </div>
+
+// //         <div className="mt-5">
+// //           <DashboardGrid>
+// //             <DashboardMain>
+// //               <div className={`${cardBase} p-3.5`}>
+// //                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+// //                   Usuarios
+// //                 </p>
+
+// //                 <h1 className="mt-0.5 text-base font-medium tracking-tight text-slate-950 dark:text-white">
+// //                   Editar usuario
+// //                 </h1>
+
+// //                 <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //                   Modificá datos básicos, rol, estado de acceso y configuración
+// //                   operativa del usuario.
+// //                 </p>
+// //               </div>
+
+// //               <EditarUsuarioForm usuario={usuario} />
+
+// //               <ResetPasswordPanel usuarioId={usuario.id} />
+// //             </DashboardMain>
+
+// //             <DashboardAside>
+// //               <ResumenUsuario usuario={usuario} />
+
+// //               <div className="rounded-[1.45rem] border border-amber-300 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm shadow-amber-950/5 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 dark:shadow-none">
+// //                 <p className="font-medium">Importante</p>
+
+// //                 <p className="mt-1">
+// //                   El reset de contraseña mostrará la clave temporal una sola
+// //                   vez. Copiala antes de salir de esta pantalla.
+// //                 </p>
+// //               </div>
+// //             </DashboardAside>
+// //           </DashboardGrid>
+// //         </div>
+// //       </div>
+// //     </PageShell>
+// //   );
+// // }
+
+
+// // // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
+
+// // import { notFound } from "next/navigation";
+// // import {
+// //   CalendarClock,
+// //   CheckCircle2,
+// //   IdCard,
+// //   KeyRound,
+// //   Mail,
+// //   ShieldCheck,
+// //   UserRound,
+// // } from "lucide-react";
+// // import { PageShell } from "@/components/ui/PageShell";
+// // import {
+// //   DashboardAside,
+// //   DashboardGrid,
+// //   DashboardMain,
+// // } from "@/components/ui/DashboardGrid";
+// // import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+// // import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+// // import { obtenerUsuarioPorId } from "@/services/usuario.service";
+// // import type { UsuarioSafe } from "@/types/usuario.types";
+
+// // type EditarUsuarioPageProps = {
+// //   params: {
+// //     id: string;
+// //   };
+// // };
+
+// // export const metadata = {
+// //   title: "Editar usuario",
+// // };
+
+// // type StatCardProps = {
+// //   title: string;
+// //   value: string;
+// //   description: string;
+// //   icon: typeof UserRound;
+// //   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
+// // };
+
+// // const cardBase =
+// //   "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
+
+// // const statToneClasses = {
+// //   cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
+// //   emerald:
+// //     "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
+// //   amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
+// //   red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
+// //   violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
+// // };
+
+// // function rolLabel(rol: string) {
+// //   if (rol === "admin") return "Admin";
+// //   if (rol === "cobrador") return "Cobrador";
+// //   return "Cliente";
+// // }
+
+// // function estadoLabel(estado: string) {
+// //   if (estado === "activo") return "Activo";
+// //   return "Suspendido";
+// // }
+
+// // function getNombreCompleto(usuario: UsuarioSafe) {
+// //   const apellido = String(usuario.apellido || "").trim();
+// //   const nombre = String(usuario.nombre || "").trim();
+
+// //   const completo = `${apellido}, ${nombre}`
+// //     .replace(/^,\s*/, "")
+// //     .replace(/,\s*$/, "")
+// //     .trim();
+
+// //   return completo || "Usuario";
+// // }
+
+// // function formatDate(value?: string | null) {
+// //   if (!value) return "Sin fecha";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+
+// //   return `${day}/${month}/${year}`;
+// // }
+
+// // function formatDateTime(value?: string | null) {
+// //   if (!value) return "Nunca";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Nunca";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+// //   const hours = String(date.getHours()).padStart(2, "0");
+// //   const minutes = String(date.getMinutes()).padStart(2, "0");
+
+// //   return `${day}/${month}/${year} ${hours}:${minutes}`;
+// // }
+
+// // function getUltimoAcceso(usuario: UsuarioSafe) {
+// //   const usuarioConAcceso = usuario as UsuarioSafe & {
+// //     ultimoAcceso?: string | null;
+// //   };
+
+// //   return usuarioConAcceso.ultimoAcceso || null;
+// // }
+
+// // function StatCard({
+// //   title,
+// //   value,
+// //   description,
+// //   icon: Icon,
+// //   tone,
+// // }: StatCardProps) {
+// //   return (
+// //     <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
+// //       <div className="flex items-start gap-3">
+// //         <div
+// //           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${statToneClasses[tone]}`}
+// //         >
+// //           <Icon className="h-4 w-4" />
+// //         </div>
+
+// //         <div className="min-w-0">
+// //           <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+// //             {title}
+// //           </p>
+
+// //           <p
+// //             className={`mt-1 truncate text-xl font-semibold tracking-tight ${
+// //               tone === "red"
+// //                 ? "text-red-700 dark:text-red-300"
+// //                 : "text-slate-950 dark:text-white"
+// //             }`}
+// //           >
+// //             {value}
+// //           </p>
+
+// //           <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
+// //             {description}
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function MobileHeader({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <section className={`${cardBase} p-3`}>
+// //       <div className="flex items-start gap-3">
+// //         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
+// //           <UserRound className="h-5 w-5" />
+// //         </div>
+
+// //         <div className="min-w-0 flex-1">
+// //           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
+// //             Editar usuario
+// //           </p>
+
+// //           <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
+// //             {getNombreCompleto(usuario)}
+// //           </h1>
+
+// //           <div className="mt-2 flex flex-wrap gap-2">
+// //             <span className="inline-flex rounded-full border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-[10px] font-medium text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/35 dark:text-cyan-300">
+// //               {rolLabel(usuario.rol)}
+// //             </span>
+
+// //             <span
+// //               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+// //                 usuario.estado === "activo"
+// //                   ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+// //                   : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
+// //               }`}
+// //             >
+// //               {estadoLabel(usuario.estado)}
+// //             </span>
+
+// //             <span
+// //               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+// //                 usuario.debeCambiarPassword
+// //                   ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
+// //                   : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+// //               }`}
+// //             >
+// //               {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
+// //             </span>
+// //           </div>
+
+// //           <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //             DNI {usuario.dni || "-"} · {usuario.email}
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </section>
+// //   );
+// // }
+
+// // function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <div className={`${cardBase} p-3.5`}>
+// //       <div className="mb-3 flex items-start justify-between gap-3">
+// //         <div>
+// //           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+// //             Resumen
+// //           </p>
+
+// //           <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+// //             Información del usuario
+// //           </h2>
+// //         </div>
+
+// //         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+// //           <UserRound className="h-4 w-4" />
+// //         </div>
+// //       </div>
+
+// //       <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none">
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Rol
+// //           </span>
+
+// //           <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+// //             {rolLabel(usuario.rol)}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Estado
+// //           </span>
+
+// //           <span
+// //             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //               usuario.estado === "activo"
+// //                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //                 : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
+// //             }`}
+// //           >
+// //             {estadoLabel(usuario.estado)}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Contraseña
+// //           </span>
+
+// //           <span
+// //             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //               usuario.debeCambiarPassword
+// //                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+// //                 : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //             }`}
+// //           >
+// //             {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Email
+// //           </span>
+
+// //           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {usuario.email}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Último acceso
+// //           </span>
+
+// //           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {formatDateTime(getUltimoAcceso(usuario))}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Creado
+// //           </span>
+
+// //           <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {formatDate(usuario.creadoEn)}
+// //           </span>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function ResetPasswordPanel({ usuarioId }: { usuarioId: string }) {
+// //   return (
+// //     <div className={`${cardBase} p-3 sm:p-3.5`}>
+// //       <div className="mb-3 flex items-start gap-3">
+// //         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900/70">
+// //           <KeyRound className="h-4 w-4" />
+// //         </div>
+
+// //         <div className="min-w-0">
+// //           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
+// //             Reset de contraseña
+// //           </p>
+
+// //           <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
+// //             Generar contraseña temporal
+// //           </h2>
+
+// //           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //             Usá esta opción si el usuario olvidó su clave. La clave temporal se
+// //             mostrará una sola vez.
+// //           </p>
+// //         </div>
+// //       </div>
+
+// //       <ResetPasswordForm usuarioId={usuarioId} />
+// //     </div>
+// //   );
+// // }
+
+// // export default async function EditarUsuarioPage({
+// //   params,
+// // }: EditarUsuarioPageProps) {
+// //   const usuario = await obtenerUsuarioPorId(params.id);
+
+// //   if (!usuario) {
+// //     notFound();
+// //   }
+
+// //   return (
+// //     <PageShell maxWidth="wide">
+// //       <div className="space-y-3 lg:hidden">
+// //         <MobileHeader usuario={usuario} />
+
+// //         <EditarUsuarioForm usuario={usuario} />
+
+// //         <ResetPasswordPanel usuarioId={usuario.id} />
+// //       </div>
+
+// //       <div className="hidden lg:block">
+// //         <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
+// //           <StatCard
+// //             title="Usuario"
+// //             value={rolLabel(usuario.rol)}
+// //             description="Rol actual."
+// //             icon={UserRound}
+// //             tone="cyan"
+// //           />
+
+// //           <StatCard
+// //             title="Estado"
+// //             value={estadoLabel(usuario.estado)}
+// //             description="Acceso al sistema."
+// //             icon={CheckCircle2}
+// //             tone={usuario.estado === "activo" ? "emerald" : "red"}
+// //           />
+
+// //           <StatCard
+// //             title="Seguridad"
+// //             value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
+// //             description="Estado de clave."
+// //             icon={KeyRound}
+// //             tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
+// //           />
+
+// //           <StatCard
+// //             title="DNI"
+// //             value={usuario.dni || "-"}
+// //             description="Documento."
+// //             icon={IdCard}
+// //             tone="violet"
+// //           />
+
+// //           <StatCard
+// //             title="Creado"
+// //             value={formatDate(usuario.creadoEn)}
+// //             description="Fecha de alta."
+// //             icon={CalendarClock}
+// //             tone="amber"
+// //           />
+// //         </div>
+
+// //         <div className="mt-5">
+// //           <DashboardGrid>
+// //             <DashboardMain>
+// //               <EditarUsuarioForm usuario={usuario} variant="desktop" />
+
+// //               <div className="mt-3">
+// //                 <ResetPasswordPanel usuarioId={usuario.id} />
+// //               </div>
+// //             </DashboardMain>
+
+// //             <DashboardAside>
+// //               <ResumenUsuario usuario={usuario} />
+
+// //               <div className="rounded-[1.45rem] border border-amber-300 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm shadow-amber-950/5 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 dark:shadow-none">
+// //                 <p className="font-medium">Importante</p>
+
+// //                 <p className="mt-1">
+// //                   El reset de contraseña mostrará la clave temporal una sola
+// //                   vez. Copiala antes de salir de esta pantalla.
+// //                 </p>
+// //               </div>
+// //             </DashboardAside>
+// //           </DashboardGrid>
+// //         </div>
+// //       </div>
+// //     </PageShell>
+// //   );
+// // }
+
+// // // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
+
+// // import { notFound } from "next/navigation";
+// // import {
+// //   CalendarClock,
+// //   CheckCircle2,
+// //   IdCard,
+// //   KeyRound,
+// //   Mail,
+// //   ShieldAlert,
+// //   ShieldCheck,
+// //   UserRound,
+// // } from "lucide-react";
+// // import { PageShell } from "@/components/ui/PageShell";
+// // import {
+// //   DashboardAside,
+// //   DashboardGrid,
+// //   DashboardMain,
+// // } from "@/components/ui/DashboardGrid";
+// // import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+// // import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+// // import { getCurrentUser } from "@/lib/current-user";
+// // import { obtenerUsuarioPorId } from "@/services/usuario.service";
+// // import type { UsuarioSafe } from "@/types/usuario.types";
+
+// // type EditarUsuarioPageProps = {
+// //   params: {
+// //     id: string;
+// //   };
+// // };
+
+// // export const metadata = {
+// //   title: "Editar usuario",
+// // };
+
+// // type StatCardProps = {
+// //   title: string;
+// //   value: string;
+// //   description: string;
+// //   icon: typeof UserRound;
+// //   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
+// // };
+
+// // type PermisosEdicion = {
+// //   actorEsProtegido: boolean;
+// //   usuarioEsProtegido: boolean;
+// //   puedeEditarDatos: boolean;
+// //   puedeCambiarRolEstado: boolean;
+// //   puedeResetearPassword: boolean;
+// //   avisoEdicion?: string;
+// //   avisoReset?: string;
+// // };
+
+// // const cardBase =
+// //   "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
+
+// // const statToneClasses = {
+// //   cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
+// //   emerald:
+// //     "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
+// //   amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
+// //   red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
+// //   violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
+// // };
+
+// // function rolLabel(rol: string) {
+// //   if (rol === "admin") return "Admin";
+// //   if (rol === "cobrador") return "Cobrador";
+// //   return "Cliente";
+// // }
+
+// // function estadoLabel(estado: string) {
+// //   if (estado === "activo") return "Activo";
+// //   return "Suspendido";
+// // }
+
+// // function getNombreCompleto(usuario: UsuarioSafe) {
+// //   const apellido = String(usuario.apellido || "").trim();
+// //   const nombre = String(usuario.nombre || "").trim();
+
+// //   const completo = `${apellido}, ${nombre}`
+// //     .replace(/^,\s*/, "")
+// //     .replace(/,\s*$/, "")
+// //     .trim();
+
+// //   return completo || "Usuario";
+// // }
+
+// // function formatDate(value?: string | null) {
+// //   if (!value) return "Sin fecha";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+
+// //   return `${day}/${month}/${year}`;
+// // }
+
+// // function formatDateTime(value?: string | null) {
+// //   if (!value) return "Nunca";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Nunca";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+// //   const hours = String(date.getHours()).padStart(2, "0");
+// //   const minutes = String(date.getMinutes()).padStart(2, "0");
+
+// //   return `${day}/${month}/${year} ${hours}:${minutes}`;
+// // }
+
+// // function getUltimoAcceso(usuario: UsuarioSafe) {
+// //   const usuarioConAcceso = usuario as UsuarioSafe & {
+// //     ultimoAcceso?: string | null;
+// //   };
+
+// //   return usuarioConAcceso.ultimoAcceso || null;
+// // }
+
+// // function construirPermisos(
+// //   usuario: UsuarioSafe,
+// //   actor: UsuarioSafe | null,
+// // ): PermisosEdicion {
+// //   const actorEsProtegido = Boolean(actor?.esProtegido);
+// //   const usuarioEsProtegido = Boolean(usuario.esProtegido);
+
+// //   if (!usuarioEsProtegido) {
+// //     return {
+// //       actorEsProtegido,
+// //       usuarioEsProtegido,
+// //       puedeEditarDatos: true,
+// //       puedeCambiarRolEstado: true,
+// //       puedeResetearPassword: true,
+// //     };
+// //   }
+
+// //   if (actorEsProtegido) {
+// //     return {
+// //       actorEsProtegido,
+// //       usuarioEsProtegido,
+// //       puedeEditarDatos: true,
+// //       puedeCambiarRolEstado: false,
+// //       puedeResetearPassword: true,
+// //       avisoEdicion:
+// //         "Administrador protegido: podés editar datos básicos, pero no cambiar rol ni suspenderlo.",
+// //       avisoReset:
+// //         "Administrador protegido: el reset de contraseña está permitido solo entre administradores protegidos.",
+// //     };
+// //   }
+
+// //   return {
+// //     actorEsProtegido,
+// //     usuarioEsProtegido,
+// //     puedeEditarDatos: false,
+// //     puedeCambiarRolEstado: false,
+// //     puedeResetearPassword: false,
+// //     avisoEdicion:
+// //       "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos básicos.",
+// //     avisoReset:
+// //       "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
+// //   };
+// // }
+
+// // function StatCard({
+// //   title,
+// //   value,
+// //   description,
+// //   icon: Icon,
+// //   tone,
+// // }: StatCardProps) {
+// //   return (
+// //     <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
+// //       <div className="flex items-start gap-3">
+// //         <div
+// //           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${statToneClasses[tone]}`}
+// //         >
+// //           <Icon className="h-4 w-4" />
+// //         </div>
+
+// //         <div className="min-w-0">
+// //           <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+// //             {title}
+// //           </p>
+
+// //           <p
+// //             className={`mt-1 truncate text-xl font-semibold tracking-tight ${
+// //               tone === "red"
+// //                 ? "text-red-700 dark:text-red-300"
+// //                 : "text-slate-950 dark:text-white"
+// //             }`}
+// //           >
+// //             {value}
+// //           </p>
+
+// //           <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
+// //             {description}
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function MobileHeader({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <section className={`${cardBase} p-3`}>
+// //       <div className="flex items-start gap-3">
+// //         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
+// //           <UserRound className="h-5 w-5" />
+// //         </div>
+
+// //         <div className="min-w-0 flex-1">
+// //           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
+// //             Editar usuario
+// //           </p>
+
+// //           <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
+// //             {getNombreCompleto(usuario)}
+// //           </h1>
+
+// //           <div className="mt-2 flex flex-wrap gap-2">
+// //             <span className="inline-flex rounded-full border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-[10px] font-medium text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/35 dark:text-cyan-300">
+// //               {rolLabel(usuario.rol)}
+// //             </span>
+
+// //             <span
+// //               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+// //                 usuario.estado === "activo"
+// //                   ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+// //                   : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
+// //               }`}
+// //             >
+// //               {estadoLabel(usuario.estado)}
+// //             </span>
+
+// //             {usuario.esProtegido ? (
+// //               <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[10px] font-medium text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
+// //                 Protegido
+// //               </span>
+// //             ) : null}
+
+// //             <span
+// //               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+// //                 usuario.debeCambiarPassword
+// //                   ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
+// //                   : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
+// //               }`}
+// //             >
+// //               {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
+// //             </span>
+// //           </div>
+
+// //           <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //             DNI {usuario.dni || "-"} · {usuario.email}
+// //           </p>
+// //         </div>
+// //       </div>
+// //     </section>
+// //   );
+// // }
+
+// // function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <div className={`${cardBase} p-3.5`}>
+// //       <div className="mb-3 flex items-start justify-between gap-3">
+// //         <div>
+// //           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+// //             Resumen
+// //           </p>
+
+// //           <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+// //             Información del usuario
+// //           </h2>
+// //         </div>
+
+// //         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
+// //           <UserRound className="h-4 w-4" />
+// //         </div>
+// //       </div>
+
+// //       <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none">
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Rol
+// //           </span>
+
+// //           <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
+// //             {rolLabel(usuario.rol)}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Estado
+// //           </span>
+
+// //           <span
+// //             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //               usuario.estado === "activo"
+// //                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //                 : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
+// //             }`}
+// //           >
+// //             {estadoLabel(usuario.estado)}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <ShieldAlert className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Protección
+// //           </span>
+
+// //           <span
+// //             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //               usuario.esProtegido
+// //                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+// //                 : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+// //             }`}
+// //           >
+// //             {usuario.esProtegido ? "Protegido" : "Normal"}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Contraseña
+// //           </span>
+
+// //           <span
+// //             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+// //               usuario.debeCambiarPassword
+// //                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+// //                 : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+// //             }`}
+// //           >
+// //             {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Email
+// //           </span>
+
+// //           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {usuario.email}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Último acceso
+// //           </span>
+
+// //           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {formatDateTime(getUltimoAcceso(usuario))}
+// //           </span>
+// //         </div>
+
+// //         <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+// //           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+// //             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
+// //             Creado
+// //           </span>
+
+// //           <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
+// //             {formatDate(usuario.creadoEn)}
+// //           </span>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function ResetPasswordPanel({
+// //   usuarioId,
+// //   permisos,
+// // }: {
+// //   usuarioId: string;
+// //   permisos: PermisosEdicion;
+// // }) {
+// //   return (
+// //     <div className={`${cardBase} p-3 sm:p-3.5`}>
+// //       <div className="mb-3 flex items-start gap-3">
+// //         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900/70">
+// //           <KeyRound className="h-4 w-4" />
+// //         </div>
+
+// //         <div className="min-w-0">
+// //           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
+// //             Reset de contraseña
+// //           </p>
+
+// //           <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
+// //             Generar contraseña temporal
+// //           </h2>
+
+// //           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
+// //             Usá esta opción si el usuario olvidó su clave. La clave temporal se
+// //             mostrará una sola vez.
+// //           </p>
+// //         </div>
+// //       </div>
+
+// //       <ResetPasswordForm
+// //         usuarioId={usuarioId}
+// //         disabled={!permisos.puedeResetearPassword}
+// //         disabledMessage={permisos.avisoReset}
+// //       />
+// //     </div>
+// //   );
+// // }
+
+// // export default async function EditarUsuarioPage({
+// //   params,
+// // }: EditarUsuarioPageProps) {
+// //   const usuario = await obtenerUsuarioPorId(params.id);
+
+// //   if (!usuario) {
+// //     notFound();
+// //   }
+
+// //   const currentUser = await getCurrentUser();
+// //   const actor = currentUser?.userId
+// //     ? await obtenerUsuarioPorId(currentUser.userId)
+// //     : null;
+
+// //   const permisos = construirPermisos(usuario, actor);
+
+// //   return (
+// //     <PageShell maxWidth="wide">
+// //       <div className="space-y-3 lg:hidden">
+// //         <MobileHeader usuario={usuario} />
+
+// //         <EditarUsuarioForm
+// //           usuario={usuario}
+// //           puedeEditarDatos={permisos.puedeEditarDatos}
+// //           puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
+// //           avisoPermisos={permisos.avisoEdicion}
+// //         />
+
+// //         <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
+// //       </div>
+
+// //       <div className="hidden lg:block">
+// //         <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
+// //           <StatCard
+// //             title="Usuario"
+// //             value={rolLabel(usuario.rol)}
+// //             description={usuario.esProtegido ? "Admin protegido." : "Rol actual."}
+// //             icon={UserRound}
+// //             tone="cyan"
+// //           />
+
+// //           <StatCard
+// //             title="Estado"
+// //             value={estadoLabel(usuario.estado)}
+// //             description="Acceso al sistema."
+// //             icon={CheckCircle2}
+// //             tone={usuario.estado === "activo" ? "emerald" : "red"}
+// //           />
+
+// //           <StatCard
+// //             title="Seguridad"
+// //             value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
+// //             description="Estado de clave."
+// //             icon={KeyRound}
+// //             tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
+// //           />
+
+// //           <StatCard
+// //             title="DNI"
+// //             value={usuario.dni || "-"}
+// //             description="Documento."
+// //             icon={IdCard}
+// //             tone="violet"
+// //           />
+
+// //           <StatCard
+// //             title="Protección"
+// //             value={usuario.esProtegido ? "Sí" : "No"}
+// //             description={
+// //               usuario.esProtegido
+// //                 ? "Solo admins protegidos."
+// //                 : "Gestión normal."
+// //             }
+// //             icon={ShieldAlert}
+// //             tone={usuario.esProtegido ? "amber" : "emerald"}
+// //           />
+// //         </div>
+
+// //         <div className="mt-5">
+// //           <DashboardGrid>
+// //             <DashboardMain>
+// //               <EditarUsuarioForm
+// //                 usuario={usuario}
+// //                 variant="desktop"
+// //                 puedeEditarDatos={permisos.puedeEditarDatos}
+// //                 puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
+// //                 avisoPermisos={permisos.avisoEdicion}
+// //               />
+
+// //               <div className="mt-3">
+// //                 <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
+// //               </div>
+// //             </DashboardMain>
+
+// //             <DashboardAside>
+// //               <ResumenUsuario usuario={usuario} />
+
+// //               <div className="rounded-[1.45rem] border border-amber-300 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm shadow-amber-950/5 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 dark:shadow-none">
+// //                 <p className="font-medium">Importante</p>
+
+// //                 <p className="mt-1">
+// //                   El reset de contraseña mostrará la clave temporal una sola
+// //                   vez. Copiala antes de salir de esta pantalla.
+// //                 </p>
+// //               </div>
+// //             </DashboardAside>
+// //           </DashboardGrid>
+// //         </div>
+// //       </div>
+// //     </PageShell>
+// //   );
+// // }
+
+// // // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
+
+// // import Link from "next/link";
+// // import { notFound } from "next/navigation";
+// // import type { ReactNode } from "react";
+// // import type { LucideIcon } from "lucide-react";
+// // import {
+// //   CalendarClock,
+// //   IdCard,
+// //   KeyRound,
+// //   Mail,
+// //   ShieldAlert,
+// //   ShieldCheck,
+// //   UserRound,
+// // } from "lucide-react";
+// // import { PageShell } from "@/components/ui/PageShell";
+// // import {
+// //   DashboardAside,
+// //   DashboardGrid,
+// //   DashboardMain,
+// // } from "@/components/ui/DashboardGrid";
+// // import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+// // import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+// // import { getCurrentUser } from "@/lib/current-user";
+// // import { obtenerUsuarioPorId } from "@/services/usuario.service";
+// // import type { UsuarioSafe } from "@/types/usuario.types";
+
+// // type EditarUsuarioPageProps = {
+// //   params: {
+// //     id: string;
+// //   };
+// // };
+
+// // export const metadata = {
+// //   title: "Editar usuario",
+// // };
+
+// // type PermisosEdicion = {
+// //   actorEsProtegido: boolean;
+// //   usuarioEsProtegido: boolean;
+// //   puedeEditarDatos: boolean;
+// //   puedeCambiarRolEstado: boolean;
+// //   puedeResetearPassword: boolean;
+// //   avisoEdicion?: string;
+// //   avisoReset?: string;
+// // };
+
+// // const panelClass =
+// //   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
+
+// // const sectionTitleClass =
+// //   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
+
+// // const sectionSubtitleClass =
+// //   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
+
+// // const sectionDescriptionClass =
+// //   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
+
+// // function rolLabel(rol: string) {
+// //   if (rol === "admin") return "Admin";
+// //   if (rol === "cobrador") return "Cobrador";
+// //   return "Cliente";
+// // }
+
+// // function estadoLabel(estado: string) {
+// //   if (estado === "activo") return "Activo";
+// //   return "Suspendido";
+// // }
+
+// // function getNombreCompleto(usuario: UsuarioSafe) {
+// //   const apellido = String(usuario.apellido || "").trim();
+// //   const nombre = String(usuario.nombre || "").trim();
+
+// //   const completo = `${apellido}, ${nombre}`
+// //     .replace(/^,\s*/, "")
+// //     .replace(/,\s*$/, "")
+// //     .trim();
+
+// //   return completo || "Usuario";
+// // }
+
+// // function formatDate(value?: string | null) {
+// //   if (!value) return "Sin fecha";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Sin fecha";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+
+// //   return `${day}/${month}/${year}`;
+// // }
+
+// // function formatDateTime(value?: string | null) {
+// //   if (!value) return "Nunca";
+
+// //   const date = new Date(value);
+
+// //   if (Number.isNaN(date.getTime())) return "Nunca";
+
+// //   const day = String(date.getDate()).padStart(2, "0");
+// //   const month = String(date.getMonth() + 1).padStart(2, "0");
+// //   const year = date.getFullYear();
+// //   const hours = String(date.getHours()).padStart(2, "0");
+// //   const minutes = String(date.getMinutes()).padStart(2, "0");
+
+// //   return `${day}/${month}/${year} ${hours}:${minutes}`;
+// // }
+
+// // function construirPermisos(
+// //   usuario: UsuarioSafe,
+// //   actor: UsuarioSafe | null,
+// // ): PermisosEdicion {
+// //   const actorEsProtegido = Boolean(actor?.esProtegido);
+// //   const usuarioEsProtegido = Boolean(usuario.esProtegido);
+
+// //   if (!usuarioEsProtegido) {
+// //     return {
+// //       actorEsProtegido,
+// //       usuarioEsProtegido,
+// //       puedeEditarDatos: true,
+// //       puedeCambiarRolEstado: true,
+// //       puedeResetearPassword: true,
+// //     };
+// //   }
+
+// //   if (actorEsProtegido) {
+// //     return {
+// //       actorEsProtegido,
+// //       usuarioEsProtegido,
+// //       puedeEditarDatos: true,
+// //       puedeCambiarRolEstado: false,
+// //       puedeResetearPassword: true,
+// //       avisoEdicion:
+// //         "Administrador protegido: podés editar datos básicos, pero no cambiar rol ni suspenderlo.",
+// //       avisoReset:
+// //         "Administrador protegido: el reset de contraseña está permitido solo entre administradores protegidos.",
+// //     };
+// //   }
+
+// //   return {
+// //     actorEsProtegido,
+// //     usuarioEsProtegido,
+// //     puedeEditarDatos: false,
+// //     puedeCambiarRolEstado: false,
+// //     puedeResetearPassword: false,
+// //     avisoEdicion:
+// //       "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos básicos.",
+// //     avisoReset:
+// //       "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
+// //   };
+// // }
+
+// // function Badge({
+// //   children,
+// //   tone = "neutral",
+// // }: {
+// //   children: ReactNode;
+// //   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// // }) {
+// //   const toneClass = {
+// //     neutral:
+// //       "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+// //     primary:
+// //       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+// //     success:
+// //       "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+// //     warning:
+// //       "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+// //     danger:
+// //       "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
+// //   }[tone];
+
+// //   return (
+// //     <span
+// //       className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+// //     >
+// //       {children}
+// //     </span>
+// //   );
+// // }
+
+// // function BackButton() {
+// //   return (
+// //     <Link
+// //       href="/usuarios"
+// //       className="hidden h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+// //     >
+// //       Volver
+// //     </Link>
+// //   );
+// // }
+
+// // function PageTitle({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+// //       <div className="min-w-0">
+// //         <p className={sectionTitleClass}>Usuarios</p>
+
+// //         <h1 className={sectionSubtitleClass}>Editar usuario</h1>
+
+// //         <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
+// //           {getNombreCompleto(usuario)} · DNI {usuario.dni || "-"} ·{" "}
+// //           {usuario.email}
+// //         </p>
+// //       </div>
+
+// //       <div className="flex flex-col items-start gap-2 lg:items-end">
+// //         <BackButton />
+
+// //         <div className="flex flex-wrap gap-2 lg:justify-end">
+// //           <Badge tone="primary">{rolLabel(usuario.rol)}</Badge>
+
+// //           <Badge tone={usuario.estado === "activo" ? "success" : "danger"}>
+// //             {estadoLabel(usuario.estado)}
+// //           </Badge>
+
+// //           {usuario.esProtegido ? <Badge tone="warning">Protegido</Badge> : null}
+
+// //           <Badge tone={usuario.debeCambiarPassword ? "warning" : "success"}>
+// //             {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
+// //           </Badge>
+// //         </div>
+// //       </div>
+// //     </div>
+// //   );
+// // }
+
+// // function ResumenItem({
+// //   icon: Icon,
+// //   label,
+// //   value,
+// //   tone = "neutral",
+// // }: {
+// //   icon: LucideIcon;
+// //   label: string;
+// //   value: string;
+// //   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+// // }) {
+// //   const toneClass = {
+// //     neutral: "text-slate-950 dark:text-white",
+// //     primary: "text-blue-700 dark:text-blue-300",
+// //     success: "text-emerald-700 dark:text-emerald-300",
+// //     warning: "text-amber-700 dark:text-amber-300",
+// //     danger: "text-red-700 dark:text-red-300",
+// //   }[tone];
+
+// //   return (
+// //     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
+// //       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
+// //         <Icon className="h-3.5 w-3.5 shrink-0 text-blue-700 dark:text-blue-300" />
+// //         <span className="truncate">{label}</span>
+// //       </span>
+
+// //       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
+// //         {value}
+// //       </span>
+// //     </div>
+// //   );
+// // }
+
+// // function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
+// //   return (
+// //     <section className={`${panelClass} p-3.5`}>
+// //       <div className="mb-3">
+// //         <p className={sectionTitleClass}>Resumen</p>
+
+// //         <h2 className={sectionSubtitleClass}>Datos actuales</h2>
+// //       </div>
+
+// //       <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
+// //         <ResumenItem
+// //           icon={UserRound}
+// //           label="Rol"
+// //           value={rolLabel(usuario.rol)}
+// //           tone="primary"
+// //         />
+
+// //         <ResumenItem
+// //           icon={ShieldCheck}
+// //           label="Estado"
+// //           value={estadoLabel(usuario.estado)}
+// //           tone={usuario.estado === "activo" ? "success" : "danger"}
+// //         />
+
+// //         <ResumenItem
+// //           icon={ShieldAlert}
+// //           label="Protección"
+// //           value={usuario.esProtegido ? "Protegido" : "Normal"}
+// //           tone={usuario.esProtegido ? "warning" : "neutral"}
+// //         />
+
+// //         <ResumenItem
+// //           icon={KeyRound}
+// //           label="Contraseña"
+// //           value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
+// //           tone={usuario.debeCambiarPassword ? "warning" : "success"}
+// //         />
+
+// //         <ResumenItem icon={IdCard} label="DNI" value={usuario.dni || "-"} />
+
+// //         <ResumenItem icon={Mail} label="Email" value={usuario.email} />
+
+// //         <ResumenItem
+// //           icon={CalendarClock}
+// //           label="Último acceso"
+// //           value={formatDateTime(usuario.ultimoAcceso)}
+// //         />
+
+// //         <ResumenItem
+// //           icon={CalendarClock}
+// //           label="Creado"
+// //           value={formatDate(usuario.creadoEn)}
+// //         />
+// //       </div>
+// //     </section>
+// //   );
+// // }
+
+// // function ResetPasswordPanel({
+// //   usuarioId,
+// //   permisos,
+// // }: {
+// //   usuarioId: string;
+// //   permisos: PermisosEdicion;
+// // }) {
+// //   return (
+// //     <section className={`${panelClass} p-3.5`}>
+// //       <div className="mb-3">
+// //         <p className={sectionTitleClass}>Reset de contraseña</p>
+
+// //         <h2 className={sectionSubtitleClass}>Contraseña temporal</h2>
+
+// //         <p className={sectionDescriptionClass}>
+// //           El sistema genera una clave provisoria y la muestra una sola vez.
+// //         </p>
+// //       </div>
+
+// //       <ResetPasswordForm
+// //         usuarioId={usuarioId}
+// //         disabled={!permisos.puedeResetearPassword}
+// //         disabledMessage={permisos.avisoReset}
+// //       />
+// //     </section>
+// //   );
+// // }
+
+// // function NotaReset() {
+// //   return (
+// //     <section className={`${panelClass} p-3.5`}>
+// //       <div className="mb-3">
+// //         <p className={sectionTitleClass}>Seguridad</p>
+
+// //         <h2 className={sectionSubtitleClass}>Clave temporal</h2>
+// //       </div>
+
+// //       <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[12px] leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
+// //         La contraseña temporal se muestra una sola vez. Copiala antes de salir
+// //         de esta pantalla.
+// //       </div>
+// //     </section>
+// //   );
+// // }
+
+// // export default async function EditarUsuarioPage({
+// //   params,
+// // }: EditarUsuarioPageProps) {
+// //   const usuario = await obtenerUsuarioPorId(params.id);
+
+// //   if (!usuario) {
+// //     notFound();
+// //   }
+
+// //   const currentUser = await getCurrentUser();
+// //   const actor = currentUser?.userId
+// //     ? await obtenerUsuarioPorId(currentUser.userId)
+// //     : null;
+
+// //   const permisos = construirPermisos(usuario, actor);
+
+// //   return (
+// //     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+// //       <DashboardGrid>
+// //         <DashboardMain>
+// //           <section className={`${panelClass} p-3.5`}>
+// //             <PageTitle usuario={usuario} />
+
+// //             <EditarUsuarioForm
+// //               usuario={usuario}
+// //               puedeEditarDatos={permisos.puedeEditarDatos}
+// //               puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
+// //               avisoPermisos={permisos.avisoEdicion}
+// //             />
+// //           </section>
+
+// //           <div className="mt-3">
+// //             <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
+// //           </div>
+// //         </DashboardMain>
+
+// //         <DashboardAside>
+// //           <ResumenUsuario usuario={usuario} />
+
+// //           <div className="mt-3">
+// //             <NotaReset />
+// //           </div>
+// //         </DashboardAside>
+// //       </DashboardGrid>
+// //     </PageShell>
+// //   );
+// // }
+
+// import Link from "next/link";
+// import { notFound, redirect } from "next/navigation";
+// import type { ReactNode } from "react";
+// import type { LucideIcon } from "lucide-react";
 // import {
 //   CalendarClock,
-//   CheckCircle2,
 //   IdCard,
 //   KeyRound,
 //   Mail,
+//   ShieldAlert,
 //   ShieldCheck,
 //   UserRound,
 // } from "lucide-react";
-// import { PageShell } from "@/components/ui/PageShell";
+
+// import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
+// import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
 // import {
 //   DashboardAside,
 //   DashboardGrid,
 //   DashboardMain,
 // } from "@/components/ui/DashboardGrid";
-// import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
-// import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
+// import { PageShell } from "@/components/ui/PageShell";
+// import { getCurrentUser } from "@/lib/current-user";
 // import { obtenerUsuarioPorId } from "@/services/usuario.service";
+// import type { UsuarioSafe } from "@/types/usuario.types";
 
 // type EditarUsuarioPageProps = {
 //   params: {
@@ -26,79 +2201,64 @@
 //   };
 // };
 
+// type PermisosEdicion = {
+//   actorEsProtegido: boolean;
+//   usuarioEsProtegido: boolean;
+//   puedeEditarDatos: boolean;
+//   puedeCambiarRolEstado: boolean;
+//   puedeResetearPassword: boolean;
+//   avisoEdicion?: string;
+//   avisoReset?: string;
+// };
+
+// type BadgeTone =
+//   | "neutral"
+//   | "primary"
+//   | "success"
+//   | "warning"
+//   | "danger";
+
 // export const metadata = {
 //   title: "Editar usuario",
 // };
 
-// type StatCardProps = {
-//   title: string;
-//   shortTitle?: string;
-//   value: string;
-//   description: string;
-//   icon: typeof UserRound;
-//   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
-// };
-
-// const toneClasses = {
-//   cyan: "bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300",
-//   emerald:
-//     "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
-//   amber:
-//     "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
-//   red: "bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300",
-//   violet:
-//     "bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
-// };
-
-// function StatCard({
-//   title,
-//   shortTitle,
-//   value,
-//   description,
-//   icon: Icon,
-//   tone,
-// }: StatCardProps) {
-//   return (
-//     <div className="flex h-full min-h-[78px] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white/85 p-2.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/75 sm:min-h-[104px] sm:rounded-[1.35rem] sm:p-3">
-//       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
-//         <div
-//           className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl sm:h-10 sm:w-10 sm:rounded-2xl ${toneClasses[tone]}`}
-//         >
-//           <Icon className="h-4 w-4" />
-//         </div>
-
-//         <div className="min-w-0">
-//           <p className="truncate text-[9px] font-medium uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400 sm:text-[10px] sm:tracking-[0.15em]">
-//             <span className="sm:hidden">{shortTitle || title}</span>
-//             <span className="hidden sm:inline">{title}</span>
-//           </p>
-
-//           <p className="mt-0.5 truncate text-[15px] font-medium leading-none tracking-tight text-slate-950 dark:text-white sm:mt-1 sm:text-lg">
-//             {value}
-//           </p>
-
-//           <p className="mt-1 hidden text-xs leading-5 text-slate-600 dark:text-slate-400 sm:block">
-//             {description}
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+// const panelClass =
+//   "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
+//   "dark:border-[#263451] dark:bg-[#111b31] " +
+//   "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
 
 // function rolLabel(rol: string) {
-//   if (rol === "admin") return "Admin";
-//   if (rol === "cobrador") return "Cobrador";
+//   if (rol === "admin") {
+//     return "Administrador";
+//   }
+
+//   if (rol === "cobrador") {
+//     return "Cobrador";
+//   }
+
 //   return "Cliente";
 // }
 
 // function estadoLabel(estado: string) {
-//   if (estado === "activo") return "Activo";
-//   return "Suspendido";
+//   return estado === "activo" ? "Activo" : "Suspendido";
+// }
+
+// function getNombreCompleto(usuario: UsuarioSafe) {
+//   const apellido = String(usuario.apellido || "").trim();
+//   const nombre = String(usuario.nombre || "").trim();
+
+//   const nombreCompleto = `${apellido}, ${nombre}`
+//     .replace(/^,\s*/, "")
+//     .replace(/,\s*$/, "")
+//     .trim();
+
+//   return nombreCompleto || "Usuario";
 // }
 
 // function formatDate(value?: string | null) {
-//   if (!value) return "Sin fecha";
+//   if (!value) {
+//     return "Sin fecha";
+//   }
 
 //   const date = new Date(value);
 
@@ -114,7 +2274,9 @@
 // }
 
 // function formatDateTime(value?: string | null) {
-//   if (!value) return "Nunca";
+//   if (!value) {
+//     return "Nunca";
+//   }
 
 //   const date = new Date(value);
 
@@ -125,1741 +2287,6 @@
 //   const day = String(date.getDate()).padStart(2, "0");
 //   const month = String(date.getMonth() + 1).padStart(2, "0");
 //   const year = date.getFullYear();
-
-//   let hours = date.getHours();
-//   const minutes = String(date.getMinutes()).padStart(2, "0");
-//   const period = hours >= 12 ? "p. m." : "a. m.";
-
-//   hours = hours % 12;
-//   hours = hours === 0 ? 12 : hours;
-
-//   return `${day}/${month}/${year}, ${String(hours).padStart(
-//     2,
-//     "0",
-//   )}:${minutes} ${period}`;
-// }
-
-// export default async function EditarUsuarioPage({
-//   params,
-// }: EditarUsuarioPageProps) {
-//   const usuario = await obtenerUsuarioPorId(params.id);
-
-//   if (!usuario) {
-//     notFound();
-//   }
-
-//   return (
-//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
-//       <div className="grid grid-cols-4 items-stretch gap-2 sm:grid-cols-2 sm:gap-3 xl:grid-cols-5">
-//         <StatCard
-//           title="Usuario"
-//           value={rolLabel(usuario.rol)}
-//           description="Rol actual del usuario."
-//           icon={UserRound}
-//           tone="cyan"
-//         />
-
-//         <StatCard
-//           title="Estado"
-//           value={estadoLabel(usuario.estado)}
-//           description="Estado de acceso al sistema."
-//           icon={CheckCircle2}
-//           tone={usuario.estado === "activo" ? "emerald" : "red"}
-//         />
-
-//         <StatCard
-//           title="Seguridad"
-//           shortTitle="Clave"
-//           value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
-//           description="Estado de la contraseña."
-//           icon={KeyRound}
-//           tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
-//         />
-
-//         <StatCard
-//           title="DNI"
-//           value={usuario.dni || "-"}
-//           description="Documento registrado."
-//           icon={IdCard}
-//           tone="violet"
-//         />
-
-//         <div className="hidden xl:block">
-//           <StatCard
-//             title="Creado"
-//             value={formatDate(usuario.creadoEn)}
-//             description="Fecha de alta del usuario."
-//             icon={CalendarClock}
-//             tone="amber"
-//           />
-//         </div>
-//       </div>
-
-//       <DashboardGrid>
-//         <DashboardMain>
-//           <div className="rounded-[1.45rem] border border-slate-200 bg-white/80 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
-//             <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-//               Usuarios
-//             </p>
-
-//             <h1 className="mt-0.5 text-base font-medium tracking-tight text-slate-950 dark:text-white">
-//               Editar usuario
-//             </h1>
-
-//             <p className="mt-1 hidden max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400 sm:block">
-//               Modificá datos básicos, rol, estado de acceso, seguridad y
-//               configuración operativa del usuario registrado.
-//             </p>
-//           </div>
-
-//           <EditarUsuarioForm usuario={usuario} />
-
-//           <div className="rounded-[1.45rem] border border-slate-200 bg-white/80 p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-3.5">
-//             <div className="mb-3 flex items-start gap-3">
-//               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
-//                 <KeyRound className="h-4 w-4" />
-//               </div>
-
-//               <div className="min-w-0">
-//                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
-//                   Reset de contraseña
-//                 </p>
-
-//                 <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
-//                   Generar contraseña temporal
-//                 </h2>
-
-//                 <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-//                   Usá esta opción si el usuario olvidó su clave. El sistema
-//                   generará una contraseña temporal y obligará el cambio al
-//                   iniciar sesión.
-//                 </p>
-//               </div>
-//             </div>
-
-//             <ResetPasswordForm usuarioId={usuario.id} />
-//           </div>
-//         </DashboardMain>
-
-//         <DashboardAside>
-//           <div className="rounded-[1.45rem] border border-slate-200 bg-white/80 p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
-//             <div className="mb-3">
-//               <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-//                 Resumen
-//               </p>
-
-//               <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
-//                 Información del usuario
-//               </h2>
-//             </div>
-
-//             <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
-//               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//                   <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//                   Rol
-//                 </span>
-
-//                 <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-//                   {rolLabel(usuario.rol)}
-//                 </span>
-//               </div>
-
-//               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//                   <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//                   Estado
-//                 </span>
-
-//                 <span
-//                   className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//                     usuario.estado === "activo"
-//                       ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//                       : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
-//                   }`}
-//                 >
-//                   {estadoLabel(usuario.estado)}
-//                 </span>
-//               </div>
-
-//               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//                   <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//                   Contraseña
-//                 </span>
-
-//                 <span
-//                   className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//                     usuario.debeCambiarPassword
-//                       ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-//                       : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//                   }`}
-//                 >
-//                   {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
-//                 </span>
-//               </div>
-
-//               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//                   <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//                   Email
-//                 </span>
-
-//                 <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//                   {usuario.email}
-//                 </span>
-//               </div>
-
-//               <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//                   <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//                   Último acceso
-//                 </span>
-
-//                 <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//                   {formatDateTime(usuario.ultimoAcceso)}
-//                 </span>
-//               </div>
-
-//               <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-//                 <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//                   <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//                   Creado
-//                 </span>
-
-//                 <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
-//                   {formatDate(usuario.creadoEn)}
-//                 </span>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="hidden rounded-[1.45rem] border border-amber-200 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 xl:block">
-//             <p className="font-medium">Importante</p>
-
-//             <p className="mt-1">
-//               El reset de contraseña mostrará la clave temporal una sola vez.
-//               Copiala antes de salir de esta pantalla.
-//             </p>
-//           </div>
-//         </DashboardAside>
-//       </DashboardGrid>
-//     </PageShell>
-//   );
-// }
-
-// // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
-
-// import { notFound } from "next/navigation";
-// import {
-//   CalendarClock,
-//   CheckCircle2,
-//   IdCard,
-//   KeyRound,
-//   Mail,
-//   ShieldCheck,
-//   UserRound,
-// } from "lucide-react";
-// import { PageShell } from "@/components/ui/PageShell";
-// import {
-//   DashboardAside,
-//   DashboardGrid,
-//   DashboardMain,
-// } from "@/components/ui/DashboardGrid";
-// import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
-// import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
-// import { obtenerUsuarioPorId } from "@/services/usuario.service";
-// import type { UsuarioSafe } from "@/types/usuario.types";
-
-// type EditarUsuarioPageProps = {
-//   params: {
-//     id: string;
-//   };
-// };
-
-// export const metadata = {
-//   title: "Editar usuario",
-// };
-
-// type StatCardProps = {
-//   title: string;
-//   value: string;
-//   description: string;
-//   icon: typeof UserRound;
-//   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
-// };
-
-// const cardBase =
-//   "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
-
-// const innerCardBase =
-//   "rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-200/70 dark:border-slate-800 dark:bg-slate-950/55 dark:shadow-none";
-
-// const statToneClasses = {
-//   cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
-//   emerald:
-//     "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
-//   amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
-//   red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
-//   violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
-// };
-
-// function rolLabel(rol: string) {
-//   if (rol === "admin") return "Admin";
-//   if (rol === "cobrador") return "Cobrador";
-//   return "Cliente";
-// }
-
-// function estadoLabel(estado: string) {
-//   if (estado === "activo") return "Activo";
-//   return "Suspendido";
-// }
-
-// function getNombreCompleto(usuario: UsuarioSafe) {
-//   const apellido = String(usuario.apellido || "").trim();
-//   const nombre = String(usuario.nombre || "").trim();
-
-//   const completo = `${apellido}, ${nombre}`
-//     .replace(/^,\s*/, "")
-//     .replace(/,\s*$/, "")
-//     .trim();
-
-//   return completo || "Usuario";
-// }
-
-// function formatDate(value?: string | null) {
-//   if (!value) return "Sin fecha";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Sin fecha";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
-
-//   return `${day}/${month}/${year}`;
-// }
-
-// function formatDateTime(value?: string | null) {
-//   if (!value) return "Nunca";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Nunca";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
-//   const hours = String(date.getHours()).padStart(2, "0");
-//   const minutes = String(date.getMinutes()).padStart(2, "0");
-
-//   return `${day}/${month}/${year} ${hours}:${minutes}`;
-// }
-
-// function getUltimoAcceso(usuario: UsuarioSafe) {
-//   const usuarioConAcceso = usuario as UsuarioSafe & {
-//     ultimoAcceso?: string | null;
-//   };
-
-//   return usuarioConAcceso.ultimoAcceso || null;
-// }
-
-// function StatCard({
-//   title,
-//   value,
-//   description,
-//   icon: Icon,
-//   tone,
-// }: StatCardProps) {
-//   return (
-//     <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
-//       <div className="flex items-start gap-3">
-//         <div
-//           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${statToneClasses[tone]}`}
-//         >
-//           <Icon className="h-4 w-4" />
-//         </div>
-
-//         <div className="min-w-0">
-//           <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
-//             {title}
-//           </p>
-
-//           <p
-//             className={`mt-1 truncate text-xl font-semibold tracking-tight ${
-//               tone === "red"
-//                 ? "text-red-700 dark:text-red-300"
-//                 : "text-slate-950 dark:text-white"
-//             }`}
-//           >
-//             {value}
-//           </p>
-
-//           <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
-//             {description}
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function MobileHeader({ usuario }: { usuario: UsuarioSafe }) {
-//   return (
-//     <section className={`${cardBase} p-3`}>
-//       <div className="flex items-start gap-3">
-//         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
-//           <UserRound className="h-5 w-5" />
-//         </div>
-
-//         <div className="min-w-0 flex-1">
-//           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
-//             Editar usuario
-//           </p>
-
-//           <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
-//             {getNombreCompleto(usuario)}
-//           </h1>
-
-//           <div className="mt-2 flex flex-wrap gap-2">
-//             <span className="inline-flex rounded-full border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-[10px] font-medium text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/35 dark:text-cyan-300">
-//               {rolLabel(usuario.rol)}
-//             </span>
-
-//             <span
-//               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-//                 usuario.estado === "activo"
-//                   ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-//                   : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
-//               }`}
-//             >
-//               {estadoLabel(usuario.estado)}
-//             </span>
-
-//             <span
-//               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-//                 usuario.debeCambiarPassword
-//                   ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
-//                   : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-//               }`}
-//             >
-//               {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
-//             </span>
-//           </div>
-
-//           <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
-//             DNI {usuario.dni || "-"} · {usuario.email}
-//           </p>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-// function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
-//   return (
-//     <div className={`${cardBase} p-3.5`}>
-//       <div className="mb-3">
-//         <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-//           Resumen
-//         </p>
-
-//         <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
-//           Información del usuario
-//         </h2>
-//       </div>
-
-//       <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none">
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Rol
-//           </span>
-
-//           <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-//             {rolLabel(usuario.rol)}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Estado
-//           </span>
-
-//           <span
-//             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//               usuario.estado === "activo"
-//                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//                 : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
-//             }`}
-//           >
-//             {estadoLabel(usuario.estado)}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Contraseña
-//           </span>
-
-//           <span
-//             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//               usuario.debeCambiarPassword
-//                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-//                 : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//             }`}
-//           >
-//             {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Email
-//           </span>
-
-//           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {usuario.email}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Último acceso
-//           </span>
-
-//           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {formatDateTime(getUltimoAcceso(usuario))}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Creado
-//           </span>
-
-//           <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {formatDate(usuario.creadoEn)}
-//           </span>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function ResetPasswordPanel({ usuarioId }: { usuarioId: string }) {
-//   return (
-//     <div className={`${cardBase} p-3 sm:p-3.5`}>
-//       <div className="mb-3 flex items-start gap-3">
-//         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900/70">
-//           <KeyRound className="h-4 w-4" />
-//         </div>
-
-//         <div className="min-w-0">
-//           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
-//             Reset de contraseña
-//           </p>
-
-//           <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
-//             Generar contraseña temporal
-//           </h2>
-
-//           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-//             Usá esta opción si el usuario olvidó su clave. La clave temporal se
-//             mostrará una sola vez.
-//           </p>
-//         </div>
-//       </div>
-
-//       <ResetPasswordForm usuarioId={usuarioId} />
-//     </div>
-//   );
-// }
-
-// export default async function EditarUsuarioPage({
-//   params,
-// }: EditarUsuarioPageProps) {
-//   const usuario = await obtenerUsuarioPorId(params.id);
-
-//   if (!usuario) {
-//     notFound();
-//   }
-
-//   return (
-//     <PageShell maxWidth="wide">
-//       <div className="space-y-3 lg:hidden">
-//         <MobileHeader usuario={usuario} />
-
-//         <EditarUsuarioForm usuario={usuario} />
-
-//         <ResetPasswordPanel usuarioId={usuario.id} />
-//       </div>
-
-//       <div className="hidden lg:block">
-//         <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
-//           <StatCard
-//             title="Usuario"
-//             value={rolLabel(usuario.rol)}
-//             description="Rol actual del usuario."
-//             icon={UserRound}
-//             tone="cyan"
-//           />
-
-//           <StatCard
-//             title="Estado"
-//             value={estadoLabel(usuario.estado)}
-//             description="Estado de acceso."
-//             icon={CheckCircle2}
-//             tone={usuario.estado === "activo" ? "emerald" : "red"}
-//           />
-
-//           <StatCard
-//             title="Seguridad"
-//             value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
-//             description="Estado de la clave."
-//             icon={KeyRound}
-//             tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
-//           />
-
-//           <StatCard
-//             title="DNI"
-//             value={usuario.dni || "-"}
-//             description="Documento registrado."
-//             icon={IdCard}
-//             tone="violet"
-//           />
-
-//           <StatCard
-//             title="Creado"
-//             value={formatDate(usuario.creadoEn)}
-//             description="Fecha de alta."
-//             icon={CalendarClock}
-//             tone="amber"
-//           />
-//         </div>
-
-//         <div className="mt-5">
-//           <DashboardGrid>
-//             <DashboardMain>
-//               <div className={`${cardBase} p-3.5`}>
-//                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-//                   Usuarios
-//                 </p>
-
-//                 <h1 className="mt-0.5 text-base font-medium tracking-tight text-slate-950 dark:text-white">
-//                   Editar usuario
-//                 </h1>
-
-//                 <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-600 dark:text-slate-400">
-//                   Modificá datos básicos, rol, estado de acceso y configuración
-//                   operativa del usuario.
-//                 </p>
-//               </div>
-
-//               <EditarUsuarioForm usuario={usuario} />
-
-//               <ResetPasswordPanel usuarioId={usuario.id} />
-//             </DashboardMain>
-
-//             <DashboardAside>
-//               <ResumenUsuario usuario={usuario} />
-
-//               <div className="rounded-[1.45rem] border border-amber-300 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm shadow-amber-950/5 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 dark:shadow-none">
-//                 <p className="font-medium">Importante</p>
-
-//                 <p className="mt-1">
-//                   El reset de contraseña mostrará la clave temporal una sola
-//                   vez. Copiala antes de salir de esta pantalla.
-//                 </p>
-//               </div>
-//             </DashboardAside>
-//           </DashboardGrid>
-//         </div>
-//       </div>
-//     </PageShell>
-//   );
-// }
-
-
-// // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
-
-// import { notFound } from "next/navigation";
-// import {
-//   CalendarClock,
-//   CheckCircle2,
-//   IdCard,
-//   KeyRound,
-//   Mail,
-//   ShieldCheck,
-//   UserRound,
-// } from "lucide-react";
-// import { PageShell } from "@/components/ui/PageShell";
-// import {
-//   DashboardAside,
-//   DashboardGrid,
-//   DashboardMain,
-// } from "@/components/ui/DashboardGrid";
-// import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
-// import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
-// import { obtenerUsuarioPorId } from "@/services/usuario.service";
-// import type { UsuarioSafe } from "@/types/usuario.types";
-
-// type EditarUsuarioPageProps = {
-//   params: {
-//     id: string;
-//   };
-// };
-
-// export const metadata = {
-//   title: "Editar usuario",
-// };
-
-// type StatCardProps = {
-//   title: string;
-//   value: string;
-//   description: string;
-//   icon: typeof UserRound;
-//   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
-// };
-
-// const cardBase =
-//   "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
-
-// const statToneClasses = {
-//   cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
-//   emerald:
-//     "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
-//   amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
-//   red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
-//   violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
-// };
-
-// function rolLabel(rol: string) {
-//   if (rol === "admin") return "Admin";
-//   if (rol === "cobrador") return "Cobrador";
-//   return "Cliente";
-// }
-
-// function estadoLabel(estado: string) {
-//   if (estado === "activo") return "Activo";
-//   return "Suspendido";
-// }
-
-// function getNombreCompleto(usuario: UsuarioSafe) {
-//   const apellido = String(usuario.apellido || "").trim();
-//   const nombre = String(usuario.nombre || "").trim();
-
-//   const completo = `${apellido}, ${nombre}`
-//     .replace(/^,\s*/, "")
-//     .replace(/,\s*$/, "")
-//     .trim();
-
-//   return completo || "Usuario";
-// }
-
-// function formatDate(value?: string | null) {
-//   if (!value) return "Sin fecha";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Sin fecha";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
-
-//   return `${day}/${month}/${year}`;
-// }
-
-// function formatDateTime(value?: string | null) {
-//   if (!value) return "Nunca";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Nunca";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
-//   const hours = String(date.getHours()).padStart(2, "0");
-//   const minutes = String(date.getMinutes()).padStart(2, "0");
-
-//   return `${day}/${month}/${year} ${hours}:${minutes}`;
-// }
-
-// function getUltimoAcceso(usuario: UsuarioSafe) {
-//   const usuarioConAcceso = usuario as UsuarioSafe & {
-//     ultimoAcceso?: string | null;
-//   };
-
-//   return usuarioConAcceso.ultimoAcceso || null;
-// }
-
-// function StatCard({
-//   title,
-//   value,
-//   description,
-//   icon: Icon,
-//   tone,
-// }: StatCardProps) {
-//   return (
-//     <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
-//       <div className="flex items-start gap-3">
-//         <div
-//           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${statToneClasses[tone]}`}
-//         >
-//           <Icon className="h-4 w-4" />
-//         </div>
-
-//         <div className="min-w-0">
-//           <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
-//             {title}
-//           </p>
-
-//           <p
-//             className={`mt-1 truncate text-xl font-semibold tracking-tight ${
-//               tone === "red"
-//                 ? "text-red-700 dark:text-red-300"
-//                 : "text-slate-950 dark:text-white"
-//             }`}
-//           >
-//             {value}
-//           </p>
-
-//           <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
-//             {description}
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function MobileHeader({ usuario }: { usuario: UsuarioSafe }) {
-//   return (
-//     <section className={`${cardBase} p-3`}>
-//       <div className="flex items-start gap-3">
-//         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
-//           <UserRound className="h-5 w-5" />
-//         </div>
-
-//         <div className="min-w-0 flex-1">
-//           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
-//             Editar usuario
-//           </p>
-
-//           <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
-//             {getNombreCompleto(usuario)}
-//           </h1>
-
-//           <div className="mt-2 flex flex-wrap gap-2">
-//             <span className="inline-flex rounded-full border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-[10px] font-medium text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/35 dark:text-cyan-300">
-//               {rolLabel(usuario.rol)}
-//             </span>
-
-//             <span
-//               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-//                 usuario.estado === "activo"
-//                   ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-//                   : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
-//               }`}
-//             >
-//               {estadoLabel(usuario.estado)}
-//             </span>
-
-//             <span
-//               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-//                 usuario.debeCambiarPassword
-//                   ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
-//                   : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-//               }`}
-//             >
-//               {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
-//             </span>
-//           </div>
-
-//           <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
-//             DNI {usuario.dni || "-"} · {usuario.email}
-//           </p>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-// function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
-//   return (
-//     <div className={`${cardBase} p-3.5`}>
-//       <div className="mb-3 flex items-start justify-between gap-3">
-//         <div>
-//           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-//             Resumen
-//           </p>
-
-//           <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
-//             Información del usuario
-//           </h2>
-//         </div>
-
-//         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
-//           <UserRound className="h-4 w-4" />
-//         </div>
-//       </div>
-
-//       <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none">
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Rol
-//           </span>
-
-//           <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-//             {rolLabel(usuario.rol)}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Estado
-//           </span>
-
-//           <span
-//             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//               usuario.estado === "activo"
-//                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//                 : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
-//             }`}
-//           >
-//             {estadoLabel(usuario.estado)}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Contraseña
-//           </span>
-
-//           <span
-//             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//               usuario.debeCambiarPassword
-//                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-//                 : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//             }`}
-//           >
-//             {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Email
-//           </span>
-
-//           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {usuario.email}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Último acceso
-//           </span>
-
-//           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {formatDateTime(getUltimoAcceso(usuario))}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Creado
-//           </span>
-
-//           <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {formatDate(usuario.creadoEn)}
-//           </span>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function ResetPasswordPanel({ usuarioId }: { usuarioId: string }) {
-//   return (
-//     <div className={`${cardBase} p-3 sm:p-3.5`}>
-//       <div className="mb-3 flex items-start gap-3">
-//         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900/70">
-//           <KeyRound className="h-4 w-4" />
-//         </div>
-
-//         <div className="min-w-0">
-//           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
-//             Reset de contraseña
-//           </p>
-
-//           <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
-//             Generar contraseña temporal
-//           </h2>
-
-//           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-//             Usá esta opción si el usuario olvidó su clave. La clave temporal se
-//             mostrará una sola vez.
-//           </p>
-//         </div>
-//       </div>
-
-//       <ResetPasswordForm usuarioId={usuarioId} />
-//     </div>
-//   );
-// }
-
-// export default async function EditarUsuarioPage({
-//   params,
-// }: EditarUsuarioPageProps) {
-//   const usuario = await obtenerUsuarioPorId(params.id);
-
-//   if (!usuario) {
-//     notFound();
-//   }
-
-//   return (
-//     <PageShell maxWidth="wide">
-//       <div className="space-y-3 lg:hidden">
-//         <MobileHeader usuario={usuario} />
-
-//         <EditarUsuarioForm usuario={usuario} />
-
-//         <ResetPasswordPanel usuarioId={usuario.id} />
-//       </div>
-
-//       <div className="hidden lg:block">
-//         <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
-//           <StatCard
-//             title="Usuario"
-//             value={rolLabel(usuario.rol)}
-//             description="Rol actual."
-//             icon={UserRound}
-//             tone="cyan"
-//           />
-
-//           <StatCard
-//             title="Estado"
-//             value={estadoLabel(usuario.estado)}
-//             description="Acceso al sistema."
-//             icon={CheckCircle2}
-//             tone={usuario.estado === "activo" ? "emerald" : "red"}
-//           />
-
-//           <StatCard
-//             title="Seguridad"
-//             value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
-//             description="Estado de clave."
-//             icon={KeyRound}
-//             tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
-//           />
-
-//           <StatCard
-//             title="DNI"
-//             value={usuario.dni || "-"}
-//             description="Documento."
-//             icon={IdCard}
-//             tone="violet"
-//           />
-
-//           <StatCard
-//             title="Creado"
-//             value={formatDate(usuario.creadoEn)}
-//             description="Fecha de alta."
-//             icon={CalendarClock}
-//             tone="amber"
-//           />
-//         </div>
-
-//         <div className="mt-5">
-//           <DashboardGrid>
-//             <DashboardMain>
-//               <EditarUsuarioForm usuario={usuario} variant="desktop" />
-
-//               <div className="mt-3">
-//                 <ResetPasswordPanel usuarioId={usuario.id} />
-//               </div>
-//             </DashboardMain>
-
-//             <DashboardAside>
-//               <ResumenUsuario usuario={usuario} />
-
-//               <div className="rounded-[1.45rem] border border-amber-300 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm shadow-amber-950/5 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 dark:shadow-none">
-//                 <p className="font-medium">Importante</p>
-
-//                 <p className="mt-1">
-//                   El reset de contraseña mostrará la clave temporal una sola
-//                   vez. Copiala antes de salir de esta pantalla.
-//                 </p>
-//               </div>
-//             </DashboardAside>
-//           </DashboardGrid>
-//         </div>
-//       </div>
-//     </PageShell>
-//   );
-// }
-
-// // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
-
-// import { notFound } from "next/navigation";
-// import {
-//   CalendarClock,
-//   CheckCircle2,
-//   IdCard,
-//   KeyRound,
-//   Mail,
-//   ShieldAlert,
-//   ShieldCheck,
-//   UserRound,
-// } from "lucide-react";
-// import { PageShell } from "@/components/ui/PageShell";
-// import {
-//   DashboardAside,
-//   DashboardGrid,
-//   DashboardMain,
-// } from "@/components/ui/DashboardGrid";
-// import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
-// import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
-// import { getCurrentUser } from "@/lib/current-user";
-// import { obtenerUsuarioPorId } from "@/services/usuario.service";
-// import type { UsuarioSafe } from "@/types/usuario.types";
-
-// type EditarUsuarioPageProps = {
-//   params: {
-//     id: string;
-//   };
-// };
-
-// export const metadata = {
-//   title: "Editar usuario",
-// };
-
-// type StatCardProps = {
-//   title: string;
-//   value: string;
-//   description: string;
-//   icon: typeof UserRound;
-//   tone: "cyan" | "emerald" | "amber" | "red" | "violet";
-// };
-
-// type PermisosEdicion = {
-//   actorEsProtegido: boolean;
-//   usuarioEsProtegido: boolean;
-//   puedeEditarDatos: boolean;
-//   puedeCambiarRolEstado: boolean;
-//   puedeResetearPassword: boolean;
-//   avisoEdicion?: string;
-//   avisoReset?: string;
-// };
-
-// const cardBase =
-//   "rounded-[1.45rem] border border-slate-300 bg-slate-50/95 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none";
-
-// const statToneClasses = {
-//   cyan: "bg-cyan-600 text-white dark:bg-cyan-500 dark:text-slate-950",
-//   emerald:
-//     "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950",
-//   amber: "bg-amber-500 text-white dark:bg-amber-400 dark:text-slate-950",
-//   red: "bg-red-600 text-white dark:bg-red-500 dark:text-white",
-//   violet: "bg-violet-600 text-white dark:bg-violet-500 dark:text-white",
-// };
-
-// function rolLabel(rol: string) {
-//   if (rol === "admin") return "Admin";
-//   if (rol === "cobrador") return "Cobrador";
-//   return "Cliente";
-// }
-
-// function estadoLabel(estado: string) {
-//   if (estado === "activo") return "Activo";
-//   return "Suspendido";
-// }
-
-// function getNombreCompleto(usuario: UsuarioSafe) {
-//   const apellido = String(usuario.apellido || "").trim();
-//   const nombre = String(usuario.nombre || "").trim();
-
-//   const completo = `${apellido}, ${nombre}`
-//     .replace(/^,\s*/, "")
-//     .replace(/,\s*$/, "")
-//     .trim();
-
-//   return completo || "Usuario";
-// }
-
-// function formatDate(value?: string | null) {
-//   if (!value) return "Sin fecha";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Sin fecha";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
-
-//   return `${day}/${month}/${year}`;
-// }
-
-// function formatDateTime(value?: string | null) {
-//   if (!value) return "Nunca";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Nunca";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
-//   const hours = String(date.getHours()).padStart(2, "0");
-//   const minutes = String(date.getMinutes()).padStart(2, "0");
-
-//   return `${day}/${month}/${year} ${hours}:${minutes}`;
-// }
-
-// function getUltimoAcceso(usuario: UsuarioSafe) {
-//   const usuarioConAcceso = usuario as UsuarioSafe & {
-//     ultimoAcceso?: string | null;
-//   };
-
-//   return usuarioConAcceso.ultimoAcceso || null;
-// }
-
-// function construirPermisos(
-//   usuario: UsuarioSafe,
-//   actor: UsuarioSafe | null,
-// ): PermisosEdicion {
-//   const actorEsProtegido = Boolean(actor?.esProtegido);
-//   const usuarioEsProtegido = Boolean(usuario.esProtegido);
-
-//   if (!usuarioEsProtegido) {
-//     return {
-//       actorEsProtegido,
-//       usuarioEsProtegido,
-//       puedeEditarDatos: true,
-//       puedeCambiarRolEstado: true,
-//       puedeResetearPassword: true,
-//     };
-//   }
-
-//   if (actorEsProtegido) {
-//     return {
-//       actorEsProtegido,
-//       usuarioEsProtegido,
-//       puedeEditarDatos: true,
-//       puedeCambiarRolEstado: false,
-//       puedeResetearPassword: true,
-//       avisoEdicion:
-//         "Administrador protegido: podés editar datos básicos, pero no cambiar rol ni suspenderlo.",
-//       avisoReset:
-//         "Administrador protegido: el reset de contraseña está permitido solo entre administradores protegidos.",
-//     };
-//   }
-
-//   return {
-//     actorEsProtegido,
-//     usuarioEsProtegido,
-//     puedeEditarDatos: false,
-//     puedeCambiarRolEstado: false,
-//     puedeResetearPassword: false,
-//     avisoEdicion:
-//       "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos básicos.",
-//     avisoReset:
-//       "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
-//   };
-// }
-
-// function StatCard({
-//   title,
-//   value,
-//   description,
-//   icon: Icon,
-//   tone,
-// }: StatCardProps) {
-//   return (
-//     <div className="flex h-full min-h-[108px] flex-col justify-between rounded-[1.35rem] border border-slate-300 bg-slate-50/95 p-3 shadow-sm shadow-slate-300/60 dark:border-slate-800 dark:bg-slate-900/75 dark:shadow-none">
-//       <div className="flex items-start gap-3">
-//         <div
-//           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl shadow-sm ${statToneClasses[tone]}`}
-//         >
-//           <Icon className="h-4 w-4" />
-//         </div>
-
-//         <div className="min-w-0">
-//           <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
-//             {title}
-//           </p>
-
-//           <p
-//             className={`mt-1 truncate text-xl font-semibold tracking-tight ${
-//               tone === "red"
-//                 ? "text-red-700 dark:text-red-300"
-//                 : "text-slate-950 dark:text-white"
-//             }`}
-//           >
-//             {value}
-//           </p>
-
-//           <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-600 dark:text-slate-400">
-//             {description}
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function MobileHeader({ usuario }: { usuario: UsuarioSafe }) {
-//   return (
-//     <section className={`${cardBase} p-3`}>
-//       <div className="flex items-start gap-3">
-//         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-300 dark:ring-cyan-900">
-//           <UserRound className="h-5 w-5" />
-//         </div>
-
-//         <div className="min-w-0 flex-1">
-//           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-cyan-800 dark:text-cyan-300">
-//             Editar usuario
-//           </p>
-
-//           <h1 className="mt-1 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
-//             {getNombreCompleto(usuario)}
-//           </h1>
-
-//           <div className="mt-2 flex flex-wrap gap-2">
-//             <span className="inline-flex rounded-full border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-[10px] font-medium text-cyan-700 dark:border-cyan-900/70 dark:bg-cyan-950/35 dark:text-cyan-300">
-//               {rolLabel(usuario.rol)}
-//             </span>
-
-//             <span
-//               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-//                 usuario.estado === "activo"
-//                   ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-//                   : "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300"
-//               }`}
-//             >
-//               {estadoLabel(usuario.estado)}
-//             </span>
-
-//             {usuario.esProtegido ? (
-//               <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[10px] font-medium text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
-//                 Protegido
-//               </span>
-//             ) : null}
-
-//             <span
-//               className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-medium ${
-//                 usuario.debeCambiarPassword
-//                   ? "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300"
-//                   : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300"
-//               }`}
-//             >
-//               {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
-//             </span>
-//           </div>
-
-//           <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
-//             DNI {usuario.dni || "-"} · {usuario.email}
-//           </p>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-// function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
-//   return (
-//     <div className={`${cardBase} p-3.5`}>
-//       <div className="mb-3 flex items-start justify-between gap-3">
-//         <div>
-//           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-//             Resumen
-//           </p>
-
-//           <h2 className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
-//             Información del usuario
-//           </h2>
-//         </div>
-
-//         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700 ring-1 ring-cyan-100 dark:bg-cyan-950/50 dark:text-cyan-300 dark:ring-cyan-900">
-//           <UserRound className="h-4 w-4" />
-//         </div>
-//       </div>
-
-//       <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-800 dark:bg-slate-950/40 dark:shadow-none">
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <UserRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Rol
-//           </span>
-
-//           <span className="rounded-full bg-cyan-50 px-2.5 py-1 text-[11px] font-medium text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300">
-//             {rolLabel(usuario.rol)}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <ShieldCheck className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Estado
-//           </span>
-
-//           <span
-//             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//               usuario.estado === "activo"
-//                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//                 : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300"
-//             }`}
-//           >
-//             {estadoLabel(usuario.estado)}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <ShieldAlert className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Protección
-//           </span>
-
-//           <span
-//             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//               usuario.esProtegido
-//                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-//                 : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-//             }`}
-//           >
-//             {usuario.esProtegido ? "Protegido" : "Normal"}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <KeyRound className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Contraseña
-//           </span>
-
-//           <span
-//             className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
-//               usuario.debeCambiarPassword
-//                 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-//                 : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-//             }`}
-//           >
-//             {usuario.debeCambiarPassword ? "Cambio requerido" : "OK"}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <Mail className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Email
-//           </span>
-
-//           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {usuario.email}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 dark:border-slate-800">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Último acceso
-//           </span>
-
-//           <span className="truncate text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {formatDateTime(getUltimoAcceso(usuario))}
-//           </span>
-//         </div>
-
-//         <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-//           <span className="inline-flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
-//             <CalendarClock className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-300" />
-//             Creado
-//           </span>
-
-//           <span className="text-right text-[11px] text-slate-500 dark:text-slate-400">
-//             {formatDate(usuario.creadoEn)}
-//           </span>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// function ResetPasswordPanel({
-//   usuarioId,
-//   permisos,
-// }: {
-//   usuarioId: string;
-//   permisos: PermisosEdicion;
-// }) {
-//   return (
-//     <div className={`${cardBase} p-3 sm:p-3.5`}>
-//       <div className="mb-3 flex items-start gap-3">
-//         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900/70">
-//           <KeyRound className="h-4 w-4" />
-//         </div>
-
-//         <div className="min-w-0">
-//           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
-//             Reset de contraseña
-//           </p>
-
-//           <h2 className="mt-0.5 text-sm font-medium text-slate-950 dark:text-white">
-//             Generar contraseña temporal
-//           </h2>
-
-//           <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">
-//             Usá esta opción si el usuario olvidó su clave. La clave temporal se
-//             mostrará una sola vez.
-//           </p>
-//         </div>
-//       </div>
-
-//       <ResetPasswordForm
-//         usuarioId={usuarioId}
-//         disabled={!permisos.puedeResetearPassword}
-//         disabledMessage={permisos.avisoReset}
-//       />
-//     </div>
-//   );
-// }
-
-// export default async function EditarUsuarioPage({
-//   params,
-// }: EditarUsuarioPageProps) {
-//   const usuario = await obtenerUsuarioPorId(params.id);
-
-//   if (!usuario) {
-//     notFound();
-//   }
-
-//   const currentUser = await getCurrentUser();
-//   const actor = currentUser?.userId
-//     ? await obtenerUsuarioPorId(currentUser.userId)
-//     : null;
-
-//   const permisos = construirPermisos(usuario, actor);
-
-//   return (
-//     <PageShell maxWidth="wide">
-//       <div className="space-y-3 lg:hidden">
-//         <MobileHeader usuario={usuario} />
-
-//         <EditarUsuarioForm
-//           usuario={usuario}
-//           puedeEditarDatos={permisos.puedeEditarDatos}
-//           puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
-//           avisoPermisos={permisos.avisoEdicion}
-//         />
-
-//         <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
-//       </div>
-
-//       <div className="hidden lg:block">
-//         <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-5">
-//           <StatCard
-//             title="Usuario"
-//             value={rolLabel(usuario.rol)}
-//             description={usuario.esProtegido ? "Admin protegido." : "Rol actual."}
-//             icon={UserRound}
-//             tone="cyan"
-//           />
-
-//           <StatCard
-//             title="Estado"
-//             value={estadoLabel(usuario.estado)}
-//             description="Acceso al sistema."
-//             icon={CheckCircle2}
-//             tone={usuario.estado === "activo" ? "emerald" : "red"}
-//           />
-
-//           <StatCard
-//             title="Seguridad"
-//             value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
-//             description="Estado de clave."
-//             icon={KeyRound}
-//             tone={usuario.debeCambiarPassword ? "amber" : "emerald"}
-//           />
-
-//           <StatCard
-//             title="DNI"
-//             value={usuario.dni || "-"}
-//             description="Documento."
-//             icon={IdCard}
-//             tone="violet"
-//           />
-
-//           <StatCard
-//             title="Protección"
-//             value={usuario.esProtegido ? "Sí" : "No"}
-//             description={
-//               usuario.esProtegido
-//                 ? "Solo admins protegidos."
-//                 : "Gestión normal."
-//             }
-//             icon={ShieldAlert}
-//             tone={usuario.esProtegido ? "amber" : "emerald"}
-//           />
-//         </div>
-
-//         <div className="mt-5">
-//           <DashboardGrid>
-//             <DashboardMain>
-//               <EditarUsuarioForm
-//                 usuario={usuario}
-//                 variant="desktop"
-//                 puedeEditarDatos={permisos.puedeEditarDatos}
-//                 puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
-//                 avisoPermisos={permisos.avisoEdicion}
-//               />
-
-//               <div className="mt-3">
-//                 <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
-//               </div>
-//             </DashboardMain>
-
-//             <DashboardAside>
-//               <ResumenUsuario usuario={usuario} />
-
-//               <div className="rounded-[1.45rem] border border-amber-300 bg-amber-50 p-3.5 text-xs leading-5 text-amber-800 shadow-sm shadow-amber-950/5 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-300 dark:shadow-none">
-//                 <p className="font-medium">Importante</p>
-
-//                 <p className="mt-1">
-//                   El reset de contraseña mostrará la clave temporal una sola
-//                   vez. Copiala antes de salir de esta pantalla.
-//                 </p>
-//               </div>
-//             </DashboardAside>
-//           </DashboardGrid>
-//         </div>
-//       </div>
-//     </PageShell>
-//   );
-// }
-
-// // src/app/(dashboard)/usuarios/[id]/editar/page.tsx
-
-// import Link from "next/link";
-// import { notFound } from "next/navigation";
-// import type { ReactNode } from "react";
-// import type { LucideIcon } from "lucide-react";
-// import {
-//   CalendarClock,
-//   IdCard,
-//   KeyRound,
-//   Mail,
-//   ShieldAlert,
-//   ShieldCheck,
-//   UserRound,
-// } from "lucide-react";
-// import { PageShell } from "@/components/ui/PageShell";
-// import {
-//   DashboardAside,
-//   DashboardGrid,
-//   DashboardMain,
-// } from "@/components/ui/DashboardGrid";
-// import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
-// import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
-// import { getCurrentUser } from "@/lib/current-user";
-// import { obtenerUsuarioPorId } from "@/services/usuario.service";
-// import type { UsuarioSafe } from "@/types/usuario.types";
-
-// type EditarUsuarioPageProps = {
-//   params: {
-//     id: string;
-//   };
-// };
-
-// export const metadata = {
-//   title: "Editar usuario",
-// };
-
-// type PermisosEdicion = {
-//   actorEsProtegido: boolean;
-//   usuarioEsProtegido: boolean;
-//   puedeEditarDatos: boolean;
-//   puedeCambiarRolEstado: boolean;
-//   puedeResetearPassword: boolean;
-//   avisoEdicion?: string;
-//   avisoReset?: string;
-// };
-
-// const panelClass =
-//   "rounded-xl border border-slate-300 bg-white/95 shadow-md shadow-slate-300/55 ring-1 ring-white/70 dark:border-slate-700 dark:bg-slate-900/86 dark:shadow-black/20 dark:ring-slate-800/80";
-
-// const sectionTitleClass =
-//   "text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300";
-
-// const sectionSubtitleClass =
-//   "mt-0.5 text-sm font-semibold text-slate-950 dark:text-white";
-
-// const sectionDescriptionClass =
-//   "mt-1 text-[12px] leading-5 text-slate-600 dark:text-slate-400";
-
-// function rolLabel(rol: string) {
-//   if (rol === "admin") return "Admin";
-//   if (rol === "cobrador") return "Cobrador";
-//   return "Cliente";
-// }
-
-// function estadoLabel(estado: string) {
-//   if (estado === "activo") return "Activo";
-//   return "Suspendido";
-// }
-
-// function getNombreCompleto(usuario: UsuarioSafe) {
-//   const apellido = String(usuario.apellido || "").trim();
-//   const nombre = String(usuario.nombre || "").trim();
-
-//   const completo = `${apellido}, ${nombre}`
-//     .replace(/^,\s*/, "")
-//     .replace(/,\s*$/, "")
-//     .trim();
-
-//   return completo || "Usuario";
-// }
-
-// function formatDate(value?: string | null) {
-//   if (!value) return "Sin fecha";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Sin fecha";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
-
-//   return `${day}/${month}/${year}`;
-// }
-
-// function formatDateTime(value?: string | null) {
-//   if (!value) return "Nunca";
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return "Nunca";
-
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = date.getFullYear();
 //   const hours = String(date.getHours()).padStart(2, "0");
 //   const minutes = String(date.getMinutes()).padStart(2, "0");
 
@@ -1891,9 +2318,9 @@
 //       puedeCambiarRolEstado: false,
 //       puedeResetearPassword: true,
 //       avisoEdicion:
-//         "Administrador protegido: podés editar datos básicos, pero no cambiar rol ni suspenderlo.",
+//         "Administrador protegido: podés editar sus datos básicos, pero no cambiar su rol ni suspenderlo.",
 //       avisoReset:
-//         "Administrador protegido: el reset de contraseña está permitido solo entre administradores protegidos.",
+//         "El reset de contraseña está permitido únicamente entre administradores protegidos.",
 //     };
 //   }
 
@@ -1904,169 +2331,398 @@
 //     puedeCambiarRolEstado: false,
 //     puedeResetearPassword: false,
 //     avisoEdicion:
-//       "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos básicos.",
+//       "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos.",
 //     avisoReset:
 //       "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
 //   };
 // }
 
-// function Badge({
+// function StatusBadge({
 //   children,
 //   tone = "neutral",
+//   dotClass,
 // }: {
 //   children: ReactNode;
-//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+//   tone?: BadgeTone;
+//   dotClass?: string;
 // }) {
-//   const toneClass = {
+//   const toneClass: Record<BadgeTone, string> = {
 //     neutral:
-//       "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-950/50 dark:text-slate-300",
+//       "border-slate-200 bg-slate-50 text-slate-700 " +
+//       "dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300",
+
 //     primary:
-//       "border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300",
+//       "border-blue-200 bg-blue-50 text-blue-700 " +
+//       "dark:border-indigo-800/70 dark:bg-indigo-950/25 dark:text-indigo-300",
+
 //     success:
-//       "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/35 dark:text-emerald-300",
+//       "border-emerald-200 bg-emerald-50 text-emerald-700 " +
+//       "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
+
 //     warning:
-//       "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+//       "border-amber-200 bg-amber-50 text-amber-700 " +
+//       "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
+
 //     danger:
-//       "border-red-300 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/35 dark:text-red-300",
-//   }[tone];
+//       "border-red-200 bg-red-50 text-red-700 " +
+//       "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
+//   };
 
 //   return (
 //     <span
-//       className={`inline-flex h-7 items-center rounded-full border px-2.5 text-[10px] font-semibold leading-none ${toneClass}`}
+//       className={`
+//         inline-flex min-h-7 items-center justify-center gap-1.5
+//         rounded-md border px-2.5 py-1
+//         text-[10px] font-medium
+//         ${toneClass[tone]}
+//       `}
 //     >
-//       {children}
+//       {dotClass ? (
+//         <span
+//           className={`
+//             h-1.5 w-1.5 shrink-0 rounded-full
+//             ${dotClass}
+//           `}
+//         />
+//       ) : null}
+
+//       <span className="whitespace-nowrap leading-none">
+//         {children}
+//       </span>
 //     </span>
 //   );
 // }
 
-// function BackButton() {
+// function PageHeader({
+//   usuario,
+// }: {
+//   usuario: UsuarioSafe;
+// }) {
 //   return (
-//     <Link
-//       href="/usuarios"
-//       className="hidden h-8 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 text-[12px] font-medium text-slate-700 shadow-sm shadow-slate-300/35 transition hover:bg-slate-50 active:scale-[0.99] dark:border-slate-700 dark:bg-slate-950/55 dark:text-slate-200 dark:shadow-black/10 dark:hover:bg-slate-900 sm:inline-flex"
+//     <header
+//       className="
+//         flex flex-col gap-3
+//         border-b border-slate-200
+//         bg-slate-50/80 px-3 py-3
+//         dark:border-[#263451]
+//         dark:bg-[#0e172a]
+//         sm:px-4
+//         lg:flex-row lg:items-center
+//         lg:justify-between
+//       "
 //     >
-//       Volver
-//     </Link>
-//   );
-// }
-
-// function PageTitle({ usuario }: { usuario: UsuarioSafe }) {
-//   return (
-//     <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
 //       <div className="min-w-0">
-//         <p className={sectionTitleClass}>Usuarios</p>
+//         <div className="flex items-center gap-2.5">
+//           <UserRound
+//             className="
+//               h-5 w-5 shrink-0
+//               text-blue-700
+//               dark:text-indigo-300
+//             "
+//           />
 
-//         <h1 className={sectionSubtitleClass}>Editar usuario</h1>
+//           <h1
+//             className="
+//               truncate text-base font-medium
+//               text-slate-950 dark:text-white
+//             "
+//           >
+//             Editar usuario
+//           </h1>
+//         </div>
 
-//         <p className={`${sectionDescriptionClass} max-w-3xl truncate`}>
-//           {getNombreCompleto(usuario)} · DNI {usuario.dni || "-"} ·{" "}
-//           {usuario.email}
+//         <p
+//           className="
+//             mt-1 truncate text-[11px]
+//             text-slate-500 dark:text-slate-400
+//             sm:text-[12px]
+//           "
+//         >
+//           {getNombreCompleto(usuario)}
+//           <span className="hidden sm:inline">
+//             {" "}
+//             · DNI {usuario.dni || "-"} · {usuario.email}
+//           </span>
 //         </p>
 //       </div>
 
-//       <div className="flex flex-col items-start gap-2 lg:items-end">
-//         <BackButton />
+//       <div className="flex flex-wrap items-center gap-2">
+//         <StatusBadge
+//           tone="primary"
+//           dotClass="bg-blue-500"
+//         >
+//           {rolLabel(usuario.rol)}
+//         </StatusBadge>
 
-//         <div className="flex flex-wrap gap-2 lg:justify-end">
-//           <Badge tone="primary">{rolLabel(usuario.rol)}</Badge>
+//         <StatusBadge
+//           tone={
+//             usuario.estado === "activo"
+//               ? "success"
+//               : "danger"
+//           }
+//           dotClass={
+//             usuario.estado === "activo"
+//               ? "bg-emerald-500"
+//               : "bg-red-500"
+//           }
+//         >
+//           {estadoLabel(usuario.estado)}
+//         </StatusBadge>
 
-//           <Badge tone={usuario.estado === "activo" ? "success" : "danger"}>
-//             {estadoLabel(usuario.estado)}
-//           </Badge>
+//         {usuario.esProtegido ? (
+//           <StatusBadge
+//             tone="warning"
+//             dotClass="bg-amber-500"
+//           >
+//             Protegido
+//           </StatusBadge>
+//         ) : null}
 
-//           {usuario.esProtegido ? <Badge tone="warning">Protegido</Badge> : null}
+//         <StatusBadge
+//           tone={
+//             usuario.debeCambiarPassword
+//               ? "warning"
+//               : "success"
+//           }
+//           dotClass={
+//             usuario.debeCambiarPassword
+//               ? "bg-amber-500"
+//               : "bg-emerald-500"
+//           }
+//         >
+//           {usuario.debeCambiarPassword
+//             ? "Cambiar clave"
+//             : "Clave OK"}
+//         </StatusBadge>
 
-//           <Badge tone={usuario.debeCambiarPassword ? "warning" : "success"}>
-//             {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
-//           </Badge>
-//         </div>
+//         <Link
+//           href="/usuarios"
+//           className="
+//             hidden h-8 items-center justify-center
+//             rounded-lg border border-slate-300
+//             bg-white px-3 text-[12px]
+//             font-medium text-slate-700
+//             shadow-sm transition
+//             hover:border-slate-400
+//             hover:bg-slate-50
+//             active:scale-[0.99]
+//             dark:border-[#354462]
+//             dark:bg-[#111b31]
+//             dark:text-slate-200
+//             dark:hover:bg-[#16223c]
+//             sm:inline-flex
+//           "
+//         >
+//           <span className="text-[12px] leading-none">
+//             Volver
+//           </span>
+//         </Link>
 //       </div>
-//     </div>
+//     </header>
 //   );
 // }
 
-// function ResumenItem({
+// function SummaryRow({
 //   icon: Icon,
 //   label,
 //   value,
 //   tone = "neutral",
+//   dotClass,
 // }: {
 //   icon: LucideIcon;
 //   label: string;
 //   value: string;
-//   tone?: "neutral" | "primary" | "success" | "warning" | "danger";
+//   tone?: BadgeTone;
+//   dotClass?: string;
 // }) {
-//   const toneClass = {
-//     neutral: "text-slate-950 dark:text-white",
-//     primary: "text-blue-700 dark:text-blue-300",
-//     success: "text-emerald-700 dark:text-emerald-300",
-//     warning: "text-amber-700 dark:text-amber-300",
-//     danger: "text-red-700 dark:text-red-300",
-//   }[tone];
+//   const valueClass: Record<BadgeTone, string> = {
+//     neutral:
+//       "text-slate-900 dark:text-slate-100",
+//     primary:
+//       "text-blue-700 dark:text-indigo-300",
+//     success:
+//       "text-emerald-700 dark:text-emerald-300",
+//     warning:
+//       "text-amber-700 dark:text-amber-300",
+//     danger:
+//       "text-red-700 dark:text-red-300",
+//   };
 
 //   return (
-//     <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5 last:border-b-0 dark:border-slate-700">
-//       <span className="inline-flex min-w-0 items-center gap-2.5 text-xs text-slate-700 dark:text-slate-300">
-//         <Icon className="h-3.5 w-3.5 shrink-0 text-blue-700 dark:text-blue-300" />
-//         <span className="truncate">{label}</span>
+//     <div
+//       className="
+//         flex items-center justify-between gap-3
+//         border-b border-slate-200
+//         px-3 py-2.5
+//         last:border-b-0
+//         dark:border-[#263451]
+//       "
+//     >
+//       <span
+//         className="
+//           flex min-w-0 items-center gap-2.5
+//           text-[12px] text-slate-600
+//           dark:text-slate-300
+//         "
+//       >
+//         <Icon
+//           className="
+//             h-3.5 w-3.5 shrink-0
+//             text-blue-700
+//             dark:text-indigo-300
+//           "
+//         />
+
+//         <span className="truncate">
+//           {label}
+//         </span>
 //       </span>
 
-//       <span className={`truncate text-right text-xs font-semibold ${toneClass}`}>
-//         {value}
+//       <span
+//         className={`
+//           flex min-w-0 items-center gap-1.5
+//           truncate text-right text-[12px]
+//           font-medium
+//           ${valueClass[tone]}
+//         `}
+//         title={value}
+//       >
+//         {dotClass ? (
+//           <span
+//             className={`
+//               h-1.5 w-1.5 shrink-0 rounded-full
+//               ${dotClass}
+//             `}
+//           />
+//         ) : null}
+
+//         <span className="truncate">
+//           {value}
+//         </span>
 //       </span>
 //     </div>
 //   );
 // }
 
-// function ResumenUsuario({ usuario }: { usuario: UsuarioSafe }) {
+// function UserSummary({
+//   usuario,
+// }: {
+//   usuario: UsuarioSafe;
+// }) {
 //   return (
-//     <section className={`${panelClass} p-3.5`}>
-//       <div className="mb-3">
-//         <p className={sectionTitleClass}>Resumen</p>
+//     <section className={`${panelClass} p-4`}>
+//       <div className="flex items-center gap-2">
+//         <UserRound
+//           className="
+//             h-4 w-4 text-blue-700
+//             dark:text-indigo-300
+//           "
+//         />
 
-//         <h2 className={sectionSubtitleClass}>Datos actuales</h2>
+//         <h2
+//           className="
+//             text-sm font-medium
+//             text-slate-950 dark:text-white
+//           "
+//         >
+//           Resumen del usuario
+//         </h2>
 //       </div>
 
-//       <div className="overflow-hidden rounded-lg border border-slate-300 bg-white shadow-sm shadow-slate-300/40 dark:border-slate-700 dark:bg-slate-950/40 dark:shadow-none">
-//         <ResumenItem
+//       <div
+//         className="
+//           mt-3 overflow-hidden rounded-lg
+//           border border-slate-200
+//           bg-slate-50
+//           dark:border-[#2b3957]
+//           dark:bg-[#0d172a]
+//         "
+//       >
+//         <SummaryRow
 //           icon={UserRound}
 //           label="Rol"
 //           value={rolLabel(usuario.rol)}
 //           tone="primary"
+//           dotClass="bg-blue-500"
 //         />
 
-//         <ResumenItem
+//         <SummaryRow
 //           icon={ShieldCheck}
 //           label="Estado"
 //           value={estadoLabel(usuario.estado)}
-//           tone={usuario.estado === "activo" ? "success" : "danger"}
+//           tone={
+//             usuario.estado === "activo"
+//               ? "success"
+//               : "danger"
+//           }
+//           dotClass={
+//             usuario.estado === "activo"
+//               ? "bg-emerald-500"
+//               : "bg-red-500"
+//           }
 //         />
 
-//         <ResumenItem
+//         <SummaryRow
 //           icon={ShieldAlert}
 //           label="Protección"
-//           value={usuario.esProtegido ? "Protegido" : "Normal"}
-//           tone={usuario.esProtegido ? "warning" : "neutral"}
+//           value={
+//             usuario.esProtegido
+//               ? "Protegido"
+//               : "Normal"
+//           }
+//           tone={
+//             usuario.esProtegido
+//               ? "warning"
+//               : "neutral"
+//           }
+//           dotClass={
+//             usuario.esProtegido
+//               ? "bg-amber-500"
+//               : "bg-slate-400"
+//           }
 //         />
 
-//         <ResumenItem
+//         <SummaryRow
 //           icon={KeyRound}
 //           label="Contraseña"
-//           value={usuario.debeCambiarPassword ? "Cambiar" : "OK"}
-//           tone={usuario.debeCambiarPassword ? "warning" : "success"}
+//           value={
+//             usuario.debeCambiarPassword
+//               ? "Cambio requerido"
+//               : "Clave correcta"
+//           }
+//           tone={
+//             usuario.debeCambiarPassword
+//               ? "warning"
+//               : "success"
+//           }
+//           dotClass={
+//             usuario.debeCambiarPassword
+//               ? "bg-amber-500"
+//               : "bg-emerald-500"
+//           }
 //         />
 
-//         <ResumenItem icon={IdCard} label="DNI" value={usuario.dni || "-"} />
+//         <SummaryRow
+//           icon={IdCard}
+//           label="DNI"
+//           value={usuario.dni || "-"}
+//         />
 
-//         <ResumenItem icon={Mail} label="Email" value={usuario.email} />
+//         <SummaryRow
+//           icon={Mail}
+//           label="Email"
+//           value={usuario.email}
+//         />
 
-//         <ResumenItem
+//         <SummaryRow
 //           icon={CalendarClock}
 //           label="Último acceso"
-//           value={formatDateTime(usuario.ultimoAcceso)}
+//           value={formatDateTime(
+//             usuario.ultimoAcceso,
+//           )}
 //         />
 
-//         <ResumenItem
+//         <SummaryRow
 //           icon={CalendarClock}
 //           label="Creado"
 //           value={formatDate(usuario.creadoEn)}
@@ -2084,38 +2740,111 @@
 //   permisos: PermisosEdicion;
 // }) {
 //   return (
-//     <section className={`${panelClass} p-3.5`}>
-//       <div className="mb-3">
-//         <p className={sectionTitleClass}>Reset de contraseña</p>
+//     <section className={panelClass}>
+//       <div
+//         className="
+//           border-b border-slate-200
+//           bg-slate-50/80 px-3 py-3
+//           dark:border-[#263451]
+//           dark:bg-[#0e172a]
+//           sm:px-4
+//         "
+//       >
+//         <div className="flex items-center gap-2">
+//           <KeyRound
+//             className="
+//               h-4 w-4 text-amber-700
+//               dark:text-amber-300
+//             "
+//           />
 
-//         <h2 className={sectionSubtitleClass}>Contraseña temporal</h2>
+//           <h2
+//             className="
+//               text-sm font-medium
+//               text-slate-950 dark:text-white
+//             "
+//           >
+//             Reset de contraseña
+//           </h2>
+//         </div>
 
-//         <p className={sectionDescriptionClass}>
-//           El sistema genera una clave provisoria y la muestra una sola vez.
+//         <p
+//           className="
+//             mt-1 text-[11px] leading-5
+//             text-slate-500 dark:text-slate-400
+//             sm:text-[12px]
+//           "
+//         >
+//           Genera una contraseña temporal y obliga al
+//           usuario a cambiarla al iniciar sesión.
 //         </p>
 //       </div>
 
-//       <ResetPasswordForm
-//         usuarioId={usuarioId}
-//         disabled={!permisos.puedeResetearPassword}
-//         disabledMessage={permisos.avisoReset}
-//       />
+//       <div className="p-3 sm:p-4">
+//         {permisos.avisoReset ? (
+//           <div
+//             className="
+//               mb-3 flex gap-2 rounded-lg
+//               border border-amber-200
+//               bg-amber-50 px-3 py-2
+//               text-[11px] leading-5
+//               text-amber-800
+//               dark:border-amber-800/70
+//               dark:bg-amber-950/25
+//               dark:text-amber-300
+//               sm:text-[12px]
+//             "
+//           >
+//             <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+
+//             <span>{permisos.avisoReset}</span>
+//           </div>
+//         ) : null}
+
+//         <ResetPasswordForm
+//           usuarioId={usuarioId}
+//           disabled={!permisos.puedeResetearPassword}
+//           disabledMessage={permisos.avisoReset}
+//         />
+//       </div>
 //     </section>
 //   );
 // }
 
-// function NotaReset() {
+// function SecurityNote() {
 //   return (
-//     <section className={`${panelClass} p-3.5`}>
-//       <div className="mb-3">
-//         <p className={sectionTitleClass}>Seguridad</p>
+//     <section className={`${panelClass} p-4`}>
+//       <div className="flex items-center gap-2">
+//         <KeyRound
+//           className="
+//             h-4 w-4 text-amber-700
+//             dark:text-amber-300
+//           "
+//         />
 
-//         <h2 className={sectionSubtitleClass}>Clave temporal</h2>
+//         <h2
+//           className="
+//             text-sm font-medium
+//             text-slate-950 dark:text-white
+//           "
+//         >
+//           Contraseña temporal
+//         </h2>
 //       </div>
 
-//       <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[12px] leading-5 text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300">
-//         La contraseña temporal se muestra una sola vez. Copiala antes de salir
-//         de esta pantalla.
+//       <div
+//         className="
+//           mt-3 rounded-lg border
+//           border-amber-200 bg-amber-50
+//           px-3 py-2.5 text-[12px]
+//           leading-5 text-amber-800
+//           dark:border-amber-800/70
+//           dark:bg-amber-950/25
+//           dark:text-amber-300
+//         "
+//       >
+//         La contraseña temporal se muestra una sola vez.
+//         Copiala antes de salir de esta pantalla.
 //       </div>
 //     </section>
 //   );
@@ -2124,46 +2853,74 @@
 // export default async function EditarUsuarioPage({
 //   params,
 // }: EditarUsuarioPageProps) {
+//   const currentUser = await getCurrentUser();
+
+//   if (!currentUser) {
+//     redirect("/login");
+//   }
+
+//   if (currentUser.rol !== "admin") {
+//     redirect(`/${currentUser.rol}`);
+//   }
+
 //   const usuario = await obtenerUsuarioPorId(params.id);
 
 //   if (!usuario) {
 //     notFound();
 //   }
 
-//   const currentUser = await getCurrentUser();
-//   const actor = currentUser?.userId
+//   const actor = currentUser.userId
 //     ? await obtenerUsuarioPorId(currentUser.userId)
 //     : null;
 
-//   const permisos = construirPermisos(usuario, actor);
+//   const permisos = construirPermisos(
+//     usuario,
+//     actor,
+//   );
 
 //   return (
-//     <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+//     <PageShell
+//       maxWidth="wide"
+//       className="pb-20 lg:pb-6"
+//     >
 //       <DashboardGrid>
 //         <DashboardMain>
-//           <section className={`${panelClass} p-3.5`}>
-//             <PageTitle usuario={usuario} />
+//           <section className={panelClass}>
+//             <PageHeader usuario={usuario} />
 
-//             <EditarUsuarioForm
-//               usuario={usuario}
-//               puedeEditarDatos={permisos.puedeEditarDatos}
-//               puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
-//               avisoPermisos={permisos.avisoEdicion}
-//             />
+//             <div className="p-3 sm:p-4">
+//               <EditarUsuarioForm
+//                 usuario={usuario}
+//                 puedeEditarDatos={
+//                   permisos.puedeEditarDatos
+//                 }
+//                 puedeCambiarRolEstado={
+//                   permisos.puedeCambiarRolEstado
+//                 }
+//                 avisoPermisos={
+//                   permisos.avisoEdicion
+//                 }
+//               />
+//             </div>
 //           </section>
 
 //           <div className="mt-3">
-//             <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
+//             <ResetPasswordPanel
+//               usuarioId={usuario.id}
+//               permisos={permisos}
+//             />
 //           </div>
 //         </DashboardMain>
 
-//         <DashboardAside>
-//           <ResumenUsuario usuario={usuario} />
+//         <div className="hidden lg:block">
+//           <DashboardAside>
+//             <UserSummary usuario={usuario} />
 
-//           <div className="mt-3">
-//             <NotaReset />
-//           </div>
-//         </DashboardAside>
+//             <div className="mt-3">
+//               <SecurityNote />
+//             </div>
+//           </DashboardAside>
+//         </div>
 //       </DashboardGrid>
 //     </PageShell>
 //   );
@@ -2172,35 +2929,21 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
 import {
-  CalendarClock,
-  IdCard,
+  ArrowLeft,
   KeyRound,
-  Mail,
   ShieldAlert,
-  ShieldCheck,
   UserRound,
 } from "lucide-react";
-
 import { EditarUsuarioForm } from "@/components/forms/EditarUsuarioForm";
 import { ResetPasswordForm } from "@/components/forms/ResetPasswordForm";
-import {
-  DashboardAside,
-  DashboardGrid,
-  DashboardMain,
-} from "@/components/ui/DashboardGrid";
 import { PageShell } from "@/components/ui/PageShell";
+import { cajaStyles as styles } from "@/components/ui/dashboard-styles";
 import { getCurrentUser } from "@/lib/current-user";
 import { obtenerUsuarioPorId } from "@/services/usuario.service";
 import type { UsuarioSafe } from "@/types/usuario.types";
 
-type EditarUsuarioPageProps = {
-  params: {
-    id: string;
-  };
-};
-
+type EditarUsuarioPageProps = { params: { id: string } };
 type PermisosEdicion = {
   actorEsProtegido: boolean;
   usuarioEsProtegido: boolean;
@@ -2210,32 +2953,13 @@ type PermisosEdicion = {
   avisoEdicion?: string;
   avisoReset?: string;
 };
+type BadgeTone = "neutral" | "primary" | "success" | "warning" | "danger";
 
-type BadgeTone =
-  | "neutral"
-  | "primary"
-  | "success"
-  | "warning"
-  | "danger";
-
-export const metadata = {
-  title: "Editar usuario",
-};
-
-const panelClass =
-  "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm " +
-  "dark:border-[#263451] dark:bg-[#111b31] " +
-  "dark:shadow-[0_12px_32px_rgba(0,0,0,0.24)]";
+export const metadata = { title: "Editar usuario" };
 
 function rolLabel(rol: string) {
-  if (rol === "admin") {
-    return "Administrador";
-  }
-
-  if (rol === "cobrador") {
-    return "Cobrador";
-  }
-
+  if (rol === "admin") return "Administrador";
+  if (rol === "cobrador") return "Cobrador";
   return "Cliente";
 }
 
@@ -2244,59 +2968,34 @@ function estadoLabel(estado: string) {
 }
 
 function getNombreCompleto(usuario: UsuarioSafe) {
-  const apellido = String(usuario.apellido || "").trim();
-  const nombre = String(usuario.nombre || "").trim();
-
-  const nombreCompleto = `${apellido}, ${nombre}`
+  const nombre = `${String(usuario.apellido || "").trim()}, ${String(usuario.nombre || "").trim()}`
     .replace(/^,\s*/, "")
     .replace(/,\s*$/, "")
     .trim();
-
-  return nombreCompleto || "Usuario";
+  return nombre || "Usuario";
 }
 
 function formatDate(value?: string | null) {
-  if (!value) {
-    return "Sin fecha";
-  }
-
+  if (!value) return "Sin fecha";
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Sin fecha";
-  }
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
+  if (Number.isNaN(date.getTime())) return "Sin fecha";
+  return new Intl.DateTimeFormat("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
 }
 
 function formatDateTime(value?: string | null) {
-  if (!value) {
-    return "Nunca";
-  }
-
+  if (!value) return "Nunca";
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "Nunca";
-  }
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
+  if (Number.isNaN(date.getTime())) return "Nunca";
+  return new Intl.DateTimeFormat("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
-function construirPermisos(
-  usuario: UsuarioSafe,
-  actor: UsuarioSafe | null,
-): PermisosEdicion {
+function construirPermisos(usuario: UsuarioSafe, actor: UsuarioSafe | null): PermisosEdicion {
   const actorEsProtegido = Boolean(actor?.esProtegido);
   const usuarioEsProtegido = Boolean(usuario.esProtegido);
 
@@ -2317,10 +3016,8 @@ function construirPermisos(
       puedeEditarDatos: true,
       puedeCambiarRolEstado: false,
       puedeResetearPassword: true,
-      avisoEdicion:
-        "Administrador protegido: podés editar sus datos básicos, pero no cambiar su rol ni suspenderlo.",
-      avisoReset:
-        "El reset de contraseña está permitido únicamente entre administradores protegidos.",
+      avisoEdicion: "Administrador protegido: podés editar sus datos básicos, pero no cambiar su rol ni suspenderlo.",
+      avisoReset: "El reset de contraseña está permitido únicamente entre administradores protegidos.",
     };
   }
 
@@ -2330,477 +3027,67 @@ function construirPermisos(
     puedeEditarDatos: false,
     puedeCambiarRolEstado: false,
     puedeResetearPassword: false,
-    avisoEdicion:
-      "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos.",
-    avisoReset:
-      "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
+    avisoEdicion: "Este administrador está protegido. Solo otro administrador protegido puede editar sus datos.",
+    avisoReset: "Este administrador está protegido. Solo otro administrador protegido puede generar una contraseña temporal.",
   };
 }
 
-function StatusBadge({
-  children,
-  tone = "neutral",
-  dotClass,
-}: {
-  children: ReactNode;
-  tone?: BadgeTone;
-  dotClass?: string;
-}) {
+function StatusBadge({ children, tone = "neutral" }: { children: ReactNode; tone?: BadgeTone }) {
   const toneClass: Record<BadgeTone, string> = {
-    neutral:
-      "border-slate-200 bg-slate-50 text-slate-700 " +
-      "dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300",
-
-    primary:
-      "border-blue-200 bg-blue-50 text-blue-700 " +
-      "dark:border-indigo-800/70 dark:bg-indigo-950/25 dark:text-indigo-300",
-
-    success:
-      "border-emerald-200 bg-emerald-50 text-emerald-700 " +
-      "dark:border-emerald-800/70 dark:bg-emerald-950/25 dark:text-emerald-300",
-
-    warning:
-      "border-amber-200 bg-amber-50 text-amber-700 " +
-      "dark:border-amber-800/70 dark:bg-amber-950/25 dark:text-amber-300",
-
-    danger:
-      "border-red-200 bg-red-50 text-red-700 " +
-      "dark:border-red-800/70 dark:bg-red-950/25 dark:text-red-300",
+    neutral: "bg-[var(--overview-button)] text-[var(--overview-text)]",
+    primary: styles.blueBadge,
+    success: styles.greenBadge,
+    warning: styles.amberBadge,
+    danger: "!bg-red-100 text-red-700 dark:!bg-red-950/40 dark:text-red-300",
   };
-
-  return (
-    <span
-      className={`
-        inline-flex min-h-7 items-center justify-center gap-1.5
-        rounded-md border px-2.5 py-1
-        text-[10px] font-medium
-        ${toneClass[tone]}
-      `}
-    >
-      {dotClass ? (
-        <span
-          className={`
-            h-1.5 w-1.5 shrink-0 rounded-full
-            ${dotClass}
-          `}
-        />
-      ) : null}
-
-      <span className="whitespace-nowrap leading-none">
-        {children}
-      </span>
-    </span>
-  );
+  return <span className={`${styles.badge} ${toneClass[tone]}`}>{children}</span>;
 }
 
-function PageHeader({
-  usuario,
-}: {
-  usuario: UsuarioSafe;
-}) {
+function SummaryRow({ label, value, tone = "" }: { label: string; value: string; tone?: string }) {
   return (
-    <header
-      className="
-        flex flex-col gap-3
-        border-b border-slate-200
-        bg-slate-50/80 px-3 py-3
-        dark:border-[#263451]
-        dark:bg-[#0e172a]
-        sm:px-4
-        lg:flex-row lg:items-center
-        lg:justify-between
-      "
-    >
-      <div className="min-w-0">
-        <div className="flex items-center gap-2.5">
-          <UserRound
-            className="
-              h-5 w-5 shrink-0
-              text-blue-700
-              dark:text-indigo-300
-            "
-          />
-
-          <h1
-            className="
-              truncate text-base font-medium
-              text-slate-950 dark:text-white
-            "
-          >
-            Editar usuario
-          </h1>
-        </div>
-
-        <p
-          className="
-            mt-1 truncate text-[11px]
-            text-slate-500 dark:text-slate-400
-            sm:text-[12px]
-          "
-        >
-          {getNombreCompleto(usuario)}
-          <span className="hidden sm:inline">
-            {" "}
-            · DNI {usuario.dni || "-"} · {usuario.email}
-          </span>
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <StatusBadge
-          tone="primary"
-          dotClass="bg-blue-500"
-        >
-          {rolLabel(usuario.rol)}
-        </StatusBadge>
-
-        <StatusBadge
-          tone={
-            usuario.estado === "activo"
-              ? "success"
-              : "danger"
-          }
-          dotClass={
-            usuario.estado === "activo"
-              ? "bg-emerald-500"
-              : "bg-red-500"
-          }
-        >
-          {estadoLabel(usuario.estado)}
-        </StatusBadge>
-
-        {usuario.esProtegido ? (
-          <StatusBadge
-            tone="warning"
-            dotClass="bg-amber-500"
-          >
-            Protegido
-          </StatusBadge>
-        ) : null}
-
-        <StatusBadge
-          tone={
-            usuario.debeCambiarPassword
-              ? "warning"
-              : "success"
-          }
-          dotClass={
-            usuario.debeCambiarPassword
-              ? "bg-amber-500"
-              : "bg-emerald-500"
-          }
-        >
-          {usuario.debeCambiarPassword
-            ? "Cambiar clave"
-            : "Clave OK"}
-        </StatusBadge>
-
-        <Link
-          href="/usuarios"
-          className="
-            hidden h-8 items-center justify-center
-            rounded-lg border border-slate-300
-            bg-white px-3 text-[12px]
-            font-medium text-slate-700
-            shadow-sm transition
-            hover:border-slate-400
-            hover:bg-slate-50
-            active:scale-[0.99]
-            dark:border-[#354462]
-            dark:bg-[#111b31]
-            dark:text-slate-200
-            dark:hover:bg-[#16223c]
-            sm:inline-flex
-          "
-        >
-          <span className="text-[12px] leading-none">
-            Volver
-          </span>
-        </Link>
-      </div>
-    </header>
-  );
-}
-
-function SummaryRow({
-  icon: Icon,
-  label,
-  value,
-  tone = "neutral",
-  dotClass,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  tone?: BadgeTone;
-  dotClass?: string;
-}) {
-  const valueClass: Record<BadgeTone, string> = {
-    neutral:
-      "text-slate-900 dark:text-slate-100",
-    primary:
-      "text-blue-700 dark:text-indigo-300",
-    success:
-      "text-emerald-700 dark:text-emerald-300",
-    warning:
-      "text-amber-700 dark:text-amber-300",
-    danger:
-      "text-red-700 dark:text-red-300",
-  };
-
-  return (
-    <div
-      className="
-        flex items-center justify-between gap-3
-        border-b border-slate-200
-        px-3 py-2.5
-        last:border-b-0
-        dark:border-[#263451]
-      "
-    >
-      <span
-        className="
-          flex min-w-0 items-center gap-2.5
-          text-[12px] text-slate-600
-          dark:text-slate-300
-        "
-      >
-        <Icon
-          className="
-            h-3.5 w-3.5 shrink-0
-            text-blue-700
-            dark:text-indigo-300
-          "
-        />
-
-        <span className="truncate">
-          {label}
-        </span>
-      </span>
-
-      <span
-        className={`
-          flex min-w-0 items-center gap-1.5
-          truncate text-right text-[12px]
-          font-medium
-          ${valueClass[tone]}
-        `}
-        title={value}
-      >
-        {dotClass ? (
-          <span
-            className={`
-              h-1.5 w-1.5 shrink-0 rounded-full
-              ${dotClass}
-            `}
-          />
-        ) : null}
-
-        <span className="truncate">
-          {value}
-        </span>
-      </span>
+    <div className={styles.sideRow}>
+      <span>{label}</span>
+      <strong className={`max-w-[62%] text-right [overflow-wrap:anywhere] ${tone}`}>{value}</strong>
     </div>
   );
 }
 
-function UserSummary({
-  usuario,
-}: {
-  usuario: UsuarioSafe;
-}) {
+function UserSummary({ usuario }: { usuario: UsuarioSafe }) {
   return (
-    <section className={`${panelClass} p-4`}>
-      <div className="flex items-center gap-2">
-        <UserRound
-          className="
-            h-4 w-4 text-blue-700
-            dark:text-indigo-300
-          "
-        />
-
-        <h2
-          className="
-            text-sm font-medium
-            text-slate-950 dark:text-white
-          "
-        >
-          Resumen del usuario
-        </h2>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <h2 className={styles.panelTitle}><UserRound aria-hidden="true" /> Resumen del usuario</h2>
       </div>
-
-      <div
-        className="
-          mt-3 overflow-hidden rounded-lg
-          border border-slate-200
-          bg-slate-50
-          dark:border-[#2b3957]
-          dark:bg-[#0d172a]
-        "
-      >
-        <SummaryRow
-          icon={UserRound}
-          label="Rol"
-          value={rolLabel(usuario.rol)}
-          tone="primary"
-          dotClass="bg-blue-500"
-        />
-
-        <SummaryRow
-          icon={ShieldCheck}
-          label="Estado"
-          value={estadoLabel(usuario.estado)}
-          tone={
-            usuario.estado === "activo"
-              ? "success"
-              : "danger"
-          }
-          dotClass={
-            usuario.estado === "activo"
-              ? "bg-emerald-500"
-              : "bg-red-500"
-          }
-        />
-
-        <SummaryRow
-          icon={ShieldAlert}
-          label="Protección"
-          value={
-            usuario.esProtegido
-              ? "Protegido"
-              : "Normal"
-          }
-          tone={
-            usuario.esProtegido
-              ? "warning"
-              : "neutral"
-          }
-          dotClass={
-            usuario.esProtegido
-              ? "bg-amber-500"
-              : "bg-slate-400"
-          }
-        />
-
-        <SummaryRow
-          icon={KeyRound}
-          label="Contraseña"
-          value={
-            usuario.debeCambiarPassword
-              ? "Cambio requerido"
-              : "Clave correcta"
-          }
-          tone={
-            usuario.debeCambiarPassword
-              ? "warning"
-              : "success"
-          }
-          dotClass={
-            usuario.debeCambiarPassword
-              ? "bg-amber-500"
-              : "bg-emerald-500"
-          }
-        />
-
-        <SummaryRow
-          icon={IdCard}
-          label="DNI"
-          value={usuario.dni || "-"}
-        />
-
-        <SummaryRow
-          icon={Mail}
-          label="Email"
-          value={usuario.email}
-        />
-
-        <SummaryRow
-          icon={CalendarClock}
-          label="Último acceso"
-          value={formatDateTime(
-            usuario.ultimoAcceso,
-          )}
-        />
-
-        <SummaryRow
-          icon={CalendarClock}
-          label="Creado"
-          value={formatDate(usuario.creadoEn)}
-        />
+      <div className={styles.sideBody}>
+        <SummaryRow label="Rol" value={rolLabel(usuario.rol)} tone={styles.blue} />
+        <SummaryRow label="Estado" value={estadoLabel(usuario.estado)} tone={usuario.estado === "activo" ? styles.green : "text-red-700 dark:text-red-300"} />
+        <SummaryRow label="Protección" value={usuario.esProtegido ? "Protegido" : "Normal"} tone={usuario.esProtegido ? styles.amber : ""} />
+        <SummaryRow label="Contraseña" value={usuario.debeCambiarPassword ? "Cambio requerido" : "Clave correcta"} tone={usuario.debeCambiarPassword ? styles.amber : styles.green} />
+        <SummaryRow label="DNI" value={usuario.dni || "—"} />
+        <SummaryRow label="Email" value={usuario.email} />
+        <SummaryRow label="Último acceso" value={formatDateTime(usuario.ultimoAcceso)} />
+        <SummaryRow label="Creado" value={formatDate(usuario.creadoEn)} />
       </div>
     </section>
   );
 }
 
-function ResetPasswordPanel({
-  usuarioId,
-  permisos,
-}: {
-  usuarioId: string;
-  permisos: PermisosEdicion;
-}) {
+function ResetPasswordPanel({ usuarioId, permisos }: { usuarioId: string; permisos: PermisosEdicion }) {
   return (
-    <section className={panelClass}>
-      <div
-        className="
-          border-b border-slate-200
-          bg-slate-50/80 px-3 py-3
-          dark:border-[#263451]
-          dark:bg-[#0e172a]
-          sm:px-4
-        "
-      >
-        <div className="flex items-center gap-2">
-          <KeyRound
-            className="
-              h-4 w-4 text-amber-700
-              dark:text-amber-300
-            "
-          />
-
-          <h2
-            className="
-              text-sm font-medium
-              text-slate-950 dark:text-white
-            "
-          >
-            Reset de contraseña
-          </h2>
-        </div>
-
-        <p
-          className="
-            mt-1 text-[11px] leading-5
-            text-slate-500 dark:text-slate-400
-            sm:text-[12px]
-          "
-        >
-          Genera una contraseña temporal y obliga al
-          usuario a cambiarla al iniciar sesión.
-        </p>
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <h2 className={styles.panelTitle}><KeyRound aria-hidden="true" /> Restablecer contraseña</h2>
       </div>
-
-      <div className="p-3 sm:p-4">
+      <div className="grid gap-3 p-3 min-[700px]:p-[14px]">
+        <p className="text-[length:11px] leading-[1.5] text-[var(--overview-muted)]">
+          Genera una contraseña temporal y solicita que el usuario la cambie al iniciar sesión.
+        </p>
         {permisos.avisoReset ? (
-          <div
-            className="
-              mb-3 flex gap-2 rounded-lg
-              border border-amber-200
-              bg-amber-50 px-3 py-2
-              text-[11px] leading-5
-              text-amber-800
-              dark:border-amber-800/70
-              dark:bg-amber-950/25
-              dark:text-amber-300
-              sm:text-[12px]
-            "
-          >
-            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
-
+          <div role="alert" className="flex items-start gap-2 rounded-[7px] border border-[var(--overview-amber)] bg-[var(--overview-amber-bg)] px-3 py-[9px] text-[length:11px] leading-[1.5] text-[var(--overview-amber)]">
+            <ShieldAlert aria-hidden="true" className="mt-[2px] !size-[14px] shrink-0" />
             <span>{permisos.avisoReset}</span>
           </div>
         ) : null}
-
         <ResetPasswordForm
           usuarioId={usuarioId}
           disabled={!permisos.puedeResetearPassword}
@@ -2811,117 +3098,72 @@ function ResetPasswordPanel({
   );
 }
 
-function SecurityNote() {
-  return (
-    <section className={`${panelClass} p-4`}>
-      <div className="flex items-center gap-2">
-        <KeyRound
-          className="
-            h-4 w-4 text-amber-700
-            dark:text-amber-300
-          "
-        />
-
-        <h2
-          className="
-            text-sm font-medium
-            text-slate-950 dark:text-white
-          "
-        >
-          Contraseña temporal
-        </h2>
-      </div>
-
-      <div
-        className="
-          mt-3 rounded-lg border
-          border-amber-200 bg-amber-50
-          px-3 py-2.5 text-[12px]
-          leading-5 text-amber-800
-          dark:border-amber-800/70
-          dark:bg-amber-950/25
-          dark:text-amber-300
-        "
-      >
-        La contraseña temporal se muestra una sola vez.
-        Copiala antes de salir de esta pantalla.
-      </div>
-    </section>
-  );
-}
-
-export default async function EditarUsuarioPage({
-  params,
-}: EditarUsuarioPageProps) {
+export default async function EditarUsuarioPage({ params }: EditarUsuarioPageProps) {
   const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect("/login");
-  }
-
-  if (currentUser.rol !== "admin") {
-    redirect(`/${currentUser.rol}`);
-  }
+  if (!currentUser) redirect("/login");
+  if (currentUser.rol !== "admin") redirect(`/${currentUser.rol}`);
 
   const usuario = await obtenerUsuarioPorId(params.id);
+  if (!usuario) notFound();
 
-  if (!usuario) {
-    notFound();
-  }
-
-  const actor = currentUser.userId
-    ? await obtenerUsuarioPorId(currentUser.userId)
-    : null;
-
-  const permisos = construirPermisos(
-    usuario,
-    actor,
-  );
+  const actor = currentUser.userId ? await obtenerUsuarioPorId(currentUser.userId) : null;
+  const permisos = construirPermisos(usuario, actor);
+  const estadoTone = usuario.estado === "activo" ? "success" : "danger";
 
   return (
-    <PageShell
-      maxWidth="wide"
-      className="pb-20 lg:pb-6"
-    >
-      <DashboardGrid>
-        <DashboardMain>
-          <section className={panelClass}>
-            <PageHeader usuario={usuario} />
-
-            <div className="p-3 sm:p-4">
-              <EditarUsuarioForm
-                usuario={usuario}
-                puedeEditarDatos={
-                  permisos.puedeEditarDatos
-                }
-                puedeCambiarRolEstado={
-                  permisos.puedeCambiarRolEstado
-                }
-                avisoPermisos={
-                  permisos.avisoEdicion
-                }
-              />
-            </div>
-          </section>
-
-          <div className="mt-3">
-            <ResetPasswordPanel
-              usuarioId={usuario.id}
-              permisos={permisos}
-            />
+    <PageShell maxWidth="wide" className="pb-20 sm:pb-0">
+      <div className={styles.page}>
+        <header className={`${styles.heading} flex-wrap`}>
+          <div className="min-w-0">
+            <p className="mb-1 text-[11px] text-[var(--overview-muted)]">Usuarios</p>
+            <h1>Editar usuario</h1>
+            <p className={styles.description}>{getNombreCompleto(usuario)} · DNI {usuario.dni || "—"}</p>
           </div>
-        </DashboardMain>
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge tone="primary">{rolLabel(usuario.rol)}</StatusBadge>
+            <StatusBadge tone={estadoTone}>{estadoLabel(usuario.estado)}</StatusBadge>
+            {usuario.esProtegido ? <StatusBadge tone="warning">Protegido</StatusBadge> : null}
+            <StatusBadge tone={usuario.debeCambiarPassword ? "warning" : "success"}>
+              {usuario.debeCambiarPassword ? "Cambiar clave" : "Clave OK"}
+            </StatusBadge>
+            <Link href="/usuarios" className={styles.button}>
+              <ArrowLeft aria-hidden="true" /> Volver
+            </Link>
+          </div>
+        </header>
 
-        <div className="hidden lg:block">
-          <DashboardAside>
+        <div className={styles.layout}>
+          <div className={styles.main}>
+            <section className={styles.panel}>
+              <div className={styles.panelHeader}>
+                <h2 className={styles.panelTitle}><UserRound aria-hidden="true" /> Datos de la cuenta</h2>
+              </div>
+              <div className="p-3 min-[700px]:p-[14px]">
+                <EditarUsuarioForm
+                  usuario={usuario}
+                  puedeEditarDatos={permisos.puedeEditarDatos}
+                  puedeCambiarRolEstado={permisos.puedeCambiarRolEstado}
+                  avisoPermisos={permisos.avisoEdicion}
+                />
+              </div>
+            </section>
+
+            <ResetPasswordPanel usuarioId={usuario.id} permisos={permisos} />
+          </div>
+
+          <aside className="hidden min-w-0 content-start gap-[14px] min-[1500px]:grid">
             <UserSummary usuario={usuario} />
-
-            <div className="mt-3">
-              <SecurityNote />
-            </div>
-          </DashboardAside>
+            <section className={styles.panel}>
+              <div className={styles.panelHeader}>
+                <h2 className={styles.panelTitle}><KeyRound aria-hidden="true" /> Contraseña temporal</h2>
+              </div>
+              <p className="px-[14px] py-3 text-[length:12px] leading-[1.6] text-[var(--overview-muted)]">
+                La contraseña temporal se muestra una sola vez. Copiala antes de salir de esta pantalla.
+              </p>
+            </section>
+          </aside>
         </div>
-      </DashboardGrid>
+      </div>
     </PageShell>
   );
 }

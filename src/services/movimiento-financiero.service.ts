@@ -1317,13 +1317,18 @@ async function crearMovimiento(params: {
     | "mensualidad"
     | "proporcional_alta"
     | "ajuste_prorrateo"
+    | "instalacion"
     | "manual";
   origenFacturacion?: "manual" | "cron" | "cobrador" | "admin" | "sistema";
   cicloFacturacionKey?: string | null;
   creadoPor: UsuarioCreadorMovimiento;
 }) {
   const saldoActual = await obtenerSaldoActual(params.clienteId);
-  const nuevoSaldo = saldoActual + params.debe - params.haber;
+  const nuevoSaldo = centsToMoney(
+    moneyToCents(saldoActual) -
+      moneyToCents(params.haber) +
+      moneyToCents(params.debe),
+  );
   const numeroComprobante = await obtenerSiguienteNumeroComprobante();
 
   const movimiento = await MovimientoFinanciero.create({
@@ -1352,7 +1357,7 @@ async function crearMovimiento(params: {
 
 async function obtenerMovimientosCliente(clienteId: string) {
   const movimientosRaw = await MovimientoFinanciero.find({ clienteId })
-    .sort({ fecha: 1, creadoEn: 1 })
+    .sort({ fecha: 1, creadoEn: 1, numeroComprobante: 1 })
     .lean();
 
   const movimientosBase = movimientosRaw.map(toSafeMovimiento);
@@ -1706,6 +1711,55 @@ async function obtenerFacturaPeriodo(params: {
   }).lean();
 }
 
+async function generarCuotaInstalacion(params: {
+  cliente: any;
+  clienteId: string;
+  facturaId: string;
+  periodo: { mes: number; anio: number };
+  origenFacturacion: "manual" | "cron";
+  creadoPor: UsuarioCreadorMovimiento;
+}) {
+  const instalacion = params.cliente.instalacion;
+  if (!instalacion?.habilitada || !instalacion.periodoInicio) return false;
+
+  const periodoKey = getPeriodoKey(params.periodo.mes, params.periodo.anio);
+  const inicio = instalacion.periodoInicio;
+  const diferenciaMeses =
+    (params.periodo.anio - Number(inicio.slice(0, 4))) * 12 +
+    (params.periodo.mes - Number(inicio.slice(5, 7)));
+  const numeroCuota = diferenciaMeses + 1;
+  const cantidadCuotas = Number(instalacion.cantidadCuotas || 0);
+  if (diferenciaMeses < 0 || numeroCuota > cantidadCuotas || cantidadCuotas < 1) {
+    return false;
+  }
+
+  const totalCentavos = moneyToCents(Number(instalacion.importeTotal || 0));
+  const baseCentavos = Math.floor(totalCentavos / cantidadCuotas);
+  const restoCentavos = totalCentavos % cantidadCuotas;
+  const importeCentavos = baseCentavos + (numeroCuota <= restoCentavos ? 1 : 0);
+  if (importeCentavos <= 0) return false;
+
+  const cicloFacturacionKey = `instalacion:${periodoKey}:${params.clienteId}`;
+  if (await existeCiclo(params.clienteId, cicloFacturacionKey)) return false;
+
+  await crearMovimiento({
+    clienteId: params.clienteId,
+    tipoMovimiento: "nota_debito",
+    facturaAsociadaId: params.facturaId,
+    concepto: `${instalacion.concepto || "Instalación"} · Cuota ${numeroCuota}/${cantidadCuotas}`,
+    debe: centsToMoney(importeCentavos),
+    haber: 0,
+    referenciaMes: params.periodo.mes,
+    referenciaAnio: params.periodo.anio,
+    observacion: "Cuota de instalación programada al dar de alta al cliente.",
+    tipoCargo: "instalacion",
+    origenFacturacion: params.origenFacturacion,
+    cicloFacturacionKey,
+    creadoPor: params.creadoPor,
+  });
+  return true;
+}
+
 async function asegurarHistorialInicial(params: { cliente: any; plan: any }) {
   const clienteId = params.cliente._id.toString();
 
@@ -1826,6 +1880,7 @@ export async function generarFacturacionManual(
       generadas: 0,
       omitidas: 0,
       ajustes: 0,
+      cuotasInstalacion: 0,
     };
   }
 
@@ -1846,12 +1901,14 @@ export async function generarFacturacionManual(
       generadas: 0,
       omitidas: 0,
       ajustes: 0,
+      cuotasInstalacion: 0,
     };
   }
 
   let generadas = 0;
   let omitidas = 0;
   let ajustes = 0;
+  let cuotasInstalacion = 0;
 
   for (const cliente of clientes) {
     const plan: any = cliente.planId;
@@ -1928,7 +1985,7 @@ export async function generarFacturacionManual(
           continue;
         }
 
-        await crearMovimiento({
+        const facturaCreada = await crearMovimiento({
           clienteId,
           tipoMovimiento: "factura",
           facturaAsociadaId: null,
@@ -1945,6 +2002,18 @@ export async function generarFacturacionManual(
         });
 
         generadas++;
+        if (
+          await generarCuotaInstalacion({
+            cliente,
+            clienteId,
+            facturaId: facturaCreada.id,
+            periodo,
+            origenFacturacion,
+            creadoPor,
+          })
+        ) {
+          cuotasInstalacion++;
+        }
         continue;
       }
 
@@ -1953,6 +2022,18 @@ export async function generarFacturacionManual(
 
       if (diferencia === 0) {
         omitidas++;
+        if (
+          await generarCuotaInstalacion({
+            cliente,
+            clienteId,
+            facturaId: facturaExistente._id.toString(),
+            periodo,
+            origenFacturacion,
+            creadoPor,
+          })
+        ) {
+          cuotasInstalacion++;
+        }
         continue;
       }
 
@@ -1961,6 +2042,18 @@ export async function generarFacturacionManual(
 
       if (yaTieneAjuste) {
         omitidas++;
+        if (
+          await generarCuotaInstalacion({
+            cliente,
+            clienteId,
+            facturaId: facturaExistente._id.toString(),
+            periodo,
+            origenFacturacion,
+            creadoPor,
+          })
+        ) {
+          cuotasInstalacion++;
+        }
         continue;
       }
 
@@ -1999,15 +2092,28 @@ export async function generarFacturacionManual(
       }
 
       ajustes++;
+      if (
+        await generarCuotaInstalacion({
+          cliente,
+          clienteId,
+          facturaId: facturaExistente._id.toString(),
+          periodo,
+          origenFacturacion,
+          creadoPor,
+        })
+      ) {
+        cuotasInstalacion++;
+      }
     }
   }
 
   return {
     ok: true,
-    message: `Facturación finalizada. Facturas generadas: ${generadas}. Ajustes: ${ajustes}. Omitidas: ${omitidas}. Corte fijo día ${DIA_CORTE_FACTURACION}.`,
+    message: `Facturación finalizada. Facturas generadas: ${generadas}. Cuotas de instalación: ${cuotasInstalacion}. Ajustes: ${ajustes}. Omitidas: ${omitidas}. Corte fijo día ${DIA_CORTE_FACTURACION}.`,
     generadas,
     omitidas,
     ajustes,
+    cuotasInstalacion,
   };
 }
 

@@ -1302,7 +1302,7 @@ export function EstadoCuentaTable({
     <>
       <div className={styles.desktopTable}>
         <table
-          className={`${actions.table} !min-w-[930px]`}
+          className={`${actions.table} !min-w-[930px] [&_tbody_tr:hover]:!bg-[var(--overview-soft)] [&_tbody_tr:active]:!bg-[var(--overview-soft)]`}
           aria-label="Períodos facturados del cliente"
         >
           <colgroup>

@@ -1826,6 +1826,68 @@ function money(value: number) {
   return `$ ${integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${decimal}`;
 }
 
+function normalizeInstallationAmount(value: string, padDecimals = false) {
+  const hasCurrencyPrefix = value.includes("$");
+  const clean = value.replace(/[^\d.,]/g, "");
+  if (!clean) return { raw: "", display: "" };
+
+  const commaIndex = clean.lastIndexOf(",");
+  const dotIndex = clean.lastIndexOf(".");
+  let decimalSeparator: "," | "." | null = null;
+
+  if (commaIndex >= 0 && dotIndex >= 0) {
+    decimalSeparator = commaIndex > dotIndex ? "," : ".";
+  } else if (commaIndex >= 0) {
+    decimalSeparator = ",";
+  } else if (
+    dotIndex >= 0 &&
+    !hasCurrencyPrefix &&
+    clean.length - dotIndex - 1 <= 2
+  ) {
+    // Se acepta punto decimal en el valor pegado sin formato.
+    // En el valor con $ el punto siempre es separador de miles.
+    decimalSeparator = ".";
+  }
+
+  const separatorIndex = decimalSeparator === "," ? commaIndex : dotIndex;
+  const integerSource = decimalSeparator
+    ? clean.slice(0, separatorIndex)
+    : clean;
+  const decimalSource = decimalSeparator
+    ? clean.slice(separatorIndex + 1)
+    : "";
+  const integerDigits = integerSource.replace(/\D/g, "") || "0";
+  const decimalDigits = decimalSource.replace(/\D/g, "").slice(0, 2);
+  const groupedInteger = integerDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const hasDecimal = decimalSeparator !== null;
+  const raw = `${integerDigits}${hasDecimal ? `.${decimalDigits}` : ""}`;
+  const shownDecimals = hasDecimal || padDecimals
+    ? `,${decimalDigits.padEnd(padDecimals ? 2 : 0, "0")}`
+    : "";
+
+  return {
+    raw,
+    display: `$${groupedInteger}${shownDecimals}`,
+  };
+}
+
+function parseAmountCents(value: string) {
+  const normalized = value.trim().replace(",", ".");
+  if (!/^\d+(?:\.\d{0,2})?$/.test(normalized)) return 0;
+  return Math.round(Number(normalized) * 100);
+}
+
+function formatInstallmentMonth(start: string, offset: number) {
+  if (!/^\d{4}-\d{2}$/.test(start)) return `Mes ${offset + 1}`;
+  const [year, month] = start.split("-").map(Number);
+  const date = new Date(year, month - 1 + offset, 1);
+  const label = new Intl.DateTimeFormat("es-AR", {
+    month: "long",
+    year: "numeric",
+  }).format(date);
+  return label.charAt(0).toLocaleUpperCase("es-AR") + label.slice(1);
+}
+
 function Field({
   id,
   label,
@@ -1912,8 +1974,23 @@ export function ClienteForm({
   );
 
   const [planId, setPlanId] = useState("");
+  const [fechaAlta, setFechaAlta] = useState(fechaAltaInicial);
+  const [incluyeInstalacion, setIncluyeInstalacion] = useState(false);
+  const [importeInstalacion, setImporteInstalacion] = useState("");
+  const [importeEnEdicion, setImporteEnEdicion] = useState(false);
+  const [cuotasInstalacion, setCuotasInstalacion] = useState("1");
+  const [inicioInstalacion, setInicioInstalacion] = useState(
+    fechaAltaInicial?.slice(0, 7) || new Date().toISOString().slice(0, 7),
+  );
 
   const selectedPlan = planes.find((plan) => plan.id === planId);
+  const totalInstalacionCentavos = parseAmountCents(importeInstalacion);
+  const cantidadCuotas = Math.min(36, Math.max(1, Number(cuotasInstalacion) || 1));
+  const cuotasPreview = Array.from({ length: cantidadCuotas }, (_, index) => {
+    const base = Math.floor(totalInstalacionCentavos / cantidadCuotas);
+    const resto = totalInstalacionCentavos % cantidadCuotas;
+    return (base + (index < resto ? 1 : 0)) / 100;
+  });
 
   useEffect(() => {
     if (state.ok) {
@@ -2094,6 +2171,14 @@ export function ClienteForm({
             label="Fecha de alta"
             type="date"
             defaultValue={fechaAltaInicial}
+            onChange={(event) => {
+              const nextFechaAlta = event.target.value;
+              setFechaAlta(nextFechaAlta);
+              const minPeriodo = nextFechaAlta.slice(0, 7);
+              if (minPeriodo && inicioInstalacion < minPeriodo) {
+                setInicioInstalacion(minPeriodo);
+              }
+            }}
             optional
           />
 
@@ -2138,6 +2223,170 @@ export function ClienteForm({
             </div>
           )}
         </div>
+      </section>
+
+      <section className={styles.panel}>
+        <div className={`${styles.panelHeader} flex-wrap gap-2`}>
+          <h2 className={styles.panelTitle}>Cargo de instalación</h2>
+          <label className="flex shrink-0 cursor-pointer items-center gap-2 text-[12px] text-[var(--overview-text)]">
+            <input
+              type="checkbox"
+              name="incluyeInstalacion"
+              checked={incluyeInstalacion}
+              onChange={(event) => setIncluyeInstalacion(event.target.checked)}
+              className="size-4 accent-blue-600"
+            />
+            ¿Incluye instalación?
+          </label>
+        </div>
+
+        {incluyeInstalacion ? (
+          <div className="grid grid-cols-1 gap-2.5 p-3 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6">
+            <div className="min-w-0 sm:col-span-2 2xl:col-span-2">
+              <Input
+                id="instalacionConcepto"
+                label="Concepto"
+                type="text"
+                defaultValue="Instalación"
+                maxLength={180}
+              />
+            </div>
+
+            <div className="min-w-0 sm:col-span-2 2xl:col-span-2">
+              <Field id="instalacionImporteTotal" label="Importe total">
+                <input
+                  id="instalacionImporteTotal"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="$0,00"
+                  value={normalizeInstallationAmount(
+                    importeInstalacion,
+                    !importeEnEdicion,
+                  ).display}
+                  onFocus={() => setImporteEnEdicion(true)}
+                  onBlur={() => setImporteEnEdicion(false)}
+                  onChange={(event) => {
+                    const input = event.currentTarget;
+                    const cursor = input.selectionStart ?? input.value.length;
+                    const nativeInputEvent = event.nativeEvent as InputEvent;
+                    let inputValue = input.value;
+
+                    // El punto del teclado numérico también se usa como decimal.
+                    // El campo agrega los puntos de miles automáticamente.
+                    if (nativeInputEvent.data === ".") {
+                      const lastDot = inputValue.lastIndexOf(".");
+                      if (lastDot >= 0) {
+                        inputValue = `${inputValue.slice(0, lastDot)},${inputValue.slice(lastDot + 1)}`;
+                      }
+                    }
+
+                    const prefix = inputValue.slice(0, cursor);
+                    const normalized = normalizeInstallationAmount(inputValue);
+                    const normalizedPrefix = normalizeInstallationAmount(prefix).raw;
+                    const decimalPosition = normalizedPrefix.indexOf(".");
+                    const digitsBeforeCursor = normalizedPrefix
+                      .slice(0, decimalPosition >= 0 ? decimalPosition : undefined)
+                      .replace(/\D/g, "").length;
+                    const decimalsBeforeCursor = decimalPosition >= 0
+                      ? normalizedPrefix.slice(decimalPosition + 1).replace(/\D/g, "").length
+                      : 0;
+                    const cursorIsInDecimals = decimalPosition >= 0;
+                    const nextDisplay = normalizeInstallationAmount(
+                      normalized.raw,
+                      !importeEnEdicion,
+                    ).display;
+
+                    setImporteInstalacion(normalized.raw);
+
+                    requestAnimationFrame(() => {
+                      if (cursorIsInDecimals) {
+                        const comma = nextDisplay.indexOf(",");
+                        const nextCursor = comma >= 0
+                          ? comma + 1 + decimalsBeforeCursor
+                          : nextDisplay.length;
+                        input.setSelectionRange(nextCursor, nextCursor);
+                        return;
+                      }
+
+                      let nextCursor = nextDisplay.startsWith("$") ? 1 : 0;
+                      let seenDigits = 0;
+                      while (nextCursor < nextDisplay.length && seenDigits < digitsBeforeCursor) {
+                        if (/\d/.test(nextDisplay[nextCursor])) seenDigits += 1;
+                        nextCursor += 1;
+                      }
+                      input.setSelectionRange(nextCursor, nextCursor);
+                    });
+                  }}
+                  required={incluyeInstalacion}
+                  title="Usá hasta dos decimales."
+                  className={inputClass}
+                />
+                <input
+                  type="hidden"
+                  name="instalacionImporteTotal"
+                  value={(totalInstalacionCentavos / 100).toFixed(2)}
+                />
+                <p className="mt-1 text-[10px] text-[var(--overview-muted)]">
+                  Usá coma o punto para los decimales; los miles se separan automáticamente.
+                </p>
+              </Field>
+            </div>
+
+            <div className="min-w-0 xl:col-span-2 2xl:col-span-1">
+              <Field id="instalacionCantidadCuotas" label="Cantidad de cuotas">
+                <input
+                  id="instalacionCantidadCuotas"
+                  name="instalacionCantidadCuotas"
+                  type="number"
+                  min={1}
+                  max={36}
+                  step={1}
+                  value={cuotasInstalacion}
+                  onChange={(event) => setCuotasInstalacion(event.target.value)}
+                  required={incluyeInstalacion}
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+
+            <div className="min-w-0 xl:col-span-2 2xl:col-span-1">
+              <Field id="instalacionPeriodoInicio" label="Mes de inicio de las cuotas">
+                <input
+                  id="instalacionPeriodoInicio"
+                  name="instalacionPeriodoInicio"
+                  type="month"
+                  value={inicioInstalacion}
+                  onChange={(event) => setInicioInstalacion(event.target.value)}
+                  min={(fechaAlta || fechaAltaInicial || new Date().toISOString().slice(0, 10)).slice(0, 7)}
+                  required={incluyeInstalacion}
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+
+            <div className="min-w-0 rounded-[7px] border border-[var(--overview-border)] bg-[var(--overview-green-tint)] p-3 sm:col-span-2 xl:col-span-4 2xl:col-span-6">
+              <p className="text-[12px] font-medium text-[var(--overview-text)]">
+                Vista previa de cuotas
+              </p>
+              {totalInstalacionCentavos > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {cuotasPreview.map((importe, index) => (
+                    <span
+                      key={index}
+                      className="rounded-md border border-[var(--overview-border)] bg-[var(--overview-bg)] px-2 py-1 text-[11px] tabular-nums"
+                    >
+                      Cuota {index + 1} · {formatInstallmentMonth(inicioInstalacion, index)}: {money(importe)}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-1 text-[11px] text-[var(--overview-muted)]">
+                  Ingresá el total para calcular el importe de cada cuota.
+                </p>
+              )}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       {state.message && (

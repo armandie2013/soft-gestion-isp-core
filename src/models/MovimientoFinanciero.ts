@@ -537,6 +537,7 @@ const MovimientoFinancieroSchema = new Schema(
         "mensualidad",
         "proporcional_alta",
         "ajuste_prorrateo",
+        "instalacion",
         "manual",
       ],
       default: "manual",

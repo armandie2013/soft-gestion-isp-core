@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { CalendarDays, ReceiptText, X } from "lucide-react";
 import { cajaStyles as styles } from "@/components/ui/dashboard-styles";
 import { EstadoCuentaTable } from "@/components/tables/EstadoCuentaTable";
@@ -11,6 +12,8 @@ type Props = {
   periodos: PeriodoCuentaClienteSafe[];
   currentYear: number;
   currentMonth: number;
+  planInstalacion?: ReactNode;
+  movimientos?: ReactNode;
 };
 const months = [
   "Enero",
@@ -83,6 +86,8 @@ export function EstadoCuentaCalendario({
   clienteId,
   periodos,
   currentYear,
+  planInstalacion,
+  movimientos,
 }: Props) {
   const [year, setYear] = useState(currentYear);
   const [filter, setFilter] = useState<"year" | "month" | "all">("year");
@@ -122,8 +127,9 @@ export function EstadoCuentaCalendario({
 
   return (
     <>
+      <div className={`grid min-w-0 items-start gap-3 ${planInstalacion ? "min-[1000px]:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]" : ""}`}>
       <section
-        className={`${styles.panel} w-full max-w-[420px]`}
+        className={`${styles.panel} w-full min-w-0`}
         aria-labelledby="annual-calendar-title"
       >
         <div className={`${styles.panelHeader} !gap-2 !py-2`}>
@@ -193,6 +199,9 @@ export function EstadoCuentaCalendario({
           </span>
         </div>
       </section>
+      {planInstalacion ? <div className="min-w-0">{planInstalacion}</div> : null}
+      </div>
+      {movimientos ? <div className="mt-3 min-w-0">{movimientos}</div> : null}
       <section className={styles.panel} aria-labelledby="account-periods-title">
         <div className={`${styles.panelHeader} !flex-wrap !gap-2`}>
           <h2 id="account-periods-title" className={styles.panelTitle}>

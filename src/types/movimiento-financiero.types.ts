@@ -195,6 +195,7 @@ export type MovimientoFinancieroSafe = {
     | "mensualidad"
     | "proporcional_alta"
     | "ajuste_prorrateo"
+    | "instalacion"
     | "manual";
   origenFacturacion?: "manual" | "cron" | "cobrador" | "admin" | "sistema";
   cicloFacturacionKey?: string | null;
